@@ -1,7 +1,7 @@
 %% Calculate from epoched raw traces
 clear 
 tic
-[ allTraces allIDs allChans] = loadTraces ('PFC');
+[ allTraces allIDs allChans] = loadTraces ('HIP');
 toc
 
 
