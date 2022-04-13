@@ -1,11 +1,14 @@
 %%
 clear 
+
+paths = load_paths; 
+
 %ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-load PFC_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat
+load ([paths.neural_rdms_path 'PFC_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat']); 
 pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-load VVS_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat
+load ([paths.neural_rdms_path 'VVS_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat']); 
 vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
-load pfc_elec
+load ([paths.electrodes_path 'pfc_elec']); 
 pfc = pfc_fits; 
 vvs = vvs_fits; 
 
