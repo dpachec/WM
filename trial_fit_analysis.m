@@ -24,15 +24,14 @@ s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 1);
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 % ff1 = 13:29; 
-% tt1 = 21:29; 
-% ff2 = 30:54; % 
-% tt2 = 31:55; 
+% tt1 = 41:55; 
+% ff2 = 39:54; % 
+% tt2 = 41:55; 
 
 ff1 = 13:29; 
-tt1 = 31:55; 
+tt1 = 51:60; 
 ff2 = 39:54; % 
-tt2 = 31:55; 
-
+tt2 = 51:60; 
 
 
 
@@ -97,11 +96,11 @@ contourf(myresizem(t, 20), 40, 'linecolor', 'none'); axis equal, hold on; colorb
 contour(myresizem(h, 20), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'xtick', [10 30 50 70 90 110 130], 'xticklabels', {[1:7]})
 set(gca, 'ytick', [10 30 50 70 90 110 130], 'yticklabels', {[1:7]})
-set(gca, 'FontSize', 22) %, 'clim', [-4 4]
+set(gca, 'FontSize', 22, 'clim', [-4 4])
 %set(gca, 'xlim',  [0.5 nLays+0.5], 'ylim', [.5  nLays+0.5]) %, 'clim', [0 180]
 
 
-%exportgraphics(gcf, 'trial_based.png', 'Resolution', 300)
+exportgraphics(gcf, 'trial_based.png', 'Resolution', 300)
 
 
 
