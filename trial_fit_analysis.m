@@ -14,21 +14,21 @@ vvs = vvs_fits;
 
 
 
+
 %% frequency resolved
 pfc_fits = pfc; 
 vvs_fits = vvs; 
 
 tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 1); 
+s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 2); 
 %sub2exc = []; 
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 
 ff1 = 18:28; 
-tt1 = 23:28; 
-ff2 = 39:54; % 
-tt2 = 31:60; 
-
+tt1 = 21:26; 
+ff2 = 30:38;
+tt2 = 41:60; 
 
 
 nLays = 7;
@@ -40,7 +40,7 @@ for subji = 1:length(pfc_fits)
     y = vvs_fits{subji};
     
 %     figure(); set(gcf, 'Position', [100 100 1000 1000]); ploti = 1;
-    for layi = 1:nLays % 7:7 %
+    for layi = 1:7 %5:nLays % 7:7 %
         x1 = squeeze(mean(mean(x(layi, :, ff1, tt1), 4, 'omitnan'), 3, 'omitnan'))'; 
         %x1p = squeeze(x(layi, :, :,:)); 
         %x1 = mean(x1p(:, clustinfo_lay(7).PixelIdxList{10}),2);
@@ -87,8 +87,8 @@ max_clust_sum_real = allSTs(id);
 
 
 
-figure()
-contourf(myresizem(t, 20), 40, 'linecolor', 'none'); axis equal, hold on; colorbar
+figure(); %set(gcf, 'Position', [1000 1000 500 200])
+contourf(myresizem(t, 20), 40, 'linecolor', 'none'); hold on; colorbar; axis equal
 contour(myresizem(h, 20), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'xtick', [10 30 50 70 90 110 130], 'xticklabels', {[1:7]})
 set(gca, 'ytick', [10 30 50 70 90 110 130], 'yticklabels', {[1:7]})
@@ -107,7 +107,7 @@ paths = load_paths;
 
 %ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 load ([paths.neural_rdms_path 'HIP_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat']); 
-hip_fits = nnFit;
+hip_fits = nnFit(1:16);
 load ([paths.neural_rdms_path 'VVS_8-16-24-32-40-48-56_01-54_1_1_0.1_5_1_.mat']); 
 vvs_fits = nnFit([1 5 10 12:15 17 18 21 23:28]);
 load ([paths.electrodes_path 'hipp_elec']); 
@@ -120,17 +120,14 @@ hip_fits = hip;
 vvs_fits = vvs; 
 
 tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp([1:16],1) > 0); 
+s2e_hip = ~(tmp([1:16],1) > 2); 
 %sub2exc = []; 
-hip_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
-
+hip_fits(s2e_hip) = [];vvs_fits(s2e_hip) = [];
 
 ff1 = 18:28; 
-tt1 = 23:28; 
-ff2 = 39:54; % 
-tt2 = 31:60; 
-
-
+tt1 = 21:31; 
+ff2 = 39:54;
+tt2 = 51:60; 
 
 nLays = 7;
 clear cR
@@ -141,8 +138,8 @@ for subji = 1:length(hip_fits)
     y = vvs_fits{subji};
     
 %     figure(); set(gcf, 'Position', [100 100 1000 1000]); ploti = 1;
-    for layi = 1:nLays % 7:7 %
-        x1 = squeeze(mean(mean(x(layi, :, ff1, tt1), 4, 'omitnan'), 3, 'omitnan'))'; 
+    for layi = 1:3 %5:nLays % 7:7 %
+        x1 = squeeze(mean(mean(x(layi+4, :, ff1, tt1), 4, 'omitnan'), 3, 'omitnan'))'; 
         %x1p = squeeze(x(layi, :, :,:)); 
         %x1 = mean(x1p(:, clustinfo_lay(7).PixelIdxList{10}),2);
         for layj = 1:nLays %7:7 %
@@ -188,11 +185,11 @@ max_clust_sum_real = allSTs(id);
 
 
 
-figure()
-contourf(myresizem(t, 20), 40, 'linecolor', 'none'); axis equal, hold on; colorbar
+figure(); set(gcf, 'Position', [1000 1000 500 200])
+contourf(myresizem(t, 20), 40, 'linecolor', 'none'); hold on; colorbar; %axis equal
 contour(myresizem(h, 20), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'xtick', [10 30 50 70 90 110 130], 'xticklabels', {[1:7]})
-set(gca, 'ytick', [10 30 50 70 90 110 130], 'yticklabels', {[1:7]})
+set(gca, 'ytick', [10 30 50 70 90 110 130], 'yticklabels', {[5:7]})
 set(gca, 'FontSize', 22, 'clim', [-4 4])
 %set(gca, 'xlim',  [0.5 nLays+0.5], 'ylim', [.5  nLays+0.5]) %, 'clim', [0 180]
 

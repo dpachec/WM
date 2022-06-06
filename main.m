@@ -1,4 +1,4 @@
-% Load All Subjects  
+%% Load All Subjects  
 
 clear
 diary('_console_log.txt'); diary on; disp(string(datetime));
@@ -167,14 +167,17 @@ toc
 cd .. 
 
 
-                                                        %% load cfg_contrasts
+%% load cfg_contrasts
  
 clearvars
+
+paths = load_paths_WM; 
+
 %frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
 %fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-frequncies2test = [{30:38} ]';
-fnames = {'30-38Hz' }'; fnames = fnames';
+frequncies2test = [{13:29} ]';
+fnames = {'13-29Hz' }'; fnames = fnames';
 
 %frequncies2test = [{3:54}]';
 %fnames = {'3-54Hz'}'; fnames = fnames';
@@ -186,7 +189,7 @@ meanInFreq          = 0;
 takeElec            = 0; 
 takeFreq            = 0;
 TG                  = 1; %temporal generalization
-contr2save          = {'SISC_EE' 'DISC_EE'}; %{};
+contr2save          = {'DISC_EE' 'DIDC_EE'}; %{};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
@@ -198,7 +201,7 @@ n2s                 = 1000000;
 loadSurr            = 0; 
 region              = 'pfc';
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'none';  
+avMeth              = 'pow';  
  
 diary('rsa_log.txt'); diary on; disp(string(datetime));
  
@@ -211,7 +214,7 @@ disp (['measurements -> ' num2str(length(sublist))]);
  
 for subji= 1:length(sublist) %this one starts at 1 and not at 3
     disp(['File > ' num2str(subji)]);
-    load(sublist{subji});
+    load([paths.out_contrasts_path sublist{subji}]);
  
     disp ([ 'fnames = ' fnames{:} newline ...
             'win_width = ' num2str(win_width) newline ...
@@ -254,7 +257,7 @@ for subji= 1:length(sublist) %this one starts at 1 and not at 3
         cd (fname);
         f           = frequncies2test{freqi}; 
  
-        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, subji, TG, 0)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, subji, TG, 0, paths)
  
         cd ..
     end
@@ -269,7 +272,7 @@ toc
  
  
 
-%%run permutations and plot
+%% run permutations and plot
 
 disp ('Starting...');
 disp(string(datetime));
@@ -303,7 +306,7 @@ cmaps2use = repmat(cmaps2use, 1, 50);
 %perms2use = {'1-1' '1-1' '1-4' '1-4' '4-4'};
 %perms2use = { '-4-0' '-4-0'};
 %perms2use = {'4-4' '4-4' '4-4' '4-4' '4-4' '4-4' '4-4'};
-perms2use = {'1-1'};
+perms2use = {'1-4'};
 t2use = {'100_norm' '100_perm'};
 
  
@@ -326,7 +329,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
         idData{i,:} = all_IDs;
     end
 
-    region = 'pfc'; 
+    region = 'vvs'; 
     noAv = 0;
     [out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
     for i = 1:length(out_c) 
