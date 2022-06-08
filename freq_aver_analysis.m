@@ -13,15 +13,15 @@ end
 %frequncies2test = [{4:54} {4:8} {9:12} {13:29} {30:38} {39:54} {1:54} ]';
 %fnames = {'4-54Hz' '4-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' '1-54Hz'}'; fnames = fnames';
 
-avTime              = 1; 
+avTime              = 0; 
 win_width           = 5; 
 mf                  = 1; 
 meanInTime          = 1; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;    
-TG                  = 1; %temporal generalization
-contr2save          = { 'DISC_EM2' 'DIDC_EM2'}; %{};
+TG                  = 0; %temporal generalization
+contr2save          = { 'DISC_EE' 'DIDC_EE'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 100;
@@ -34,8 +34,8 @@ avMeth              = 'pow';
 tic
 
  
-for subji= 1:length(sublist) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(subji)]);
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts_path filelistSess{sessi}]);   
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
@@ -62,8 +62,8 @@ for subji= 1:length(sublist) %this one starts at 1 and not at 3
   
     for freqi = 1:length(frequncies2test) 
         fname = fnames{freqi};
-        mkdir ([paths.results.frequency_resolved fname]);
-        cd ([paths.results.frequency_resolved fname]);
+        mkdir ([paths.results.tf_res fname]);
+        cd ([paths.results.tf_res fname]);
 
         if iscell(frequncies2test)
             f           = frequncies2test{freqi}; 
@@ -71,7 +71,7 @@ for subji= 1:length(sublist) %this one starts at 1 and not at 3
             f           = frequncies2test(freqi); 
         end
  
-        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, subji, TG, avTime)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, avTime)
  
         cd ..
     end
@@ -129,6 +129,13 @@ end
 cd (currentFolder)
 
 toc
+
+%% 
+c1AM = cell2mat(cellfun(@(x) mean(x, 'omitnan'), C1A, 'un',false))
+figure()
+plot(c1AM)
+
+
 
 %% 
 clear U2 U21 DISC_H DIDC_H DISC_M2M2_H DIDC_M2M2_H
