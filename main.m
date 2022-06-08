@@ -10,8 +10,8 @@ filelistSess = getFiles(paths.out_contrasts_path);
 %frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
 %fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-frequncies2test = [{9:12} {13:29}]';
-fnames = {'9-12Hz' '13-29'}'; fnames = fnames';
+frequncies2test = [{13:29}]';
+fnames = {'13-29Hz'}'; fnames = fnames';
 
 %frequncies2test = [{3:54}]';
 %fnames = {'3-54Hz'}'; fnames = fnames';
@@ -33,11 +33,11 @@ acrossTrials        = 1;
 batch_bin           = 1000;
 n2s                 = 1000000;
 loadSurr            = 0; 
-region              = 'vvs';
+region              = 'pfc';
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  
+avMeth              = 'none';  
  
-diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
+%diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  
  
  
@@ -95,7 +95,7 @@ end
 
 cd .. 
 
-diary off
+%diary off
 
 %disp('done');
 %disp(string(datetime));
@@ -106,7 +106,9 @@ diary off
 
 disp ('Starting...');
 disp(string(datetime));
- 
+
+paths = load_paths_WM; 
+cd (paths.results_path)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 % contrasts = {   'DISC_M2123V1' 'DIDC_M2123V1'; ... 
@@ -127,7 +129,7 @@ fold = fold(dirs);
 %              };
 %  
 
-contrasts = {'DISC_EE' 'DIDC_EE'};
+contrasts = {'DISC_EM2' 'DIDC_EM2'};
 
 cmaps2use = {[-.15 .15]};
 cmaps2use = repmat(cmaps2use, 1, 50);
@@ -159,7 +161,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
         idData{i,:} = all_IDs;
     end
 
-    region = 'vvs'; 
+    region = 'pfc'; 
     noAv = 0;
     [out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
     for i = 1:length(out_c) 
@@ -171,7 +173,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     
  
  
-    for permNoperm = 1:2 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts, 1)
  
             tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -333,7 +335,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
 cd ..
 end
  
- 
+cd ..
 disp ('all plots done');
 disp(string(datetime));
 diary off
