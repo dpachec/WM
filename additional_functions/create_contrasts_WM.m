@@ -400,7 +400,7 @@ end
                         end
                         if length(unique(cncC)) == 2 & length(unique(cncI)) == 3
                             %disp (['EM2U DISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
-                            if exist('countSISC_EM2U')
+                            if exist('countDISC_EM2U')
                                 new_disc_em2u{countDISC_EM2U} = [i, j];
                                 countDISC_EM2U = countDISC_EM2U+1;
                             end
