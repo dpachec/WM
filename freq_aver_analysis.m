@@ -34,7 +34,7 @@ avMeth              = 'pow';
 tic
 
  
-for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+for sessi= 1:7 %length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts_path filelistSess{sessi}]);   
     
@@ -77,6 +77,10 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
  
 end
+
+%% 
+clear 
+paths = load_paths_WM; 
 
 
 fold = dir(); dirs = find(vertcat(fold.isdir));
