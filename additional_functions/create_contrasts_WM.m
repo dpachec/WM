@@ -392,21 +392,21 @@ end
                         cncI = [idEnc;  nonCuedIt_J(:)]';
                         cncC = [idCEnc;  nonCuedCat_J(:)]';
                         if length(unique(cncI)) == 2 % if the item is uncued in another trial
-                            disp (['EM2U SISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            %disp (['EM2U SISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countSISC_EM2U')
                                 new_sisc_em2u{countSISC_EM2U} = [i, j];
                                 countSISC_EM2U = countSISC_EM2U+1;
                             end
                         end
                         if length(unique(cncC)) == 2 & length(unique(cncI)) == 3
-                            disp (['EM2U DISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            %disp (['EM2U DISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countSISC_EM2U')
                                 new_disc_em2u{countDISC_EM2U} = [i, j];
                                 countDISC_EM2U = countDISC_EM2U+1;
                             end
                         end
                         if length(unique(cncC)) == 3
-                            disp (['EM2U DIDC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            %disp (['EM2U DIDC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countDIDC_EM2U')
                                 new_didc_em2u{countDIDC_EM2U} = [i, j];
                                 countDIDC_EM2U = countDIDC_EM2U+1;
