@@ -55,7 +55,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
             'batch_bin = ' num2str(batch_bin);
             ]);
         
-     
+    
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
  
     cfg_contrasts.contr2save = contr2save;
