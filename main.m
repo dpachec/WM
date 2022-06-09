@@ -85,7 +85,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         cd ([paths.results_path fname]);
         f           = frequncies2test{freqi}; 
  
-        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, 0, paths)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, 0)
  
         cd ..
     end
