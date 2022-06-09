@@ -1,10 +1,11 @@
 %% LOAD all conditions
 %%
-
 clearvars
 
+paths = load_paths_WM('vvs');
+
 contrasts = {
-             'DISC_M2123NC' 'DIDC_M2123NC'; ... 
+             'DISC_EM2U' 'DIDC_EM2U'; ... 
              };
 
 c = unique (contrasts);
@@ -18,7 +19,7 @@ end
 
 region = 'vvs'; 
 noAv = 0;
-[out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
+[out_c ] = averSub2 (c, d, contrData, idData, region, noAv);
 for i = 1:length(out_c) 
     eval([c{i} ' = out_c{i};']);
     %eval([d{i} ' = out_id{i};']);
