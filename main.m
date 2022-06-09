@@ -99,7 +99,8 @@ cd ..
 %disp('done');
 %disp(string(datetime));
  
-%% 
+%% process Folders
+
 clear 
 paths = load_paths_WM; 
 
