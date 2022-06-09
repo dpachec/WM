@@ -114,7 +114,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     direct = fold(foldi);
     cd (direct.name)
  
-    processFoldersWM;
+    processFoldersWM; 
 
     cd .. 
 end
