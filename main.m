@@ -99,7 +99,27 @@ cd ..
 %disp('done');
 %disp(string(datetime));
  
+%% 
+clear 
+paths = load_paths_WM; 
+
+
+fold = dir(); dirs = find(vertcat(fold.isdir));
+fold = fold(dirs);
  
+for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
+    
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test
+    
+    direct = fold(foldi);
+    cd (direct.name)
+ 
+    processFoldersWM;
+
+    cd .. 
+end
+
+disp ('done')
 
 %% run permutations and plot
 
