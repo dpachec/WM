@@ -102,9 +102,10 @@ cd ..
 %% process Folders
 
 clear 
-paths = load_paths_WM; 
+paths = load_paths_WM('vvs'); 
+currentDir = pwd; 
 
-
+cd (paths.results_path)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
@@ -120,6 +121,7 @@ for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     cd .. 
 end
 
+cd (currentDir);
 disp ('done')
 
 
