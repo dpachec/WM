@@ -367,7 +367,49 @@ end
       end
   end
       
-    if ~isempty(intersect(c2c, 'EM2U')) %Encoding maintenance uncued
+if ~isempty(intersect(c2c, 'EM2UV1'))
+      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*')
+        idEnc = double(string(evei{3})); idCEnc = floor(idEnc/100); 
+        allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
+        nonCuedIt_I = setdiff(allIt_I, idEnc); nonCuedCat_I = floor(nonCuedIt_I / 100); 
+        for j = 1:length(oneListIds)
+           evej = strsplit(oneListIds{j});
+               if ( strcmp(evej(1), '7') | strcmp(evej(1), '7*') | strcmp(evej(1), '-7') ) & ~strcmp(evej(2), '4')
+                   trli = string(evei(12)); trlj = string(evej(12));
+                   trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+                   trlij = [trli trlj];
+                                  
+                   if length(trlij) == length(unique(trlij)) % all averaged trials are from different trials
+                        cuedIt_J = double(string(char(evej(12 + str2double(evej{2})))));
+                        allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
+                        nonCuedIt_J = setdiff(allIt_J, cuedIt_J);
+                        cuedCat_J = floor(cuedIt_J / 100); nonCuedCat_J = floor(nonCuedIt_J / 100); 
+                        nonCuedItIJ = [nonCuedIt_I ; nonCuedIt_J]; 
+                        nonCuedCatIJ = [nonCuedCat_I ; nonCuedCat_J]; 
+                        allItIJ = [allIt_I ; allIt_J]; 
+                        allCatIJ = [allCat_I ; allCat_J]; 
+                        if length(unique(nonCuedCatIJ)) == 2 & length(unique(nonCuedItIJ)) == 4 & idCEnc ~= cuedCat_J
+                            disp (['EM2U DISC V1 > '  string(trlijIt)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            if exist('countDISC_EM2UV1')
+                                new_disc_em2uV1{countDISC_EM2UV1} = [i, j];
+                                countDISC_EM2UV1 = countDISC_EM2UV1+1;
+                            end
+                        end
+                        if length(unique(allCatIJ)) == 6 
+                            %disp (['All different categories > ' string(trlijIt)]);     
+                            if exist('countDIDC_EM2UV1')
+                                new_didc_em2uV1{countDIDC_EM2UV1} = [i, j];
+                                countDIDC_EM2UV1 = countDIDC_EM2UV1+1;
+                            end
+                        end
+               end
+           end
+        end
+      end
+  end
+
+
+    if ~isempty(intersect(c2c, 'EM2UV2')) %Encoding maintenance uncued
       if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*')
         idEnc = double(string(evei{3})); idCEnc = floor(idEnc/100); 
         allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
@@ -383,33 +425,33 @@ end
                    if length(trlij) == length(unique(trlij)) % all averaged trials are from different trials
                        cuedIt_J = double(string(char(evej(12 + str2double(evej{2})))));
                        allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
-                       nonCuedIt_J = setdiff(allIt_J, cuedIt_J);
-                       cuedCat_J = floor(cuedIt_J / 100); 
+                       nonCuedIt_J = setdiff(allIt_J, cuedIt_J);cuedCat_J = floor(cuedIt_J / 100); 
                        nonCuedCat_J = floor(nonCuedIt_J / 100); 
                        allItIJ = [allIt_I ; allIt_J]; 
                        allCatIJ = [allCat_I ; allCat_J]; 
     
-                        cncI = [idEnc;  nonCuedIt_J(:)]';
-                        cncC = [idCEnc;  nonCuedCat_J(:)]';
-                        if length(unique(cncI)) == 2 % if the item is uncued in another trial
-                            %disp (['EM2U SISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
-                            if exist('countSISC_EM2U')
-                                new_sisc_em2u{countSISC_EM2U} = [i, j];
-                                countSISC_EM2U = countSISC_EM2U+1;
+                        cncI = [idEnc;  nonCuedIt_I(:) nonCuedIt_J(:)]';
+                        cncC = [idCEnc;  nonCuedCat_I(:) nonCuedCat_J(:)]';
+                        
+                        if length(unique(cncI)) == 4 % the item is uncued in another trial and all uncued items are differnet
+                            disp (['EM2UV2 SISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            if exist('countSISC_EM2UV2')
+                                new_sisc_em2uV2{countSISC_EM2UV2} = [i, j];
+                                countSISC_EM2UV2 = countSISC_EM2UV2+1;
                             end
                         end
-                        if length(unique(cncC)) == 2 & length(unique(cncI)) == 3
-                            %disp (['EM2U DISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                        if length(unique(cncC)) == 4 & length(unique(cncI)) == 5
+                            disp (['EM2UV2 DISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countDISC_EM2U')
-                                new_disc_em2u{countDISC_EM2U} = [i, j];
-                                countDISC_EM2U = countDISC_EM2U+1;
+                                new_disc_em2uV2{countDISC_EM2UV2} = [i, j];
+                                countDISC_EM2UV2 = countDISC_EM2UV2+1;
                             end
                         end
-                        if length(unique(cncC)) == 3
-                            %disp (['EM2U DIDC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                        if length(unique(cncC)) == 4
+                            disp (['EM2UV2 DIDC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countDIDC_EM2U')
-                                new_didc_em2u{countDIDC_EM2U} = [i, j];
-                                countDIDC_EM2U = countDIDC_EM2U+1;
+                                new_didc_em2uV2{countDIDC_EM2UV2} = [i, j];
+                                countDIDC_EM2UV2 = countDIDC_EM2UV2+1;
                             end
                         end
                    end
