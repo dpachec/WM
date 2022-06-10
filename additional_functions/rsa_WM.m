@@ -46,7 +46,7 @@ for coni = 1:length(currentContrast)
         chanN = size(all2all, 3);
 
 
-        disp (['Cond ' id '   ' num2str(size(all2all, 1)) ' trials']);
+        %disp (['Cond ' id '   ' num2str(size(all2all, 1)) ' trials']);
         
       
             if meanInTime
@@ -111,7 +111,7 @@ for coni = 1:length(currentContrast)
                 
             end
 
-            fprintf('\n');
+            %fprintf('\n');
 
             rsaZ = zeros (trialN, bins, bins);
             %fprintf('\n'); fprintf('trial correlation:          '); 
@@ -173,20 +173,7 @@ for coni = 1:length(currentContrast)
             rsaZ = cat(1, allRSA{:});
             if ~isempty(allIDs) & ndims(rsaZ) == 3
                 if aVTime
-                    if strcmp(id(end-2:end), 'M2A') | strcmp(id(end-2:end), '2M2')
-                        %disp('averaging M2A');
-                        %rsaZ = squeeze(mean(rsaZ(:,6:45,6:45), 'all', 'omitnan'));  
-                        rsaZ = squeeze(mean(mean(rsaZ(:,6:45,6:45), 2, 'omitnan'), 3, 'omitnan'));  
-                        %rsaZ = squeeze(mean(mean(rsaZ(:,6:10,6:10), 2, 'omitnan'), 3, 'omitnan'));  
-                        %rsaZ = squeeze(mean(mean(rsaZ(:,11:45,11:45), 2, 'omitnan'), 3, 'omitnan'));  
-                    elseif strcmp(id(end-2:end), 'EM2')
-                        rsaZ = squeeze(mean(rsaZ(:,11:45,11:45), 'all', 'omitnan'));  
-                        %rsaZ = squeeze(mean(mean(rsaZ(:,6:13,6:45), 2, 'omitnan'), 3, 'omitnan'));  
-                        %rsaZ = squeeze(mean(mean(rsaZ(:,6:10,6:10), 2, 'omitnan'), 3, 'omitnan'));  
-                        %rsaZ = squeeze(mean(mean(rsaZ(:,11:45,11:45), 2, 'omitnan'), 3, 'omitnan'));  
-                    else
-                        rsaZ = squeeze(mean(rsaZ(:,6:13,6:13), 'all', 'omitnan'));  
-                    end
+                    rsaZ = squeeze(mean(rsaZ(:,6:15,6:15), 'all', 'omitnan'));  
                     save (filename, 'rsaZ'); %, 'timeBins'
                 else
                     save (filename, 'rsaZ', 'allIDs'); %, 'timeBins'
@@ -200,7 +187,7 @@ for coni = 1:length(currentContrast)
            % fprintf('\n');
          
         else
-            disp('hola')
+            %disp('hola')
             rsaZ = cat(1, allRSA{:});
             parfor triali = 1:size(rsaZ, 1)
                 rsaN(triali, :) = diag(squeeze(rsaZ(triali, :, :)));

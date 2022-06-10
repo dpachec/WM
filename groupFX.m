@@ -2,7 +2,8 @@
 %%
 clearvars
 
-paths = load_paths_WM('vvs');
+region = 'vvs'; 
+paths = load_paths_WM(region);
 
 contrasts = {
              'SISC_EM2U' 'DISC_EM2U' 'DIDC_EM2U'
@@ -17,7 +18,6 @@ for i = 1:length(c)
     %idData{i,:} = [];
 end
 
-region = 'vvs'; 
 noAv = 0;
 [out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
 for i = 1:length(out_c) 
@@ -213,15 +213,15 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
    
 
 
-perms2use = {   '4-4' ...
-                '4-4' ...
+perms2use = {   '1-1' ...
+                '1-1' ...
                 };
 t2use = {'100_norm' '100_perm'};
 
 cmapi = 1;
 for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
     
-    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region
     
     direct = fold(foldi);
     cd (direct.name)
@@ -237,7 +237,6 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
         %idData{i,:} = [];
     end
     
-    region = 'pfc'; 
     noAv = 0;
     [out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
     for i = 1:length(out_c) 
@@ -260,7 +259,11 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 
             %global parameters
-            subj2exc        =       [1];
+            if strcmp(region, 'pfc')
+                subj2exc        =       [1];
+            elseif strcmp(region, 'vvs')
+                 subj2exc        =       [18 22];
+            end
             
             if permNoperm == 1
                 runperm         =       0;  

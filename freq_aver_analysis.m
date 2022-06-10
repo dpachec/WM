@@ -1,7 +1,8 @@
 %% generate maps for each frequency
 %%
 clear 
-paths = load_paths_WM('pfc');
+region = 'vvs';
+paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts_path);
 
 
@@ -10,27 +11,28 @@ for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
 
-avTime              = 0; 
+avTime              = 1; %define tROI in rsa_WM script
 win_width           = 5; 
 mf                  = 1; 
 meanInTime          = 1; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;    
-TG                  = 0; %temporal generalization
-contr2save          = { 'DISC_EE' 'DIDC_EE'}; %{};
+TG                  = 1; %temporal generalization
+contr2save          = {'DISC_M2123NC' 'DIDC_M2123NC'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 100;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  
+avMeth              = 'none';  
 
 
 tic
 
- 
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
+
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts_path filelistSess{sessi}]);   
@@ -59,8 +61,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
   
     for freqi = 1:length(frequncies2test) 
         fname = fnames{freqi};
-        mkdir ([paths.results.tf_res fname]);
-        cd ([paths.results.tf_res fname]);
+        mkdir ([paths.results.fRes fname]);
+        cd ([paths.results.fRes fname]);
 
         if iscell(frequncies2test)
             f           = frequncies2test{freqi}; 
@@ -76,11 +78,11 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 end
 
 
-clear
+clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
 
-cd (paths.results_path)
+cd (paths.results.fRes)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
@@ -100,10 +102,10 @@ cd (currentDir);
 disp ('done')
 
 %%
-clear 
-paths = load_paths_WM; 
+clearvars -except region
+paths = load_paths_WM(region); 
 currentFolder = pwd
-cd (paths.results.frequency_resolved); 
+cd (paths.results.fRes)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 fold([1 2]) = [];
@@ -121,8 +123,8 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
     eval(['C2 = ' sublist{1}(1:end-4)])
     eval(['C1 = ' sublist{2}(1:end-4)])
 
-    C1 = averSub2(C1, 'pfc');
-    C2 = averSub2(C2, 'pfc');
+    C1 = averSub2(C1, region);
+    C2 = averSub2(C2, region);
 
     C1A{foldi,:} = C1; 
     C2A{foldi,:} = C2; 
@@ -136,7 +138,18 @@ toc
 %% 
 c1AM = cell2mat(cellfun(@(x) mean(x, 'omitnan'), C1A, 'un',false))
 figure()
-plot(c1AM)
+imagesc(c1AM)
+
+
+%% 
+c1AM = [C1A{:}]
+[h p ci ts] = ttest(c1AM); 
+t = ts.tstat; 
+
+figure()
+imagesc(c1AM)
+
+
 
 
 

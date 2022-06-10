@@ -34,7 +34,7 @@ batch_bin           = 1000;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  % average across image repetitions or not
+avMeth              = 'none';  % average across image repetitions or not
  
 %diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  

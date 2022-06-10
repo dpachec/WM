@@ -1,7 +1,8 @@
 %% generate maps for each frequency
 %%
 clear 
-paths = load_paths_WM; 
+region = 'vvs';
+paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts_path);
 
 
@@ -9,9 +10,6 @@ frequncies2test = [1:54]';
 for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
-
-%frequncies2test = [{4:54} {4:8} {9:12} {13:29} {30:38} {39:54} {1:54} ]';
-%fnames = {'4-54Hz' '4-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' '1-54Hz'}'; fnames = fnames';
 
 avTime              = 0; 
 win_width           = 5; 
@@ -21,19 +19,20 @@ meanInFreq          = 0;
 takeElec            = 0; 
 takeFreq            = 0;    
 TG                  = 0; %temporal generalization
-contr2save          = { 'DISC_EE' 'DIDC_EE'}; %{};
+contr2save          = {'DISC_M2123NC' 'DIDC_M2123NC'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 100;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  
+avMeth              = 'none';  
 
 
 tic
 
- 
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
+
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts_path filelistSess{sessi}]);   
@@ -62,8 +61,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
   
     for freqi = 1:length(frequncies2test) 
         fname = fnames{freqi};
-        mkdir ([paths.results.tf_res fname]);
-        cd ([paths.results.tf_res fname]);
+        mkdir ([paths.results.fRes fname]);
+        cd ([paths.results.fRes fname]);
 
         if iscell(frequncies2test)
             f           = frequncies2test{freqi}; 
@@ -78,26 +77,28 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
  
 end
 
-%% 
-clear 
-paths = load_paths_WM; 
-filelistSess = getFilesWM(paths.out_contrasts_path);
 
+clearvars -except region
+paths = load_paths_WM(region); 
+currentDir = pwd; 
+
+cd (paths.results.fRes)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
 for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     
-    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test currentDir
     
     direct = fold(foldi);
     cd (direct.name)
  
-    processFoldersWM;
+    processFoldersWM; 
 
     cd .. 
 end
 
+cd (currentDir);
 disp ('done')
 
 %%
