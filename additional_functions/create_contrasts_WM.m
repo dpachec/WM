@@ -434,7 +434,7 @@ if ~isempty(intersect(c2c, 'EM2UV1'))
                         cncC = [nonCuedCat_I(:) ; nonCuedCat_J(:)]';
                         
                         if length(unique(cncI)) == 3  & idEnc ~= cuedIt_J% the item is uncued in another trial and all uncued items are differnet
-                            disp (['EM2UV2 SISC > '  string(cncI) num2str(idCEnc) '-' num2str(cuedCat_J)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                            %disp (['EM2UV2 SISC > '  string(cncI) num2str(idCEnc) '-' num2str(cuedCat_J)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countSISC_EM2UV2')
                                 new_sisc_em2uV2{countSISC_EM2UV2} = [i, j];
                                 countSISC_EM2UV2 = countSISC_EM2UV2+1;
