@@ -430,8 +430,8 @@ if ~isempty(intersect(c2c, 'EM2UV1'))
                        allItIJ = [allIt_I ; allIt_J]; 
                        allCatIJ = [allCat_I ; allCat_J]; 
     
-                        cncI = [idEnc;  nonCuedIt_I(:) nonCuedIt_J(:)]';
-                        cncC = [idCEnc;  nonCuedCat_I(:) nonCuedCat_J(:)]';
+                        cncI = [idEnc; nonCuedIt_I(:) ; nonCuedIt_J(:)];
+                        cncC = [idCEnc ; nonCuedCat_I(:) ; nonCuedCat_J(:)];
                         
                         if length(unique(cncI)) == 4 % the item is uncued in another trial and all uncued items are differnet
                             disp (['EM2UV2 SISC > '  string(cncI)]);     % oneListIds{i} '//' oneListIds{j}]);     
