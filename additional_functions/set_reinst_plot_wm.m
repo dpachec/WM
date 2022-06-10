@@ -253,6 +253,19 @@ if strcmp(cfg.cond1, 'DISC_EM2') & strcmp(cfg.cond2,'DIDC_EM2')
     if (cfg.runperm) reinst_plot_cfg.imageName = ['_DISC_EM2-DIDC_EM2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
 
+
+if strcmp(cfg.cond1, 'SISC_EM2U') & strcmp(cfg.cond2,'DISC_EM2U')
+    reinst_plot_cfg.lbls3plot = {['SISCU'] ['DISCU'] ['SISCU vs.' newline 'DISCU']};
+    reinst_plot_cfg.imageName = ['_SISC_EM2U-DISC_EM2U-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) reinst_plot_cfg.imageName = ['_SISC_EM2U-DISC_EM2U-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+if strcmp(cfg.cond1, 'DISC_EM2U') & strcmp(cfg.cond2,'DIDC_EM2U')
+    reinst_plot_cfg.lbls3plot = {['DISCU'] ['DIDCU'] ['DISCU vs.' newline 'DIDCU']};
+    reinst_plot_cfg.imageName = ['_DISC_EM2U-DIDC_EM2U-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) reinst_plot_cfg.imageName = ['_DISC_EM2U-DIDC_EM2U-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+
+
 if strcmp(cfg.cond1, 'SISC_M2M2') & strcmp(cfg.cond2,'DIDC_M2M2')
     reinst_plot_cfg.lbls3plot = {['SISC'] ['DIDC'] ['SISC vs.' newline 'DIDC']};
     reinst_plot_cfg.imageName = ['_SISC_M2M2-DIDC_M2M2-' num2str(cfg.subj2exc)  '.png']; 
