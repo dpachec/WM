@@ -187,8 +187,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
  
-contrasts = {'SISC_EM2U' 'DISC_EM2U'; ... 
-             'DISC_EM2U' 'DIDC_EM2U'; ...
+contrasts = {'DISC_M2123NC' 'DIDC_M2123NC'; ...
              };
 % % use with 3 trials
 cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
@@ -210,8 +209,8 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
    
 
 
-perms2use = {   '1-4' ...
-                '1-4' ...
+perms2use = {   '4-4' ...
+                '4-4' ...
                 };
 t2use = {'100_norm' '100_perm'};
 
@@ -234,12 +233,12 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
         %idData{i,:} = [];
     end
     
-    region = 'vvs'; 
+    region = 'pfc'; 
     noAv = 0;
-    [out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
+    [out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
     for i = 1:length(out_c) 
         eval([c{i} ' = out_c{i};']);
-        eval([d{i} ' = out_id{i};']);
+        %eval([d{i} ' = out_id{i};']);
     end
 
 
@@ -257,7 +256,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 
             %global parameters
-            subj2exc        =       [18 22];
+            subj2exc        =       [1];
             
             if permNoperm == 1
                 runperm         =       0;  
