@@ -180,9 +180,13 @@ toc
 %% LOAD all conditions IN LOOP
 
 
-disp ('Starting...');
-disp(string(datetime));
+clearvars -except region
+paths = load_paths_WM(region); 
+currentDir = pwd; 
 
+cd (paths.results.ps_res)
+
+disp(string(datetime));
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
