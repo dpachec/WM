@@ -369,7 +369,7 @@ end
       
     if ~isempty(intersect(c2c, 'EM2U')) %Encoding maintenance uncued
       if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*')
-        idEnc = double(evei(3)); idCEnc = floor(idEnc/100); 
+        idEnc = double(string(evei{3})); idCEnc = floor(idEnc/100); 
         allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
         nonCuedIt_I = setdiff(allIt_I, idEnc); nonCuedCat_I = floor(nonCuedIt_I / 100); 
         for j = 1:length(oneListIds)

@@ -5,7 +5,7 @@ clearvars
 paths = load_paths_WM('vvs');
 
 contrasts = {
-             'DISC_EM2U' 'DIDC_EM2U'; ... 
+             'SISC_EM2U' 'DISC_EM2U' 'DIDC_EM2U'
              };
 
 c = unique (contrasts);
@@ -13,16 +13,16 @@ d = cellfun(@(x) [x '_id'], c, 'un', 0);
 for i = 1:length(c) 
     load([c{i} '.mat']);
     contrData{i,:} = eval(c{i});
-    %idData{i,:} = all_IDs;
-    idData{i,:} = [];
+    idData{i,:} = all_IDs;
+    %idData{i,:} = [];
 end
 
 region = 'vvs'; 
 noAv = 0;
-[out_c ] = averSub2 (c, d, contrData, idData, region, noAv);
+[out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
 for i = 1:length(out_c) 
     eval([c{i} ' = out_c{i};']);
-    %eval([d{i} ' = out_id{i};']);
+    eval([d{i} ' = out_id{i};']);
 end
 
 
@@ -33,13 +33,13 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_M2123NC';
-cond2 = 'DIDC_M2123NC';
+cond1 = 'DISC_EM2U';
+cond2 = 'DIDC_EM2U';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [22];% vvs;%[1] pfc
+subj2exc        =       [18 22];% vvs;%[1] pfc
 runperm         =       0; 
 n_perm          =       10;
 saveperm        =       1; 
@@ -73,7 +73,7 @@ end
 % % % % duplicate for EM2
 typec = strsplit(cond1, '_');
 if length(typec) > 1
-    if strcmp(typec{2}, 'EM2')
+    if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2U')
         dupSym = 0;
         for subji = 1:length(all_cond1_A)
             d2c = all_cond1_A{subji};
@@ -187,11 +187,8 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
  
-contrasts = {'SISC_EE' 'DISC_EE'; ... 
-             'DISC_EE' 'DIDC_EE'; ...
-             'SISC_EM2' 'DISC_EM2'; ... 
-             'DISC_EM2' 'DIDC_EM2'; ...
-             'DISC_M2M2' 'DIDC_M2M2';...
+contrasts = {'SISC_EM2U' 'DISC_EM2U'; ... 
+             'DISC_EM2U' 'DIDC_EM2U'; ...
              };
 % % use with 3 trials
 cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
@@ -213,11 +210,9 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
    
 
 
-perms2use = {   '1-1' ...
-                '1-1' ...
+perms2use = {   '1-4' ...
                 '1-4' ...
-                '1-4' ...
-                '4-4'};
+                };
 t2use = {'100_norm' '100_perm'};
 
 cmapi = 1;
@@ -229,16 +224,25 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
     cd (direct.name)
     %processFoldersWM;    
     
+        
     c = unique (contrasts);
+    d = cellfun(@(x) [x '_id'], c, 'un', 0);
     for i = 1:length(c) 
         load([c{i} '.mat']);
         contrData{i,:} = eval(c{i});
+        idData{i,:} = all_IDs;
+        %idData{i,:} = [];
+    end
+    
+    region = 'vvs'; 
+    noAv = 0;
+    [out_c out_id] = averageSub_WM (c, d, contrData, idData, region, noAv);
+    for i = 1:length(out_c) 
+        eval([c{i} ' = out_c{i};']);
+        eval([d{i} ' = out_id{i};']);
     end
 
-    out_contrasts = averageSub_WM (c, contrData);
-    for i = 1:length(out_contrasts) 
-        eval([c{i} ' = out_contrasts{i};']);
-    end
+
 
 
     for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
@@ -253,7 +257,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 
             %global parameters
-            subj2exc        =       [22];
+            subj2exc        =       [18 22];
             
             if permNoperm == 1
                 runperm         =       0;  
@@ -279,6 +283,8 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
             cfg.clust2plot  =       11;
             cfg.subj2exc    =       subj2exc;
+            cfg.lwd1        =       2; %baseline 
+            cfg.lwd2        =       2; %significant outline
  
 
 
@@ -287,6 +293,35 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
                 all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
                 all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
             end
+
+    
+    % % % % duplicate for EM2
+    typec = strsplit(cond1, '_');
+    if length(typec) > 1
+        if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2U')
+            dupSym = 0;
+            for subji = 1:length(all_cond1_A)
+                d2c = all_cond1_A{subji};
+                for triali = 1:size(d2c, 1)
+                    d2ct = squeeze(d2c(triali, :,:)); 
+                    d2ct = triu(d2ct.',1) + tril(d2ct);
+                    d2c(triali, :, :) = d2ct; 
+                end
+                all_cond1_A{subji} = d2c;
+    
+                d2c = all_cond2_A{subji};
+                for triali = 1:size(d2c, 1)
+                    d2ct = squeeze(d2c(triali, :,:)); 
+                    d2ct = triu(d2ct.',1) + tril(d2ct);
+                    d2c(triali, :, :) = d2ct; 
+                end
+                all_cond2_A{subji} = d2c;
+            end
+        else
+            dupSym          =       1;
+        end
+    end
+
             cfg.all_cond1_A =       all_cond1_A;
 
             [cfg_plot]   =      set_reinst_plot_wm (cfg);
@@ -336,6 +371,11 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             end
 
             cfg_plot.out_real       = out_real;
+            cfg_plot.lwd1           = cfg.lwd1; 
+            cfg_plot.lwd2           = cfg.lwd2; 
+            cfg_plot.out_real       = out_real;
+            cfg_plot.dupSym         = dupSym; 
+            cfg_plot.plotD          = 0; 
 
 
             if strcmp(test2use, 'wilcox')

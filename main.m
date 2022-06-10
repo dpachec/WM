@@ -23,7 +23,7 @@ meanInFreq          = 0;
 takeElec            = 0; 
 takeFreq            = 0;
 TG                  = 1; %temporal generalization
-contr2save          = {'DISC_EM2U' 'DIDC_EM2U'}; %{};
+contr2save          = {'SISC_EM2U' 'DISC_EM2U' 'DIDC_EM2U'}; %{};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
@@ -34,7 +34,7 @@ batch_bin           = 1000;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  
+avMeth              = 'none';  
  
 %diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  
@@ -99,10 +99,10 @@ cd ..
 %disp('done');
 %disp(string(datetime));
  
-%% process Folders
+%%process Folders
 
 clear 
-paths = load_paths_WM('vvs'); 
+paths = load_paths_WM(region); 
 currentDir = pwd; 
 
 cd (paths.results_path)
@@ -111,7 +111,7 @@ fold = fold(dirs);
  
 for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     
-    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test currentDir
     
     direct = fold(foldi);
     cd (direct.name)
