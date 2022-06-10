@@ -1,7 +1,7 @@
 %% generate maps for each frequency
 %%
 clear 
-paths = load_paths_WM; 
+paths = load_paths_WM('pfc');
 filelistSess = getFilesWM(paths.out_contrasts_path);
 
 
@@ -9,9 +9,6 @@ frequncies2test = [1:54]';
 for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
-
-%frequncies2test = [{4:54} {4:8} {9:12} {13:29} {30:38} {39:54} {1:54} ]';
-%fnames = {'4-54Hz' '4-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' '1-54Hz'}'; fnames = fnames';
 
 avTime              = 0; 
 win_width           = 5; 
@@ -34,7 +31,7 @@ avMeth              = 'pow';
 tic
 
  
-for sessi= 1:7 %length(filelistSess) %this one starts at 1 and not at 3
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts_path filelistSess{sessi}]);   
     
@@ -78,26 +75,28 @@ for sessi= 1:7 %length(filelistSess) %this one starts at 1 and not at 3
  
 end
 
-%% 
-clear 
-paths = load_paths_WM; 
 
+clear
+paths = load_paths_WM(region); 
+currentDir = pwd; 
 
+cd (paths.results_path)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
 for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
     
-    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test currentDir
     
     direct = fold(foldi);
     cd (direct.name)
  
-    processFoldersWM;
+    processFoldersWM; 
 
     cd .. 
 end
 
+cd (currentDir);
 disp ('done')
 
 %%
