@@ -391,14 +391,14 @@ if ~isempty(intersect(c2c, 'EM2UV1'))
                         if length(unique(nonCuedCatIJ)) == 2 & length(unique(nonCuedItIJ)) == 4 & idCEnc ~= cuedCat_J
                             %disp (['EM2U DISC V1 > '  string(allItIJ)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countDISC_EM2UV1')
-                                new_disc_em2uV1{countDISC_EM2UV1} = [i, j];
+                                new_disc_em2uv1{countDISC_EM2UV1} = [i, j];
                                 countDISC_EM2UV1 = countDISC_EM2UV1+1;
                             end
                         end
                         if length(unique(allCatIJ)) == 6 
                             %disp (['EM2U DIDC V1 > '  string(allItIJ)]);    
                             if exist('countDIDC_EM2UV1')
-                                new_didc_em2uV1{countDIDC_EM2UV1} = [i, j];
+                                new_didc_em2uv1{countDIDC_EM2UV1} = [i, j];
                                 countDIDC_EM2UV1 = countDIDC_EM2UV1+1;
                             end
                         end
@@ -433,24 +433,24 @@ if ~isempty(intersect(c2c, 'EM2UV1'))
                         cncI = [nonCuedIt_I(:) ; nonCuedIt_J(:)]';
                         cncC = [nonCuedCat_I(:) ; nonCuedCat_J(:)]';
                         
-                        if length(unique(cncI)) == 3  & idEnc ~= cuedIt_J% the item is uncued in another trial and all uncued items are differnet
+                        if length(unique(cncI)) == 3  & idEnc ~= cuedIt_J% 
                             %disp (['EM2UV2 SISC > '  string(cncI) num2str(idCEnc) '-' num2str(cuedCat_J)]);     % oneListIds{i} '//' oneListIds{j}]);     
                             if exist('countSISC_EM2UV2')
-                                new_sisc_em2uV2{countSISC_EM2UV2} = [i, j];
+                                new_sisc_em2uv2{countSISC_EM2UV2} = [i, j];
                                 countSISC_EM2UV2 = countSISC_EM2UV2+1;
                             end
                         end
                         if length(unique(cncC)) == 3 & length(unique(cncI)) == 4 & idCEnc ~= cuedCat_J  & isempty(intersect(cuedCat_J, cncC))
                             %disp (['EM2UV2 DISC > '  string(cncI) num2str(idCEnc) '-' num2str(cuedCat_J)]);     % oneListIds{i} '//' oneListIds{j}]);     
-                            if exist('countDISC_EM2U')
-                                new_disc_em2uV2{countDISC_EM2UV2} = [i, j];
+                            if exist('countDISC_EM2UV2')
+                                new_disc_em2uv2{countDISC_EM2UV2} = [i, j];
                                 countDISC_EM2UV2 = countDISC_EM2UV2+1;
                             end
                         end
                         if length(unique(cncC)) == 4 & idCEnc ~= cuedCat_J & isempty(intersect(cuedCat_J, cncC))
                             %disp (['EM2UV2 DIDC > '  string(cncI) num2str(idCEnc) '-' num2str(cuedCat_J)]);     % oneListIds{i} '//' oneListIds{j}]);     
-                            if exist('countDIDC_EM2U')
-                                new_didc_em2uV2{countDIDC_EM2UV2} = [i, j];
+                            if exist('countDIDC_EM2UV2')
+                                new_didc_em2uv2{countDIDC_EM2UV2} = [i, j];
                                 countDIDC_EM2UV2 = countDIDC_EM2UV2+1;
                             end
                         end

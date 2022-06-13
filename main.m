@@ -58,7 +58,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
  
-    cfg_contrasts.contr2save = contr2save;
+    cfg_contrasts.contr2save = contr2save';
     cfg_contrasts.n2s = n2s;
     cfg_contrasts.loadSurr = loadSurr;
     cfg_contrasts.batch_bin = batch_bin;

@@ -13,7 +13,7 @@ clust2plot          =   cfg.clust2plot;
 lwd1                =   cfg.lwd1;%baseline
 lwd2                =   cfg.lwd2; %cluster
 
-myPlotR= figure(1); %
+myPlotR= figure(1); set (gcf, 'Position', [100 100 1500 500]);
 subplot (131);
 meanReal_cond1 = squeeze(mean(meanReal_cond1, 'omitnan' ));
 meanReal_cond2 = squeeze(mean(meanReal_cond2, 'omitnan' ));
@@ -164,10 +164,10 @@ end
 
 
 %set (gcf, 'Position', [300 300 820 500]);
-set (gcf, 'Position', [100 100 1500 500]);
+
 if cfg.saveimg
-%export_fig(2, cfg.imageName,'-transparent', '-r300');
-exportgraphics(gcf, cfg.imageName, 'Resolution',150);
+export_fig(2, cfg.imageName,'-transparent', '-r300');
+%exportgraphics(gcf, cfg.imageName, 'Resolution',150);
 close all;
 end
 
