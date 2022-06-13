@@ -11,22 +11,22 @@ for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
 
-avTime              = 1; %define tROI in rsa_WM script
+avTime              = 0; %define tROI in rsa_WM script
 win_width           = 5; 
 mf                  = 1; 
-meanInTime          = 1; 
+meanInTime          = 0; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;    
-TG                  = 1; %temporal generalization
-contr2save          = {'DISC_M2123NC' 'DIDC_M2123NC'}; %{};
+TG                  = 0; %temporal generalization
+contr2save          = {'DISC_EE' 'DIDC_EE'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 100;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'none';  
+avMeth              = 'pow';  
 
 
 tic
@@ -101,6 +101,18 @@ end
 cd (currentDir);
 disp ('done')
 
+
+%%
+clearvars
+
+region = 'vvs'; 
+paths = load_paths_WM(region);
+
+
+
+
+
+
 %%
 region = 'pfc'
 clearvars -except region
@@ -118,23 +130,103 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
     
     sublist = dir('*.mat'); sublist = {sublist.name};
 
-    load(sublist{1});
-    load(sublist{2});
-    
-    eval(['C2 = ' sublist{1}(1:end-4)])
-    eval(['C1 = ' sublist{2}(1:end-4)])
 
-    C1 = averSub2(C1, region);
-    C2 = averSub2(C2, region);
 
-    C1A{foldi,:} = C1; 
-    C2A{foldi,:} = C2; 
+    contrasts = {
+                 'DISC_EE' 'DIDC_EE'
+                 };
+
+    c = unique (contrasts);
+    d = cellfun(@(x) [x '_id'], c, 'un', 0);
+    for i = 1:length(c) 
+        load([c{i} '.mat']);
+        contrData{i,:} = eval(c{i});
+        idData{i,:} = all_IDs;
+        %idData{i,:} = [];
+    end
+
+    noAv = 0;
+    [out_cALL{foldi} ] = averageSub_WM (c, d, contrData, idData, region, noAv);
+
     cd ..
 end
 
 cd (currentFolder)
 
 toc
+
+
+%%
+clear tmp1 tmp2 D1 D2 mTrC1 mTrC2 DDiff
+for freqi = 1:54
+   
+    tmp1 = out_cALL{freqi}{1};
+    mTrC1 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp1, 'un', 0);
+    tmp2 = out_cALL{freqi}{2};
+    mTrC2 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp2, 'un', 0); 
+    
+    for subji = 1:28
+        D1 = mTrC1{subji}; 
+        D2 = mTrC2{subji}; 
+        
+        DDiff(freqi, subji,:) = D2-D1; 
+        
+    end
+    
+    
+    
+end
+
+%% 
+dDP = permute(DDiff, [2 1 3]); 
+mD = squeeze(mean(dDP));
+figure()
+imagesc(mD); colorbar; 
+set (gca, 'clim', [-.02 .02])
+
+[h p ci ts] = ttest(dDP); 
+h = squeeze(h); t = squeeze(ts.tstat)
+
+%% 
+figure()
+imagesc(h)
+
+
+
+
+
+
+
+
+%% take diagonal only
+clear C1AALL C1ADiag C2ADiag diffD
+for freqi = 1:length(C1A)
+
+    C1ADiag(freqi, :) = diag(squeeze(mean(C1A{freqi}))); 
+    C2ADiag(freqi, :) = diag(squeeze(mean(C2A{freqi}))); 
+    C1AALL(freqi, :,:) = squeeze(mean(C1A{freqi}, 'omitnan')); 
+    C2AALL(freqi, :,:) = squeeze(mean(C2A{freqi}, 'omitnan')); 
+end 
+
+
+diffD = C1ADiag - C2ADiag; 
+%%
+figure()
+imagesc(diffD); colorbar; 
+
+
+%% 
+[h p ci ts] = ttest(C1ADiag', C2ADiag')
+
+%% 
+figure()
+m1 = mean(C1AALL); 
+m2 = mean(C2AALL); 
+difM = squeeze(m1-m2); 
+imagesc(difM); colorbar; 
+
+
+
 
 %% 
 c1AM = cell2mat(cellfun(@(x) mean(x, 'omitnan'), C1A, 'un',false))
@@ -146,12 +238,19 @@ t = ts.tstat;
 
 
 %% 
-c1AM = [C1A{:}]
-[h p ci ts] = ttest(c1AM); 
+c1AM = [C1A{:}];
+c2AM = [C2A{:}];
+diff = c1AM - c2AM; 
+[h p ci ts] = ttest(diff); 
 t = ts.tstat; 
 
-figure()
-imagesc(c1AM)
+stD = std(diff); 
+se = stD / sqrt(28)
+figure();
+errorbar(mean(diff), se); hold on; 
+plot(get(gca, 'xlim'), [0 0])
+plot(h)
+
 
 
 
