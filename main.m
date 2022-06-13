@@ -2,16 +2,16 @@
 %% 
 
 clearvars
-region              = 'vvs';
+region              = 'pfc';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts_path);
 
 
-frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
+%frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+%fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-%frequncies2test = [{13:29}]';
-%fnames = {'13-29Hz'}'; fnames = fnames';
+frequncies2test = [{13:29}]';
+fnames = {'13-29Hz'}'; fnames = fnames';
 
 %frequncies2test = [{3:54}]';
 %fnames = {'3-54Hz'}'; fnames = fnames';
@@ -81,8 +81,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     for freqi = 1:length(frequncies2test)
         %create folder
         fname = fnames{freqi};
-        mkdir ([paths.results.ps_res fname]);
-        cd ([paths.results.ps_res fname]);
+        mkdir ([paths.results.band_res fname]);
+        cd ([paths.results.band_res fname]);
         f           = frequncies2test{freqi}; 
  
         rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, 0)
