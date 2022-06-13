@@ -55,7 +55,7 @@ for foldi = 3:length(folders) %start at 3 cause 1 and 2 are . and ...
     %filename = [sublist{subji}(5:end-12)];
     eval([filename '= all;']);
     if exist('all_IDs')
-        save (filename, filename, 'all_IDs');
+        save (filename, filename, 'all_IDs', '-v7.3');
     else
         save (filename, filename, '-v7.3');
     end

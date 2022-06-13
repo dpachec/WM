@@ -102,7 +102,7 @@ clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
 
-cd (paths.results.ps_res)
+cd (paths.results.band_res)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
