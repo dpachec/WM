@@ -93,22 +93,39 @@ disp('averaging sessions and subjects');
             x(28,:,:,:) = cat(1, c{71:74});
             
       case 'pfc'
-            x(1,:) = mean([c{1:5}], 'omitnan');
-            x(2,:) = mean([c{6:9}], 'omitnan');
-            x(3,:) = mean([c{10:11}], 'omitnan');
-            x(4,:) = mean([c{12:13}], 'omitnan');
-            x(5,:) = mean([c{14:15}], 'omitnan');
-            x(6,:) = mean([c{16:18}], 'omitnan');
-            x(7,:) = mean([c{19:20}], 'omitnan');
-            x(8,:) = mean([c{21:22}], 'omitnan');
-            x(9,:) = mean([c{23:24}], 'omitnan');
-            x(10,:) = mean([c{25:26}], 'omitnan');
-            x(11,:) = mean([c{27:28}], 'omitnan');
-            x(12,:) = mean([c{29:30}], 'omitnan');
-            x(13,:) = mean([c{31:32}], 'omitnan');
-            x(14,:) = mean([c{33:34}], 'omitnan');
-            x(15,:) = mean([c{35:38}], 'omitnan');
-            x(16,:) = mean([c{39:42}], 'omitnan');
+%             x(1,:) = mean([c{1:5}], 'omitnan');
+%             x(2,:) = mean([c{6:9}], 'omitnan');
+%             x(3,:) = mean([c{10:11}], 'omitnan');
+%             x(4,:) = mean([c{12:13}], 'omitnan');
+%             x(5,:) = mean([c{14:15}], 'omitnan');
+%             x(6,:) = mean([c{16:18}], 'omitnan');
+%             x(7,:) = mean([c{19:20}], 'omitnan');
+%             x(8,:) = mean([c{21:22}], 'omitnan');
+%             x(9,:) = mean([c{23:24}], 'omitnan');
+%             x(10,:) = mean([c{25:26}], 'omitnan');
+%             x(11,:) = mean([c{27:28}], 'omitnan');
+%             x(12,:) = mean([c{29:30}], 'omitnan');
+%             x(13,:) = mean([c{31:32}], 'omitnan');
+%             x(14,:) = mean([c{33:34}], 'omitnan');
+%             x(15,:) = mean([c{35:38}], 'omitnan');
+%             x(16,:) = mean([c{39:42}], 'omitnan');
+
+            x(1,:) = mean(cat(1, c{1:5}), 'omitnan');
+            x(2,:) = mean(cat(1, c{6:9}), 'omitnan');
+            x(3,:) = mean(cat(1, c{10:11}), 'omitnan');
+            x(4,:) = mean(cat(1, c{12:13}), 'omitnan');
+            x(5,:) = mean(cat(1, c{14:15}), 'omitnan');
+            x(6,:) = mean(cat(1, c{16:18}), 'omitnan');
+            x(7,:) = mean(cat(1, c{19:20}), 'omitnan');
+            x(8,:) = mean(cat(1, c{21:22}), 'omitnan');
+            x(9,:) = mean(cat(1, c{23:24}), 'omitnan');
+            x(10,:) = mean(cat(1, c{25:26}), 'omitnan');
+            x(11,:) = mean(cat(1, c{27:28}), 'omitnan');
+            x(12,:) = mean(cat(1, c{29:30}), 'omitnan');
+            x(13,:) = mean(cat(1, c{31:32}), 'omitnan');
+            x(14,:) = mean(cat(1, c{33:34}), 'omitnan');
+            x(15,:) = mean(cat(1, c{35:38}), 'omitnan');
+            x(16,:) = mean(cat(1, c{39:42}), 'omitnan');
 
             
         case 'hipp'

@@ -114,9 +114,10 @@ paths = load_paths_WM(region);
 
 
 %%
+region = 'pfc'
 clearvars -except region
 paths = load_paths_WM(region); 
-currentFolder = pwd
+currentFolder = pwd;
 cd (paths.results.fRes)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
@@ -230,7 +231,10 @@ imagesc(difM); colorbar;
 %% 
 c1AM = cell2mat(cellfun(@(x) mean(x, 'omitnan'), C1A, 'un',false))
 figure()
-imagesc(c1AM)
+imagesc(c1AM); colorbar
+
+[h p ci ts] = ttest(C1A); 
+t = ts.tstat; 
 
 
 %% 
