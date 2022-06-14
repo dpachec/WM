@@ -49,7 +49,12 @@ for foldi = 3:length(folders) %start at 3 cause 1 and 2 are . and ...
  
     cd .. % goes up one directory
     
-    rmdir(direct.name, 's')
+    if ismac
+        rmdir(direct.name, 's')
+    else
+        cmd_rmdir(direct.name, 's')
+    end
+
     
     filename = [sublist{subji}(5:end-13)];
     %filename = [sublist{subji}(5:end-12)];
