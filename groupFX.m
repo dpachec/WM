@@ -179,7 +179,6 @@ toc
 
 %% LOAD all conditions IN LOOP
 
-
 clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
@@ -212,7 +211,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-
+dupSym = 1;
 perms2use = {   '1-1' ...
                 '1-1' ...
                 '1-1' ...
@@ -220,10 +219,11 @@ perms2use = {   '1-1' ...
                 };
 t2use = {'100_norm' '100_perm'};
 
+
 cmapi = 1;
 for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
     
-    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym
     
     direct = fold(foldi);
     cd (direct.name)
@@ -249,7 +249,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 2:2 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -329,7 +329,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 %             dupSym          =       1;
 %         end
 %     end
-dupSym = 0;
+
 
             cfg.all_cond1_A =       all_cond1_A;
 
