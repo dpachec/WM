@@ -2,29 +2,29 @@
 %% 
 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts_path);
 
 
-%frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-%fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
+frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-frequncies2test = [{13:29}]';
-fnames = {'13-29Hz'}'; fnames = fnames';
+%frequncies2test = [{13:29}]';
+%fnames = {'13-29Hz'}'; fnames = fnames';
 
 %frequncies2test = [{3:54}]';
 %fnames = {'3-54Hz'}'; fnames = fnames';
 
 win_width           = 5; 
 mf                  = 1; 
-meanInTime          = 1; 
+meanInTime          = 0; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
-TG                  = 1; %temporal generalization
+TG                  = 0; %temporal generalization
 %contr2save          = {'DISC_EM2UV1' 'DIDC_EM2UV1' 'SISC_EM2UV2' 'DISC_EM2UV2' 'DIDC_EM2UV2'}; %{};
-contr2save          = {'SISC_EM2' 'DISC_EM2' 'DIDC_EM2'};
+contr2save          = {'DISC_EE' 'DIDC_EE'};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
@@ -34,8 +34,8 @@ acrossTrials        = 1;
 batch_bin           = 1000;
 n2s                 = 1000000;
 loadSurr            = 0; 
-zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'none';  % average across image repetitions or not
+zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
+avMeth              = 'pow';  % average across image repetitions or not
  
 %diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  

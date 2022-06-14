@@ -2,11 +2,11 @@
 %%
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_M2123NC' 'DIDC_M2123NC';
+              'SISC_EE' 'DISC_EE';
              };
 
 c = unique (contrasts);
