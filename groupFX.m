@@ -189,7 +189,7 @@ disp(string(datetime));
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
-contrasts = {   'DISC_EE' 'DIDC_EE'; ...
+contrasts = {   'DISC_EM2' 'DIDC_EM2'; ...
                 %'DISC_M2123NC' 'DIDC_M2123NC'; ...
              };
 % % use with 3 trials
@@ -211,8 +211,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-dupSym = 1;
-perms2use = {   '1-1' ...
+perms2use = {   '1-4' ...
                 '1-1' ...
                 '1-1' ...
                 '4-4' ...
@@ -249,7 +248,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 2:2 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 1:2 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -303,32 +302,32 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             end
 
     
-%     % % % % duplicate for EM2
-%     typec = strsplit(cond1, '_');
-%     if length(typec) > 1
-%         if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2UV1') | strcmp(typec{2}, 'EM2UV2')
-%             dupSym = 0;
-%             for subji = 1:length(all_cond1_A)
-%                 d2c = all_cond1_A{subji};
-%                 for triali = 1:size(d2c, 1)
-%                     d2ct = squeeze(d2c(triali, :,:)); 
-%                     d2ct = triu(d2ct.',1) + tril(d2ct);
-%                     d2c(triali, :, :) = d2ct; 
-%                 end
-%                 all_cond1_A{subji} = d2c;
-%     
-%                 d2c = all_cond2_A{subji};
-%                 for triali = 1:size(d2c, 1)
-%                     d2ct = squeeze(d2c(triali, :,:)); 
-%                     d2ct = triu(d2ct.',1) + tril(d2ct);
-%                     d2c(triali, :, :) = d2ct; 
-%                 end
-%                 all_cond2_A{subji} = d2c;
-%             end
-%         else
-%             dupSym          =       1;
-%         end
-%     end
+    % % % % duplicate for EM2
+    typec = strsplit(cond1, '_');
+    if length(typec) > 1
+        if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2UV1') | strcmp(typec{2}, 'EM2UV2')
+            dupSym = 0;
+            for subji = 1:length(all_cond1_A)
+                d2c = all_cond1_A{subji};
+                for triali = 1:size(d2c, 1)
+                    d2ct = squeeze(d2c(triali, :,:)); 
+                    d2ct = triu(d2ct.',1) + tril(d2ct);
+                    d2c(triali, :, :) = d2ct; 
+                end
+                all_cond1_A{subji} = d2c;
+    
+                d2c = all_cond2_A{subji};
+                for triali = 1:size(d2c, 1)
+                    d2ct = squeeze(d2c(triali, :,:)); 
+                    d2ct = triu(d2ct.',1) + tril(d2ct);
+                    d2c(triali, :, :) = d2ct; 
+                end
+                all_cond2_A{subji} = d2c;
+            end
+        else
+            dupSym          =       1;
+        end
+    end
 
 
             cfg.all_cond1_A =       all_cond1_A;
