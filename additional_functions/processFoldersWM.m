@@ -52,7 +52,7 @@ for foldi = 3:length(folders) %start at 3 cause 1 and 2 are . and ...
     if ismac
         rmdir(direct.name, 's')
     else
-        cmd_rmdir(direct.name, 's')
+        cmd_rmdir(direct.name)
     end
 
     
