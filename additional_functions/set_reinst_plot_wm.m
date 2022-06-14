@@ -236,11 +236,6 @@ if strcmp(cfg.cond1, 'DISC_M0') & strcmp(cfg.cond2,'DIDC_M0')
     if (cfg.runperm) reinst_plot_cfg.imageName = ['_DISC_M0-DIDC_M0-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
 
-if strcmp(cfg.cond1, 'SISC_EM2') & strcmp(cfg.cond2,'DIDC_EM2')
-    reinst_plot_cfg.lbls3plot = {['SISC'] ['DIDC'] ['SISC vs.' newline 'DIDC']};
-    reinst_plot_cfg.imageName = ['_SISC_EM2-DIDC_EM2-' num2str(cfg.subj2exc)  '.png']; 
-    if (cfg.runperm) reinst_plot_cfg.imageName = ['_SISC_EM2-DIDC_EM2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
-end
 if strcmp(cfg.cond1, 'SISC_EM2') & strcmp(cfg.cond2,'DISC_EM2')
     reinst_plot_cfg.lbls3plot = {['SISC'] ['DISC'] ['SISC vs.' newline 'DISC']};
     reinst_plot_cfg.imageName = ['_SISC_EM2-DISC_EM2-' num2str(cfg.subj2exc)  '.png']; 
