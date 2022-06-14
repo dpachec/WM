@@ -6,7 +6,7 @@ region = 'pfc';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'SISC_EE' 'DISC_EE';
+              'DISC_EE' 'DIDC_EE';
              };
 
 c = unique (contrasts);
@@ -18,11 +18,11 @@ for i = 1:length(c)
     %idData{i,:} = [];
 end
 
-noAv = 0;
+noAv = 1;
 [out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
 for i = 1:length(out_c) 
     eval([c{i} ' = out_c{i};']);
-    %eval([d{i} ' = out_id{i};']);
+    eval([d{i} ' = out_id{i};']);
 end
 
 
@@ -184,15 +184,13 @@ clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
 
-cd (paths.results.ps_res)
+cd (paths.results.band_res)
 
 disp(string(datetime));
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
-contrasts = {   'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
-                'SISC_EM2UV2' 'DISC_EM2UV2'; ...
-                'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
+contrasts = {   'DISC_EE' 'DIDC_EE'; ...
                 %'DISC_M2123NC' 'DIDC_M2123NC'; ...
              };
 % % use with 3 trials
@@ -215,9 +213,9 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
    
 
 
-perms2use = {   '1-4' ...
-                '1-4' ...
-                '1-4' ...
+perms2use = {   '1-1' ...
+                '1-1' ...
+                '1-1' ...
                 '4-4' ...
                 };
 t2use = {'100_norm' '100_perm'};
@@ -241,7 +239,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
         %idData{i,:} = [];
     end
     
-    noAv = 0;
+    noAv = 1;
     [out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
     for i = 1:length(out_c) 
         eval([c{i} ' = out_c{i};']);
