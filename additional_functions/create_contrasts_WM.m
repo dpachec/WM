@@ -38,7 +38,7 @@ for i = 1:length(oneListIds)
 % % % % % % Encoding - Encoding
 if ~isempty(intersect(c2c, 'EE'))
     if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*') %* is for the average data
-        for j = 1:length(oneListIds) % repetitions are needed so shuold not start at i
+        for j = 1:length(oneListIds) % repetitions are needed so shuold not start at i (we are only saving half of the matrix)
            evej = strsplit(oneListIds{j});
            if strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') | strcmp(evej(1), '*') 
             trli = string(evei(12)); trlj = string(evej(12));

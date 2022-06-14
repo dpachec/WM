@@ -119,11 +119,11 @@ for coni = 1:length(currentContrast)
                 mX= squeeze(xM(triali,:,:));
                 mY= squeeze(yM(triali,:,:));
                 r = corr (mX', mY','Type', 's', 'Rows', 'pairwise'); 
-%                 if (~aVTime)
-%                     r(r==0) = 10000;
-%                     r = tril(squeeze(r)); %symmetric so only half is saved
-%                     r(r == 0) = nan;r(r==10000)=0;
-%                 end
+                if ~aVTime | strcmp(id, 'EM2')
+                    r(r==0) = 10000;
+                    r = tril(squeeze(r)); %symmetric so only half is saved
+                    r(r == 0) = nan;r(r==10000)=0;
+                end
                 rsaZ(triali, :, :) = atanh(r);
             end
             
