@@ -330,15 +330,19 @@ end
       % % % % % % % % % % M2M2 123 non-cued 
   if ~isempty(intersect(c2c, 'M2123NC'))
 
-      if strcmp(evei(1), '7') & ~strcmp(evei(2), '4')
+      if (strcmp(evei(1), '7') | strcmp(evei(1), '7*')) & ~strcmp(evei(2), '4')
         cuedIt_I = double(string(char(evei(12 + str2double(evei{2})))));
         allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
         nonCuedIt_I = setdiff(allIt_I, cuedIt_I);
         cuedCat_I = floor(cuedIt_I / 100); nonCuedCat_I = floor(nonCuedIt_I / 100); 
         for j = 1:length(oneListIds)
            evej = strsplit(oneListIds{j});
-           if ~strcmp(evei(12), evej(12)) %not same trial
-               if strcmp(evej(1), '7') & ~strcmp(evej(2), '4')
+            trli = string(evei(12)); trlj = string(evej(12));
+           trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+           trlij = [trli trlj];
+                          
+           if length(trlij) == length(unique(trlij)) % all averaged trials are from different trials
+               if (strcmp(evej(1), '7') | strcmp(evej(1), '7*')) & ~strcmp(evej(2), '4')
                     cuedIt_J = double(string(char(evej(12 + str2double(evej{2})))));
                     allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
                     nonCuedIt_J = setdiff(allIt_J, cuedIt_J);
