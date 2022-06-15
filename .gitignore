@@ -4,3 +4,4 @@ additional_functions/load_paths.m
 additional_functions/load_paths_WM.m
 additional_functions/rsa_WM.asv
 *.asv
+freq_aver_analysis.asv
