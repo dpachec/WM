@@ -465,11 +465,15 @@ if ~isempty(intersect(c2c, 'EM2UV1'))
   end  
        % % % % % % % % % % M2A All trials 
    if ~isempty(intersect(c2c, 'M2A'))
-      if strcmp(evei(1), '7') & strcmp(evei(2), '4')
+      if ( strcmp(evej(1), '7') | strcmp(evej(1), '7*') | strcmp(evej(1), '-7') ) & strcmp(evej(2), '4')
         allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
         for j = 1:length(oneListIds)
            evej = strsplit(oneListIds{j});
-           if ~strcmp(evei(12), evej(12)) %not same trial
+           trli = string(evei(12)); trlj = string(evej(12));
+           trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+           trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials
                if strcmp(evej(1), '7') & strcmp(evej(2), '4')
                     allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
                     allItIJ = [allIt_I ; allIt_J]; 
