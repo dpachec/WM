@@ -1,7 +1,7 @@
 %% generate maps for each frequency
 %%
 clear 
-region = 'vvs';
+region = 'pfc';
 paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts_path);
 
@@ -11,8 +11,8 @@ for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
 
-avTime              = 0; %define tROI in rsa_WM script
-win_width           = 5; 
+avTime              = 50; %define tROI in rsa_WM script
+win_width           = 1; 
 mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
@@ -25,7 +25,7 @@ acrossTrials        = 1;
 batch_bin           = 100;
 n2s                 = 1000000;
 loadSurr            = 0; 
-zScType             = 'allTrials'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
+zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 avMeth              = 'pow';  
 
 
@@ -102,14 +102,6 @@ cd (currentDir);
 disp ('done')
 
 
-%%
-clearvars
-
-region = 'vvs'; 
-paths = load_paths_WM(region);
-
-
-
 
 
 
@@ -145,7 +137,7 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
         %idData{i,:} = [];
     end
 
-    noAv = 0;
+    noAv = 1;
     [out_cALL{foldi} ] = averageSub_WM (c, d, contrData, idData, region, noAv);
 
     cd ..
@@ -165,7 +157,7 @@ for freqi = 1:54
     tmp2 = out_cALL{freqi}{2};
     mTrC2 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp2, 'un', 0); 
     
-    for subji = 1:28
+    for subji = 1:16
         D1 = mTrC1{subji}; 
         D2 = mTrC2{subji}; 
         
@@ -182,7 +174,7 @@ dDP = permute(DDiff, [2 1 3]);
 mD = squeeze(mean(dDP));
 figure()
 imagesc(mD); colorbar; 
-set (gca, 'clim', [-.02 .02])
+%set (gca, 'clim', [-.035 .035])
 
 [h p ci ts] = ttest(dDP); 
 h = squeeze(h); t = squeeze(ts.tstat)
