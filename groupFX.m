@@ -22,7 +22,7 @@ noAv = 1;
 [out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
 for i = 1:length(out_c) 
     eval([c{i} ' = out_c{i};']);
-    eval([d{i} ' = out_id{i};']);
+    %eval([d{i} ' = out_id{i};']);
 end
 
 
@@ -33,15 +33,15 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_M2123NC';
-cond2 = 'DIDC_M2123NC';
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [18 22];% vvs;%[1] pfc
-runperm         =       1; 
-n_perm          =       1000;
+subj2exc        =       [1];% vvs;%[1] pfc
+runperm         =       0; 
+n_perm          =       1;
 saveperm        =       1; 
 cfg             =       [];
 cfg.clim        =       [-.015 .015];
@@ -70,33 +70,35 @@ if subj2exc > 0
     all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
 end
 
-% % % % duplicate for EM2
-typec = strsplit(cond1, '_');
-if length(typec) > 1
-    if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2U')
-        dupSym = 0;
-        for subji = 1:length(all_cond1_A)
-            d2c = all_cond1_A{subji};
-            for triali = 1:size(d2c, 1)
-                d2ct = squeeze(d2c(triali, :,:)); 
-                d2ct = triu(d2ct.',1) + tril(d2ct);
-                d2c(triali, :, :) = d2ct; 
-            end
-            all_cond1_A{subji} = d2c;
+% % % % % duplicate for EM2
+% typec = strsplit(cond1, '_');
+% if length(typec) > 1
+%     if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2U')
+%         dupSym = 0;
+%         for subji = 1:length(all_cond1_A)
+%             d2c = all_cond1_A{subji};
+%             for triali = 1:size(d2c, 1)
+%                 d2ct = squeeze(d2c(triali, :,:)); 
+%                 d2ct = triu(d2ct.',1) + tril(d2ct);
+%                 d2c(triali, :, :) = d2ct; 
+%             end
+%             all_cond1_A{subji} = d2c;
+% 
+%             d2c = all_cond2_A{subji};
+%             for triali = 1:size(d2c, 1)
+%                 d2ct = squeeze(d2c(triali, :,:)); 
+%                 d2ct = triu(d2ct.',1) + tril(d2ct);
+%                 d2c(triali, :, :) = d2ct; 
+%             end
+%             all_cond2_A{subji} = d2c;
+%         end
+%     else
+%         dupSym          =       1;
+%     end
+% end
+% 
 
-            d2c = all_cond2_A{subji};
-            for triali = 1:size(d2c, 1)
-                d2ct = squeeze(d2c(triali, :,:)); 
-                d2ct = triu(d2ct.',1) + tril(d2ct);
-                d2c(triali, :, :) = d2ct; 
-            end
-            all_cond2_A{subji} = d2c;
-        end
-    else
-        dupSym          =       1;
-    end
-end
-
+dupSym = 0; 
 
 cfg.all_cond1_A =       all_cond1_A;
  
@@ -190,7 +192,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_M2A' 'DIDC_M2A'; ...
+                  'DISC_EM2' 'DIDC_EM2'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -426,7 +428,8 @@ max_clust_sum = out_perm.max_clust_sum;
 %obs = max(abs(all_clust_tsum_real(:,1)));
 obs = abs(out_perm.max_clust_sum_real); 
 
-allAb = max_clust_sum(abs(max_clust_sum) > obs);
+%allAb = max_clust_sum(abs(max_clust_sum) > obs);
+allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
  

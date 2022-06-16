@@ -55,7 +55,7 @@ if strcmp(cfg.res, '100_norm')
         reinst_plot_cfg.labels_to_plotE = -.5:.5:1; 
         reinst_plot_cfg.labels_to_plotR = -.5:.5:4; 
         reinst_plot_cfg.limFE =  10.5;
-        reinst_plot_cfg.limFR =  5.5;
+        reinst_plot_cfg.limFR =  4.5;
         reinst_plot_cfg.l2excE = [1 3 ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
         reinst_plot_cfg.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
         reinst_plot_cfg.placeTX = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5]; 

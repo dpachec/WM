@@ -5,7 +5,7 @@ function    [ st, msg ] = cmd_rmdir( folderspec )
 %   addition to the directory itself.  Used to remove a directory tree.
 %   See also: xtests\generic_utilies_test.m
            
-    narginchk( 1, 1 )
+    narginchk( 1, 1 );
     
     dos_cmd = sprintf( 'rmdir /S /Q "%s"', folderspec );
     

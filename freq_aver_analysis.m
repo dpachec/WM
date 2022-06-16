@@ -11,9 +11,9 @@ for i = 1:length(frequncies2test)
     fnames{i,:} = [num2str(i, '%02.f') 'Hz'];
 end
 
-avTime              = 50; %define tROI in rsa_WM script
-win_width           = 1; 
-mf                  = 1; 
+avTime              = 0; %define tROI in rsa_WM script
+win_width           = 50; 
+mf                  = 2; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
 takeElec            = 0; 
@@ -174,7 +174,7 @@ dDP = permute(DDiff, [2 1 3]);
 mD = squeeze(mean(dDP));
 figure()
 imagesc(mD); colorbar; 
-%set (gca, 'clim', [-.035 .035])
+set (gca, 'clim', [-.035 .035])
 
 [h p ci ts] = ttest(dDP); 
 h = squeeze(h); t = squeeze(ts.tstat)

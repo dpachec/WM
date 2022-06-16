@@ -120,7 +120,8 @@ for coni = 1:length(currentContrast)
                 mY= squeeze(yM(triali,:,:));
                 r = corr (mX', mY','Type', 's', 'Rows', 'pairwise'); 
                 idC = strsplit(id, '_');
-                if ~aVTime | ~strcmp(idC{2}, 'EM2') | ~strcmp(idC{2}, 'EM2UV1') | ~strcmp(idC{2}, 'EM2UV2')
+                if ~strcmp(idC{2}, 'EM2') %~aVTime |   ~strcmp(idC{2}, 'EM2UV1') | ~strcmp(idC{2}, 'EM2UV2')
+                    %disp('hola')
                     r(r==0) = 10000;
                     r = tril(squeeze(r)); %symmetric so only half is saved
                     r(r == 0) = nan;r(r==10000)=0;
