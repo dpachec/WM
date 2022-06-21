@@ -33,8 +33,8 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
@@ -44,21 +44,21 @@ runperm         =       0;
 n_perm          =       1;
 saveperm        =       1; 
 cfg             =       [];
-cfg.clim        =       [-.015 .015];
+cfg.clim        =       [-.0075 .0075];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.square      =       1;
 cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %4 3 2.5 2 
+cfg.cut2        =       '1-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
 test2use        =       'ttest'; %'wilcox'; %'ttest';
 cfg.remClust    =       1; %remove clusters from plot (only if run permutation is true)
-cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
-cfg.clust2plot  =       5;
+cfg.plot1clust  =       1; %to plot just one cluster selected in the following line
+cfg.clust2plot  =       2;
 cfg.subj2exc    =       subj2exc;
 cfg.lwd1        =       2; %baseline 
 cfg.lwd2        =       2; %significant outline
@@ -192,7 +192,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_EM2' 'DIDC_EM2'; ...
+                  'DISC_EE' 'DIDC_EE'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -217,7 +217,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-perms2use = {   '4-4' ...
+perms2use = {   '1-1' ...
                 '1-4' ...
                 '1-4' ...
                 '4-4' ...

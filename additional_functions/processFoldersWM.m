@@ -50,9 +50,9 @@ for foldi = 3:length(folders) %start at 3 cause 1 and 2 are . and ...
     cd .. % goes up one directory
     
     if ismac
-        rmdir(direct.name, 's')
+        rmdir(direct.name, 's');
     else
-        cmd_rmdir(direct.name)
+        cmd_rmdir(direct.name);
     end
 
     

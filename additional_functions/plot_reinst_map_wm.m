@@ -80,6 +80,7 @@ if cfg.square
     if plot1clust
         cfg.sigMH_thres(cfg.out_real.clustInfoReal.PixelIdxList{clust2plot}) = -100;
     end
+    %imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; % colorbar; 
     imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; % colorbar; 
     
     % % % take contour

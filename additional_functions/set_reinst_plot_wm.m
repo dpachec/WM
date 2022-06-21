@@ -30,8 +30,8 @@ end
 
 if strcmp(cfg.res, '100_norm')
     if strcmp(cfg.cut2, '1-1')
-        reinst_plot_cfg.mlimE = 1:15; %1:85;
-        reinst_plot_cfg.mlimR = 1:15; %1:85
+        reinst_plot_cfg.mlimE = 3:17; %1:85;
+        reinst_plot_cfg.mlimR = 3:17; %1:85
         x = 15; %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = x; reinst_plot_cfg.binsR = x; 
         reinst_plot_cfg.labels_to_plotE = -.5:.5:1; 
@@ -47,8 +47,8 @@ if strcmp(cfg.res, '100_norm')
     end
 
     if strcmp(cfg.cut2, '1-4')
-        reinst_plot_cfg.mlimE = 1:15; %1:85;
-        reinst_plot_cfg.mlimR = 1:45; %1:85
+        reinst_plot_cfg.mlimE = 3:17; %1:85;
+        reinst_plot_cfg.mlimR = 3:47; %1:85
         x = 45; %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = 45; 
         reinst_plot_cfg.binsR = 15; 
@@ -65,14 +65,14 @@ if strcmp(cfg.res, '100_norm')
     end
 
     if strcmp(cfg.cut2, '4-4')
-        reinst_plot_cfg.mlimE = 1:45; %1:85;
-        reinst_plot_cfg.mlimR = 1:45; %1:85
-        x = 45; %note that x is different from the original size of the matrix 
+        reinst_plot_cfg.mlimE = 3:47 %1:45; %1:85;
+        reinst_plot_cfg.mlimR = 3:47 %1:45; %1:85
+        x = 45; %45 %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = x; reinst_plot_cfg.binsR = x; 
         reinst_plot_cfg.labels_to_plotE = -.5:.5:4; 
         reinst_plot_cfg.labels_to_plotR = -.5:.5:4; 
         reinst_plot_cfg.limFE = 40.5; %cue onset line
-        reinst_plot_cfg.limFR = 5.5;
+        reinst_plot_cfg.limFR = 4.5;
         reinst_plot_cfg.l2excE = [1 3 5 7 9  ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
         reinst_plot_cfg.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
         reinst_plot_cfg.placeTX = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5]; 
