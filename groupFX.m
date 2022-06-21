@@ -2,7 +2,7 @@
 %%
 clearvars
 
-region = 'pfc'; 
+region = 'vvs'; 
 paths = load_paths_WM(region);
 
 contrasts = {
@@ -33,13 +33,13 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [1];% vvs;%[1] pfc
+subj2exc        =       [18 22];% vvs;%[1] pfc
 runperm         =       0; 
 n_perm          =       1;
 saveperm        =       1; 
@@ -51,7 +51,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %4 3 2.5 2 
+cfg.cut2        =       '1-1'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;

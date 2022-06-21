@@ -2,7 +2,7 @@
 %% 
 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts_path);
 
