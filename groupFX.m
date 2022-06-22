@@ -6,7 +6,7 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_EE' 'DIDC_EE';
+              'DISC_M2A' 'DIDC_M2A';
              };
 
 c = unique (contrasts);
@@ -33,8 +33,8 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'DISC_M2A';
+cond2 = 'DIDC_M2A';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
@@ -51,13 +51,13 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %4 3 2.5 2 
+cfg.cut2        =       '4-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
 test2use        =       'ttest'; %'wilcox'; %'ttest';
 cfg.remClust    =       1; %remove clusters from plot (only if run permutation is true)
-cfg.plot1clust  =       1; %to plot just one cluster selected in the following line
+cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
 cfg.clust2plot  =       2;
 cfg.subj2exc    =       subj2exc;
 cfg.lwd1        =       2; %baseline 
@@ -98,7 +98,7 @@ end
 % end
 % 
 
-dupSym = 0; 
+dupSym = 1; 
 
 cfg.all_cond1_A =       all_cond1_A;
  
@@ -177,6 +177,47 @@ end
  
 toc
  
+%% plot average in period
+
+for subji = 1:length(all_cond1)
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}));
+
+
+end
+
+mm1 = squeeze(mean(m1));
+mm1 = triu(mm1.',1) + tril(mm1);
+mmm1 = squeeze(mean(mm1))
+mm2 = squeeze(mean(m2));
+mm2 = triu(mm2.',1) + tril(mm2);
+mmm2 = squeeze(mean(mm2))
+
+
+%%
+figure()
+imagesc(mm1-mm2); colorbar; axis square
+figure()
+plot(mmm1-mmm2)
+
+%% 
+ms1 = squeeze(mean(m1, 3, 'omitnan'));
+ms2 = squeeze(mean(m2, 3, 'omitnan'));
+msD = ms1-ms2; 
+
+figure()
+plot(msD'); hold on; 
+plot(mean(msD), 'k', 'LineWidth',2)
+
+[h p ci ts] = ttest(msD)
+t = ts.tstat
+
+%% 
+mD = mean(msD);
+stdD = std(msD);
+seD = stdD / sqrt(26);
+figure()
+shadedErrorBar(1:45, mD,seD, 'r', 1); 
 
 
 %% LOAD all conditions IN LOOP
@@ -192,7 +233,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_EE' 'DIDC_EE'; ...
+                  'DISC_M2A' 'DIDC_M2A'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -217,12 +258,13 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-perms2use = {   '1-1' ...
+perms2use = {   '4-4' ...
                 '1-4' ...
                 '1-4' ...
                 '4-4' ...
                 };
 t2use = {'100_norm' '100_perm'};
+
 
 
 cmapi = 1;
@@ -254,7 +296,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 2:2 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -428,8 +470,8 @@ max_clust_sum = out_perm.max_clust_sum;
 %obs = max(abs(all_clust_tsum_real(:,1)));
 obs = abs(out_perm.max_clust_sum_real); 
 
-%allAb = max_clust_sum(abs(max_clust_sum) > obs);
-allAb = max_clust_sum(max_clust_sum > obs);
+allAb = max_clust_sum(abs(max_clust_sum) > obs);
+%allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
  
@@ -461,24 +503,22 @@ export_fig(1, filename,'-transparent', '-r300');
 
 %% MEAN IN CLUSTER OF INTEREST
  
-subj2exc    = []; 
+subj2exc    = [1]; 
 
-rsa_cond1 = cell2mat(cellfun(@mean, SISC_EM2, 'un',0)); 
-rsa_cond2 = cell2mat(cellfun(@mean, DISC_EM2, 'un',0)); 
+rsa_cond1 = cell2mat(cellfun(@mean, DISC_EM2, 'un',0)); 
+rsa_cond2 = cell2mat(cellfun(@mean, DIDC_EM2, 'un',0)); 
 
-plotD           = 1;
+plotD           = 0;
 takeclust       = 1;
-takeoverlap     = 0;
 
-roiX = 15:26; roiY = 13:25; %paper = 13-25
-mlimE = 1:40; mlimR = 1:40;
-bins = 40; mfL = bins/4; 
+roiX = 1:5; roiY = 13:25; %paper = 13-25
+mlimE = 1:15; mlimR = 1:45;
 
 % roiX = 75:135; roiY = 61:125; %used in 10ms analysis
 % mlimE = 26:225; mlimR = 26:225;%no need to substract 250 to make it at th emiddle
 % bins = 200; mfL = bins/4; 
  
-pixel = 5;
+pixel = 2;
 %exclude subjects
 if subj2exc > 0
     rsa_cond1(subj2exc, :, :) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
@@ -500,18 +540,7 @@ if takeclust
     ROI_cond2 = rsa_cond2(:,clustInfoReal.PixelIdxList{pixel}); 
     m_roi_cond1 = mean(ROI_cond1, 2);
     m_roi_cond2 = mean(ROI_cond2, 2);
-elseif takeoverlap
-    ROI_cond1 = rsa_cond1(:,clustInfoOverlapping.PixelIdxList{1}); 
-    ROI_cond2 = rsa_cond2(:,clustInfoOverlapping.PixelIdxList{1}); 
-    m_roi_cond1_tmp = mean(ROI_cond1, 2);
-    m_roi_cond2_tmp = mean(ROI_cond2, 2);
-    ROI_cond1 = rsa_cond1(:,clustInfoOverlapping.PixelIdxList{2}); 
-    ROI_cond2 = rsa_cond2(:,clustInfoOverlapping.PixelIdxList{2}); 
-    m_roi_cond1_tmp(:,2) = mean(ROI_cond1, 2);
-    m_roi_cond2_tmp(:,2) = mean(ROI_cond2, 2);
-    m_roi_cond1 = mean(m_roi_cond1_tmp,2);
-    m_roi_cond2 = mean(m_roi_cond2_tmp,2);
-    
+   
 else
     ROI_cond1 = rsa_cond1(:,roiX, roiY); 
     ROI_cond2 = rsa_cond2(:,roiX, roiY); 
@@ -537,24 +566,24 @@ diag1 = diag(test);
 if takeclust
     test(clustInfoReal.PixelIdxList{pixel}) = 1;
 end
-test = flipud(test);
-figure(1);imagesc(test);axis square;hold on;
+%test = flipud(test);
+figure(1);imagesc(test);hold on; %axis square;hold on;
 %contour(test, 1, 'lineWidth', 4, 'linecolor', 'k');axis square; %does not work with plotD
 
  
  
-if plotD
- plot([mfL+0.5 mfL+0.5],get(gca,'ylim'),'w', 'LineWidth', 2); 
- %plot([bins - (mfL-0.5) bins - (mfL-0.5)], get(gca,'xlim'), 'w', 'LineWidth', 2);
- plot(get(gca,'xlim'), [bins - (mfL-0.5) bins - (mfL-0.5)],'w', 'LineWidth', 2);
- plot(get(gca,'xlim'), [bins+.5 .5],'w', 'LineWidth', 2); % diagonal
-end 
-set (gca, 'clim', [0 1]);
-%remove labels
-axesHandles = findall(0, 'type', 'axes');
-for i=1:length(axesHandles)
-   set (axesHandles(i), 'visible', 'off'); % remove labels 
-end
+% if plotD
+%  plot([mfL+0.5 mfL+0.5],get(gca,'ylim'),'w', 'LineWidth', 2); 
+%  %plot([bins - (mfL-0.5) bins - (mfL-0.5)], get(gca,'xlim'), 'w', 'LineWidth', 2);
+%  plot(get(gca,'xlim'), [bins - (mfL-0.5) bins - (mfL-0.5)],'w', 'LineWidth', 2);
+%  plot(get(gca,'xlim'), [bins+.5 .5],'w', 'LineWidth', 2); % diagonal
+% end 
+% set (gca, 'clim', [0 1]);
+% %remove labels
+% axesHandles = findall(0, 'type', 'axes');
+% for i=1:length(axesHandles)
+%    set (axesHandles(i), 'visible', 'off'); % remove labels 
+% end
  
  
 %[h p ci t] = ttest (m_roi_cond1, m_roi_cond2);
@@ -566,9 +595,9 @@ disp (['W = ' num2str(stats.signedrank) '  ' ' p = ' num2str(p)]);
  
 diff_ERS = m_roi_cond1-m_roi_cond2;
  
-set (gcf, 'Position', [200 200 400 450]);
-export_fig(2, '_cluster.png','-transparent', '-r80');
-close all;   
+%set (gcf, 'Position', [200 200 400 450]);
+%export_fig(2, '_cluster.png','-transparent', '-r80');
+%close all;   
  
 
 
@@ -589,16 +618,17 @@ h = bar (mean_S);hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
 %set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
 set(gca,'XTick',[1 2],'XTickLabel',{'', ''}, ...
-    'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [-.005 .035] );
+    'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [-.01 .015] );
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 
-[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+%[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+[h p ci t] = ttest (data.data(:,1));
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 set(gca, 'LineWidth', 3);
 
-export_fig(2, '_2.png','-transparent', '-r80');
-close all;   
+%export_fig(2, '_2.png','-transparent', '-r80');
+%close all;   
 
 
 

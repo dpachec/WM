@@ -2,9 +2,11 @@
     f2t = strsplit(f2sav, '_'); 
     if strcmp(f2t{2}, 'vvs') 
         subj_ch_fr = 17; 
+        nSubj = 28;
         
     elseif strcmp(f2t{2}, 'pfc') 
         subj_ch_fr = 7;
+        nSubj = 16;
         
      elseif strcmp(f2t{2}, 'hipp') 
         subj_ch_fr = 8;

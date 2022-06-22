@@ -3,7 +3,7 @@
 clearvars -except act_CH act_FR 
 
 
-f2sav       = 'RNN_vvs_M_Av_R_nT_1-49_C_naFV_100ms'; %'Alex_vvs_CueAll_noAv_54_Real_nT_1-49'
+f2sav       = 'RNN_pfc_M_Av_R_nT_1-20_C_naFV_100ms'; %'Alex_vvs_CueAll_noAv_54_Real_nT_1-49'
 
 
 load_parameters_WMFRA;
@@ -38,14 +38,14 @@ for subji= 1:nSubj %start with subject 2
        
         [allS ids act_FR2 act_CH2 cM] = getIDsAndnRDMs(rdm_prev, act_CH, act_FR);
         
-        for timei = 1:45
+        for timei = 1:size(rdm_prev.rdm, 3)
             rdmp = squeeze(rdm_prev.rdm);
             rdm = squeeze(rdmp(:,:,timei));
             rdm(rdm ==1) = 1000;rdm(rdm ==0) = 2000;
             rdm = tril(rdm, -1);rdm(rdm==0) =[];
             rdm(rdm==1000) = 1;rdm(rdm==2000) = 0;
         
-            for layi = 1:56
+            for layi = 1:nLays
                 if subji < subj_ch_fr
                     M =  squeeze(act_FR2(layi,:,:)); 
                 else
@@ -88,7 +88,7 @@ toc
 
 
 
-%% PLOT OBS DATA (8 layers)
+%% PLOT OBS DATA 
 
 sub2exc =[1];
 
@@ -253,6 +253,7 @@ for layi = 1:nLays
         plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
         plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
         set(gca, 'xtick', [-0.055 .945 1.945 2.945 3.945 ], 'xticklabel', [0 1 2 3 4], 'clim', [-3 3]); % 'xlim', [0 3.5],
+        %set(gca, 'xlim', [-.5 1])
         set(gca,'XTick',[], 'YTick', [])
         set(gca,'xticklabel',[], 'FontSize', 12)
         colormap jet
@@ -375,7 +376,7 @@ toc
 
 %% Calculate correlation in cluster 
 
-data = squeeze(all_r_Times(:, 56,:,:));
+data = squeeze(all_r_Times(:, 49,:,:));
 mD = squeeze(mean(data));
 [h p ci ts] = ttest(data);
 h = squeeze(h); t = squeeze(ts.tstat);
@@ -386,7 +387,7 @@ clustinfo = bwconncomp(h);
 obsT = sum(t(clustinfo.PixelIdxList{8}));
 
 
-%% calculate distribution 
+%% calculate distribution from permutations
 
 nPerm = 1000; 
 for permi = 1:nPerm
@@ -416,7 +417,7 @@ end
 
 %% Calculate correlation in cluster for each layer / time point
 
-data = squeeze(all_r_Times(:, 56,:,:));
+data = squeeze(all_r_Times(:, 49,:,:));
 mD = squeeze(mean(data));
 [h p ci ts] = ttest(data);
 h = squeeze(h); t = squeeze(ts.tstat);
@@ -429,9 +430,186 @@ obsT = sum(t(clustinfo.PixelIdxList{8}));
 
 %%
 c = [60.7767903066970 69.7513849905440 56.9934561621767 72.4082145601195 79.5953647172531 78.9209984633255 90.2397712325105 90.4385912362766];
-
+c = [24 26 22 28 29 28 31 31]
 figure()
 plot(c)
+set(gca, 'yLim', [20 35])
+
+
+
+
+%% TRIAL BASED DNN ANALYSIS SLOW AS SANITY CHECK
+
+clearvars -except act_CH act_FR 
+f2sav       = 'RNN_pfc_M_noAv_R_T_1-20_C_naFV_100ms'; %'Alex_vvs_CueAll_noAv_54_Real_nT_1-49'
+
+load_parameters_WMFRA;
+loadNet_WM;
+region = f2t{2};
+paths = load_paths_WM(region);
+filelistSess = getFiles(paths.out_contrasts_path);
+nSubj = length(filelistSess); 
+all_r_Times    = zeros(nSubj, nLays, nFreqs, nTimes);
+
+tic
+
+for subji= 1:nSubj %start with subject 2
+    disp (['Subj: ' num2str(subji)])
+    load([paths.out_contrasts_path filelistSess{subji}]);   
+    cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(:, :, :, resTime); 
+    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'blo', [3 7]);
+    if strcmp(avMeth,'pow')
+       cfg_contrasts = average_repetitions(cfg_contrasts);
+    end
+    
+    
+    
+    for freqi = 1:length(freqs2test)
+        f  = freqs2test(freqi);
+        if strcmp(f2t{9}, 'aFV')
+            avTW = 1;
+        else
+            avTW = 0;
+        end
+        rdm_prev(freqi) = create_rdms(cfg_contrasts, f, it, 5, 1, avTW);
+    end
+    
+    ids = rdm_prev(1).ids; % take first freq only to get ids
+    idsT{subji,:} = ids; 
+    ids = cellfun(@(x) strsplit(string(x)), ids, 'un', 0);
+    ids0 = cellfun(@(x) x(3), ids, 'un', 0); ids0 = double(string(ids0)); 
+    ids1 = char(string((ids0))); ids2 = ids1(:,[1 3]);ids3 = double(string(ids2));
+    idx = find(~mod(ids3, 10)); ids4 = ids3-10; ids4(idx) = ids3(idx);
+
+    act_FR_2 = act_FR(:,ids4,ids4);
+    act_CH_2 = act_CH(:,ids4,ids4);
+    
+    allS = cat(4, rdm_prev.rdm);
+    % no need to remove diagonal because diagonal falls in index triali and is deleted below 
+    
+    for layi = 1:nLays
+        for triali = 1:size(allS, 1)
+            if subji < subj_ch_fr
+                M =  squeeze(act_FR_2(layi,:,:)); 
+            else
+                M =  squeeze(act_CH_2(layi,:,:)); 
+            end
+            M = M(triali, :);
+            M(triali) = []; 
+            
+            for freqi = 1:size(allS, 4)  
+                for timei = 1:size(allS, 3)
+                    allS1 = squeeze(allS(triali, :, timei, freqi)); 
+                    allS1(triali) = []; %remove same trial on diagonal (only has ones)
+
+                    allTEst = corr(allS1', M', 'type', 's');
+                    all_r_Times_Trials{subji}(layi,triali, freqi, timei) = allTEst;  
+                end
+            end
+        end
+    end
+end 
+
+
+toc 
+save(f2sav, 'all_r_Times_Trials', 'idsT');
+
+%% PFC cue performance effect BEHAVIOR
+
+clear
+load RNN_pfc_M_Av_R_nT_1-20_C_naFV_100ms
+load RNN_pfc_M_noAv_R_T_1-20_C_naFV_100ms
+
+
+sub2exc =  [];
+
+nSubjs =size(all_r_Times, 1);  
+nFreqs = size(all_r_Times, 3); 
+clear hL tL clustinfo
+allR = all_r_Times;
+allR(sub2exc,:,:) = []; 
+for layi = 1:56
+    [hL(layi, :, :) p ci ts] = ttest(allR(:,layi,:,:)); 
+    tL(layi, :, :) = ts.tstat;
+end
+
+
+%%get cluster in each layer 
+clear max_clust_sum_obs allSTs clustinfo_lay
+for layi = 1:56
+    hLay = squeeze(hL(layi,:,:)); 
+    tLay = squeeze(tL(layi,:,:));
+    clustinfo_lay(layi) = bwconncomp(hLay);
+end
+    
+
+%%extract mean rho values in each trial at this cluster for 1 layer 
+clear mARTT 
+for subji = 1:16
+   for layi = 56:56
+       all_r_tt = squeeze(all_r_Times_Trials{subji}(layi, :,:,:)); 
+       nTrials = size(all_r_tt, 1); 
+        for triali = 1:nTrials
+            all_r_ttt = squeeze(all_r_tt(triali,:,:)); 
+            mARTT{subji,:}(triali,:) = mean(all_r_ttt(clustinfo_lay(56).PixelIdxList{8}), 'omitnan'); 
+        end   
+   end
+end
+
+%% CUEPERF EFFECT in one layer
+
+clear cR xC xI perf_cc
+for subji = 1:16
+   
+    clear ic_i
+    x = mARTT{subji};
+    
+    
+    ids = idsT{subji};
+    ids0 = cellfun(@(x) strsplit(string(x)), ids, 'un', 0);
+    % 19 = correct item level ; 20 = correct category level
+    ic_i = cellfun(@(x) x(19), ids0, 'un', 0); ic_i = logical(double(string(ic_i))); 
+    
+    xC{subji,:}= x(ic_i); 
+    xI{subji,:}= x(~ic_i); 
+    
+end
+
+
+for subji = 1:16   
+    perf_cc(subji, 1) = mean(xC{subji});
+    perf_cc(subji, 2) = mean(xI{subji});
+end
+
+
+
+%% 2 bar
+
+data.data = perf_cc; 
+
+sub2exc = [1];
+
+data.data(sub2exc,:) =  [];
+
+figure(2); set(gcf,'Position', [0 0 500 500]); 
+mean_S = mean(data.data, 1, 'omitnan');
+h = bar (mean_S);hold on;
+hb = plot ([1:2], data.data); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',40);hold on;
+%h1=errorbar(mean_S, se_S,'c'); hold on;
+set(h,'facecolor', 'none', 'lineWidth', 2);
+%set(hb, 'Color','k','linestyle','none', 'lineWidth', 2);
+set(gca,'XTick',[1:2],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',1, 'xlim', [0 3], 'ylim', [-.15 .15] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 1);
+%scatter(1:2, hL+0.135, 'k', 'LineWidth', 6, 'Marker', '*')
+
+
+[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 1);
+
+%export_fig(2, [num2str(layi) '.png'],'-transparent', '-r100');
 
 
 
@@ -2034,8 +2212,8 @@ p
 %% PFC cue performance effect behavioral
 
 clear
-load RNN_pfc_M&C_noAv_54_Real_T_1-49_C_aFV
-load RNN_pfc_M&C_noAv_54_Real_nT_1-49_C_aFV
+load RNN_pfc_M_Av_R_nT_1-49_C_naFV
+
 
 
 sub2exc =  [];
