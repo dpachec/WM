@@ -194,7 +194,6 @@ mm2 = triu(mm2.',1) + tril(mm2);
 mmm2 = squeeze(mean(mm2))
 
 
-%%
 figure()
 imagesc(mm1-mm2); colorbar; axis square
 figure()
@@ -218,6 +217,13 @@ stdD = std(msD);
 seD = stdD / sqrt(26);
 figure()
 shadedErrorBar(1:45, mD,seD, 'r', 1); 
+
+
+%%  full maintenance period 
+mmSD = mean(msD, 2)
+
+[h p ci ts] = ttest(mmSD);
+t = ts.tstat
 
 
 %% LOAD all conditions IN LOOP
