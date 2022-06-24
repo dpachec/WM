@@ -2,7 +2,7 @@ function[ACT] = load_rnn(lays2load, subji, subj_ch_fr);%load network if not load
 
 
 currentFolder = pwd; 
-cd ('D:\_WM\analysis\out_contrasts\data\RNN')
+cd ('/Users/danielpacheco/Documents/iEEG_data_analysis/WM/rnn_activations')
 
 if subji < subj_ch_fr
     cd FR

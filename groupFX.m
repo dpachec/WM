@@ -6,7 +6,8 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_M2A' 'DIDC_M2A';
+              %'DISC_M2M2' 'DIDC_M2M2';
+              'DISC_EM2' 'DIDC_EM2';
              };
 
 c = unique (contrasts);
@@ -33,13 +34,14 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_M2A';
-cond2 = 'DIDC_M2A';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [18 22];% vvs;%[1] pfc
+%subj2exc        =       [18 22];% vvs;%[1] pfc
+subj2exc        =       [1];% vvs;%[1] pfc
 runperm         =       0; 
 n_perm          =       1;
 saveperm        =       1; 
@@ -51,7 +53,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '4-4'; %4 3 2.5 2 
+cfg.cut2        =       '1-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -98,7 +100,7 @@ end
 % end
 % 
 
-dupSym = 1; 
+dupSym = 0; 
 
 cfg.all_cond1_A =       all_cond1_A;
  
@@ -187,17 +189,19 @@ for subji = 1:length(all_cond1)
 end
 
 mm1 = squeeze(mean(m1));
-mm1 = triu(mm1.',1) + tril(mm1);
+%mm1 = triu(mm1.',1) + tril(mm1);
 mmm1 = squeeze(mean(mm1))
 mm2 = squeeze(mean(m2));
-mm2 = triu(mm2.',1) + tril(mm2);
+%mm2 = triu(mm2.',1) + tril(mm2);
 mmm2 = squeeze(mean(mm2))
 
 
 figure()
-imagesc(mm1-mm2); colorbar; axis square
+imagesc(mm1-mm2); colorbar; %axis square
 figure()
-plot(mmm1-mmm2)
+plot(mmm1); hold on; 
+plot (mmm2); hold on; 
+plot(mmm1-mmm2); 
 
 %% 
 ms1 = squeeze(mean(m1, 3, 'omitnan'));
@@ -210,13 +214,15 @@ plot(mean(msD), 'k', 'LineWidth',2)
 
 [h p ci ts] = ttest(msD)
 t = ts.tstat
+%plot(h, 'LineWidth', 2)
 
 %% 
 mD = mean(msD);
 stdD = std(msD);
 seD = stdD / sqrt(26);
 figure()
-shadedErrorBar(1:45, mD,seD, 'r', 1); 
+shadedErrorBar(1:15, mD,seD, 'r', 1); hold on 
+%plot(h, 'LineWidth', 2)
 
 
 %%  full maintenance period 
@@ -224,6 +230,35 @@ mmSD = mean(msD, 2)
 
 [h p ci ts] = ttest(mmSD);
 t = ts.tstat
+
+%% plot one bar
+%data.data = [data_LC.data(:,1) data_LC.data(:,2) ];
+%data.data = [diff_ERS_all diff_ERS_all_minus]; 
+data.data = [mmSD]; 
+
+
+figure(2); set(gcf,'Position', [0 0 500 650]); 
+mean_S = mean(data.data, 1);
+std_S = std(data.data, [], 1);
+se_S = std_S / sqrt(26); 
+hb = plot ([1], data.data); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
+h = bar (mean_S);hold on;
+%h1=errorbar(mean_S, se_S,'c'); hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+%set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, ...
+    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0045] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+%[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+%export_fig(2, '_2.png','-transparent', '-r80');
+%close all;   
 
 
 %% LOAD all conditions IN LOOP
@@ -239,7 +274,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_M2A' 'DIDC_M2A'; ...
+                  'DISC_EM2' 'DIDC_EM2'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -264,7 +299,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-perms2use = {   '4-4' ...
+perms2use = {   '1-4' ...
                 '1-4' ...
                 '1-4' ...
                 '4-4' ...
@@ -302,7 +337,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 2:2 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -356,33 +391,34 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             end
 
     
-    % % % % duplicate for EM2
-    typec = strsplit(cond1, '_');
-    if length(typec) > 1
-        if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2UV1') | strcmp(typec{2}, 'EM2UV2')
-            dupSym = 0;
-            for subji = 1:length(all_cond1_A)
-                d2c = all_cond1_A{subji};
-                for triali = 1:size(d2c, 1)
-                    d2ct = squeeze(d2c(triali, :,:)); 
-                    d2ct = triu(d2ct.',1) + tril(d2ct);
-                    d2c(triali, :, :) = d2ct; 
-                end
-                all_cond1_A{subji} = d2c;
-    
-                d2c = all_cond2_A{subji};
-                for triali = 1:size(d2c, 1)
-                    d2ct = squeeze(d2c(triali, :,:)); 
-                    d2ct = triu(d2ct.',1) + tril(d2ct);
-                    d2c(triali, :, :) = d2ct; 
-                end
-                all_cond2_A{subji} = d2c;
-            end
-        else
-            dupSym          =       1;
-        end
-    end
+%     % % % duplicate for EM2
+%     typec = strsplit(cond1, '_');
+%     if length(typec) > 1
+%         if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2UV1') | strcmp(typec{2}, 'EM2UV2')
+%             dupSym = 0;
+%             for subji = 1:length(all_cond1_A)
+%                 d2c = all_cond1_A{subji};
+%                 for triali = 1:size(d2c, 1)
+%                     d2ct = squeeze(d2c(triali, :,:)); 
+%                     d2ct = triu(d2ct.',1) + tril(d2ct);
+%                     d2c(triali, :, :) = d2ct; 
+%                 end
+%                 all_cond1_A{subji} = d2c;
+%     
+%                 d2c = all_cond2_A{subji};
+%                 for triali = 1:size(d2c, 1)
+%                     d2ct = squeeze(d2c(triali, :,:)); 
+%                     d2ct = triu(d2ct.',1) + tril(d2ct);
+%                     d2c(triali, :, :) = d2ct; 
+%                 end
+%                 all_cond2_A{subji} = d2c;
+%             end
+%         else
+%             dupSym          =       1;
+%         end
+%     end
 
+dupSym = 0; 
 
             cfg.all_cond1_A =       all_cond1_A;
 

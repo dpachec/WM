@@ -1,3 +1,110 @@
+%% Calculate from epoched raw traces
+%% first load traces
+clear
+%ROI___layers___freqs___avRepet___avTimeFeatVect_____freqResolv(0-1)____fitMode(0:noTrials; 1:Trials)____timeRes____win-width____mf
+%f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
+f2sav = 'vvs_1-56_3-54_1_0_0_0_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+f2t = strsplit(f2sav, '_');
+region = f2t{1};
+paths = load_paths_WM(region);
+filelistSess = getFiles(paths.traces);
+
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.traces filelistSess{sessi}]);   
+   
+    
+    ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
+    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
+    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+    if (cfg.avRep)
+        cfg_contrasts               = average_repetitions(cfg_contrasts);
+    end
+
+    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.lays2load, cfg.brainROI, sessi); %layers to load
+    
+    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+    nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
+    
+end
+
+mkdir ([paths.results.DNNs]);
+save([paths.results.DNNs f2sav], 'nnFit');
+
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
+
+
+
+
+%% plot frequency resolved
+clear 
+f2sav = 'vvs_56_3-54_1_0_1_0_.1_5_1.mat'
+f2t = strsplit(f2sav, '_');
+region = f2t{1};
+
+paths = load_paths_WM(region);
+load([paths.results.DNNs f2sav]);
+
+for subji = 1:length(nnFit)
+    
+   nnH(subji, : ,:) = nnFit{subji, 1} ;
+        
+end
+
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat)
+
+
+%% 
+d2p = squeeze(mean(nnH, 'omitnan'));
+figure
+freqs = 1:520; 
+times = 1:860; 
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+%set(gca, 'clim', [-.025 .025])
+
+
+
+
+%% plot bands
+clear 
+f2sav = 'vvs_56_3-54_1_0_0_0_.1_5_1.mat'; 
+f2t = strsplit(f2sav, '_');
+region = f2t{1};
+
+paths = load_paths_WM(region);
+load([paths.results.DNNs f2sav]);
+
+for subji = 1:length(nnFit)
+    
+   nnH(subji,:) = nnFit{subji, 1} ;
+        
+end
+
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat);
+
+
+%% 
+d2p = squeeze(mean(nnH, 'omitnan'));
+figure
+plot(d2p); hold on; 
+h(h==0) = nan; h(h==1) = .02;
+plot(h, 'lineWidth', 2)
+%set(gca, 'clim', [-.025 .025])
+
+
+
+
+
 %% FREQUENCY RESOLVED DNN ANALYSIS (SLOW WAY AS SANITY CHECK) 
 %% 
 clearvars -except act_CH act_FR 

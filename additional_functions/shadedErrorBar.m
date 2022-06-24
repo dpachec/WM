@@ -112,11 +112,11 @@ H.mainLine=plot(x,y,lineProps{:});
 col=get(H.mainLine,'color');
 %edgeColor=col+(1-col)*0.1;
 edgeColor =col .* 0.8;
-patchSaturation=1; %How de-saturated or transparent to make patch
+patchSaturation=.7; %How de-saturated or transparent to make patch
 transparency = .7;
 if transparent
     faceAlpha=transparency;
-    patchColor=col;
+    patchColor=col+(1-col)*(1-patchSaturation);
     set(gcf,'renderer','openGL')
 else
     faceAlpha=1;
