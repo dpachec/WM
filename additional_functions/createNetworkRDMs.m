@@ -1,10 +1,10 @@
-function [networkRDMS] = createNetworkRDMs(oneListIDs, lays2load, brainROI, subji)
+function [networkRDMS] = createNetworkRDMs(oneListIDs, lays2load, brainROI, subji, paths)
 
 if strcmp(brainROI, 'vvs')  subj_ch_fr = 17; end %%VVS
 if strcmp(brainROI, 'pfc')  subj_ch_fr = 7; end %%PFC
 if strcmp(brainROI, 'hipp') subj_ch_fr = 8; end %%HIPP
 
-[ACT] = load_rnn(lays2load, subji, subj_ch_fr);%load network if not loaded yet
+[ACT] = load_rnn(lays2load, subji, subj_ch_fr, paths.activations);%load network if not loaded yet
 
 
 for i = 1:length(oneListIDs)

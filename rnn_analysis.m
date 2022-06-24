@@ -3,7 +3,7 @@
 clear
 %ROI___layers___freqs___avRepet___avTimeFeatVect_____freqResolv(0-1)____fitMode(0:noTrials; 1:Trials)____timeRes____win-width____mf
 %f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'vvs_1-56_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'pfc_1-56_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{1};
@@ -27,7 +27,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
 
     neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
-    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.lays2load, cfg.brainROI, sessi); %layers to load
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.lays2load, cfg.brainROI, sessi, paths); %layers to load
     
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 

@@ -1,8 +1,8 @@
-function[ACT] = load_rnn(lays2load, subji, subj_ch_fr);%load network if not loaded yet
+function[ACT] = load_rnn(lays2load, subji, subj_ch_fr, path);%load network if not loaded yet
 
 
 currentFolder = pwd; 
-cd ('/Users/danielpacheco/Documents/iEEG_data_analysis/WM/rnn_activations')
+cd (path)
 
 if subji < subj_ch_fr
     cd FR
