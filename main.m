@@ -82,8 +82,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     for freqi = 1:length(frequncies2test)
         %create folder
         fname = fnames{freqi};
-        mkdir ([paths.results.band_res fname]);
-        cd ([paths.results.band_res fname]);
+        mkdir ([paths.results.bands fname]);
+        cd ([paths.results.bands fname]);
         f           = frequncies2test{freqi}; 
  
         rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, 0)
@@ -101,7 +101,7 @@ cd ..
 clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
-cd (paths.results.band_res)
+cd (paths.results.bands)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
  
