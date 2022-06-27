@@ -1,7 +1,7 @@
 %% generate maps for each frequency
 %%
 clear 
-region = 'pfc';
+region = 'vvs';
 paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts_path);
 
@@ -106,7 +106,7 @@ disp ('done')
 
 
 %%
-region = 'pfc'
+region = 'vvs'
 clearvars -except region
 paths = load_paths_WM(region); 
 currentFolder = pwd;

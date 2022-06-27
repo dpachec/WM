@@ -2,9 +2,9 @@
 %% 
 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region);
-filelistSess = getFiles(paths.out_contrasts_path);
+filelistSess = getFiles(paths.out_contrasts);
 
 
 frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
@@ -35,7 +35,7 @@ batch_bin           = 1000;
 n2s                 = 1000000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-avMeth              = 'pow';  % average across image repetitions or not
+avMeth              = 'none';  % average across image repetitions or not
  
 %diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  
@@ -43,7 +43,7 @@ avMeth              = 'pow';  % average across image repetitions or not
  
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
-    load([paths.out_contrasts_path filelistSess{sessi}]);   
+    load([paths.out_contrasts filelistSess{sessi}]);   
     
     disp ([ 'fnames = ' fnames{:} newline ...
             'win_width = ' num2str(win_width) newline ...

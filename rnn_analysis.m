@@ -1,12 +1,12 @@
 %% Calculate from epoched raw traces
 %% first load traces
 clear
-%ROI___layers___freqs___avRepet___avTimeFeatVect_____freqResolv(0-1)____fitMode(0:noTrials; 1:Trials)____timeRes____win-width____mf
-%f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'pfc_1-56_3-54_1_0_1_0_.1_5_1.mat'; 
+%ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+%example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
+f2sav = 'RNN_pfc_1-56_13-29_1_0_0_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
-region = f2t{1};
+region = f2t{2};
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.traces);
 
@@ -27,7 +27,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
 
     neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
-    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.lays2load, cfg.brainROI, sessi, paths); %layers to load
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths); %layers to load
     
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
@@ -43,67 +43,88 @@ etime(datevec(t2), datevec(t1))
 
 
 
-%% plot frequency resolved
+%% load file
+%ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 clear 
-f2sav = 'vvs_56_3-54_1_0_1_0_.1_5_1.mat'
+f2sav = 'RNN_pfc_56_3-54_1_0_1_0_.1_5_1.mat'; 
 f2t = strsplit(f2sav, '_');
-region = f2t{1};
+region = f2t{2};
 
 paths = load_paths_WM(region);
 load([paths.results.DNNs f2sav]);
 
-for subji = 1:length(nnFit)
-    
-   nnH(subji, : ,:) = nnFit{subji, 1} ;
-        
-end
-
-[h p ci ts] = ttest(nnH);
-h = squeeze(h); t = squeeze(ts.tstat)
 
 
-%% 
-d2p = squeeze(mean(nnH, 'omitnan'));
-figure
-freqs = 1:520; 
-times = 1:860; 
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-%set(gca, 'clim', [-.025 .025])
-
-
-
-
-%% plot bands
-clear 
-f2sav = 'vvs_56_3-54_1_0_0_0_.1_5_1.mat'; 
-f2t = strsplit(f2sav, '_');
-region = f2t{1};
-
-paths = load_paths_WM(region);
-load([paths.results.DNNs f2sav]);
+%% all plot cells start with nnH
+sub2exc = [];
 
 for subji = 1:length(nnFit)
     
-   nnH(subji,:) = nnFit{subji, 1} ;
+   nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
+   %nnH(subji, : ,:) = nnFit{subji, 1};
         
 end
 
+
+nnH(sub2exc, :, :) = []; 
+nnH = squeeze(nnH);
 [h p ci ts] = ttest(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
 
 
-%% 
+%% plot frequency resolved
+d2p = squeeze(mean(nnH, 'omitnan'));
+figure
+freqs = 1:520; 
+times = -1.75:.01:6.849; 
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+set(gca, 'xlim', [-1 6])
+%set(gca, 'clim', [-.025 .025])
+
+
+
+%% plot bands
 d2p = squeeze(mean(nnH, 'omitnan'));
 figure
 plot(d2p); hold on; 
 h(h==0) = nan; h(h==1) = .02;
 plot(h, 'lineWidth', 2)
+set(gca, 'xlim', [0 45])
 %set(gca, 'clim', [-.025 .025])
 
 
 
+%% plot bands all layers
+clear 
+f2sav = 'vvs_1-56_3-54_1_0_0_0_.1_5_1.mat'; 
+f2t = strsplit(f2sav, '_');
+region = f2t{1};
 
+paths = load_paths_WM(region);
+load([paths.results.DNNs f2sav]);
+
+for subji = 1:length(nnFit)
+   for layi = 1:56
+      nnH(subji,layi, :) = nnFit{subji, 1}(layi,:) ;
+   end
+end
+
+
+%% 
+
+figure()
+for layi = 1:56
+    d2p = squeeze(mean(nnH(:, layi,:), 'omitnan'));
+    plot(d2p); hold on; 
+end
+%h(h==0) = nan; h(h==1) = .02;
+%plot(h, 'lineWidth', 2)
+
+
+
+
+ 
 
 %% FREQUENCY RESOLVED DNN ANALYSIS (SLOW WAY AS SANITY CHECK) 
 %% 
@@ -197,7 +218,9 @@ toc
 
 %% PLOT OBS DATA 
 
-sub2exc =[1];
+sub2exc =[28];
+
+all_r_Times = nnH; 
 
 nSubjs =size(all_r_Times, 1);  
 nLays = size(all_r_Times, 2); 

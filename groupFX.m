@@ -8,6 +8,7 @@ paths = load_paths_WM(region);
 contrasts = {
               %'DISC_M2M2' 'DIDC_M2M2';
               'DISC_EM2' 'DIDC_EM2';
+              %'DISC_M2A' 'DIDC_M2A';
              };
 
 c = unique (contrasts);
@@ -34,16 +35,20 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+%cond1 = 'DISC_M2M2';
+%cond2 = 'DIDC_M2M2';
+ cond1 = 'DISC_EM2';
+ cond2 = 'DIDC_EM2';
+% cond1 = 'DISC_M2A';
+% cond2 = 'DIDC_M2A';
  
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
 %subj2exc        =       [18 22];% vvs;%[1] pfc
 subj2exc        =       [1];% vvs;%[1] pfc
-runperm         =       0; 
-n_perm          =       1;
+runperm         =       1; 
+n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
 cfg.clim        =       [-.0075 .0075];
@@ -179,62 +184,35 @@ end
  
 toc
  
-%% plot average in period
+%% average in period 
 
 for subji = 1:length(all_cond1)
-    m1(subji, :,:) = squeeze(mean(all_cond1{subji}));
-    m2(subji, :,:) = squeeze(mean(all_cond2{subji}));
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
 
 
 end
 
-mm1 = squeeze(mean(m1));
+mm1 = squeeze(mean(m1,'omitnan'));
+m1A = squeeze(mean(mean(m1,2,'omitnan'),3,'omitnan'));
 %mm1 = triu(mm1.',1) + tril(mm1);
-mmm1 = squeeze(mean(mm1))
-mm2 = squeeze(mean(m2));
+mmm1 = squeeze(mean(mm1,'omitnan'));
+mm2 = squeeze(mean(m2,'omitnan'));
+m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
 %mm2 = triu(mm2.',1) + tril(mm2);
-mmm2 = squeeze(mean(mm2))
-
-
-figure()
-imagesc(mm1-mm2); colorbar; %axis square
-figure()
-plot(mmm1); hold on; 
-plot (mmm2); hold on; 
-plot(mmm1-mmm2); 
-
-%% 
-ms1 = squeeze(mean(m1, 3, 'omitnan'));
-ms2 = squeeze(mean(m2, 3, 'omitnan'));
-msD = ms1-ms2; 
-
-figure()
-plot(msD'); hold on; 
-plot(mean(msD), 'k', 'LineWidth',2)
-
-[h p ci ts] = ttest(msD)
-t = ts.tstat
-%plot(h, 'LineWidth', 2)
-
-%% 
-mD = mean(msD);
-stdD = std(msD);
-seD = stdD / sqrt(26);
-figure()
-shadedErrorBar(1:15, mD,seD, 'r', 1); hold on 
-%plot(h, 'LineWidth', 2)
-
+mmm2 = squeeze(mean(mm2,'omitnan'));
 
 %%  full maintenance period 
-mmSD = mean(msD, 2)
-
-[h p ci ts] = ttest(mmSD);
+msD = m1A-m2A;
+[h p ci ts] = ttest(msD);
 t = ts.tstat
+
+
 
 %% plot one bar
 %data.data = [data_LC.data(:,1) data_LC.data(:,2) ];
 %data.data = [diff_ERS_all diff_ERS_all_minus]; 
-data.data = [mmSD]; 
+data.data = [msD]; 
 
 
 figure(2); set(gcf,'Position', [0 0 500 650]); 
@@ -259,6 +237,129 @@ set(gca, 'LineWidth', 3);
 
 %export_fig(2, '_2.png','-transparent', '-r80');
 %close all;   
+
+%% encoding - maintenance similarity (average full maintenance period)
+ms1 = squeeze(mean(m1, 3, 'omitnan'));
+ms2 = squeeze(mean(m2, 3, 'omitnan'));
+msD = ms1-ms2; 
+
+figure()
+plot(msD'); hold on; 
+plot(mean(msD), 'k', 'LineWidth',2)
+
+[h p ci ts] = ttest(msD)
+t = ts.tstat
+%plot(h, 'LineWidth', 2)
+
+%% 
+clear m1 m2
+for subji = 1:length(all_cond1)
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}));
+end
+ms1 = squeeze(mean(m1, 3, 'omitnan'));
+ms2 = squeeze(mean(m2, 3, 'omitnan'));
+msD = ms1-ms2; 
+
+mD = mean(msD);
+stdD = std(msD);
+seD = stdD / sqrt(26);
+figure()
+shadedErrorBar(1:15, mD,seD, 'r', 1); hold on 
+h(h==0) = nan; h(h==1) = 0;
+plot(h, 'LineWidth', 2)
+
+%% encoding - maintenance similarity (average full encoding period)
+clearvars -except m1 m2 
+ms1 = squeeze(mean(m1(:,6:15,:), 2, 'omitnan'));
+ms2 = squeeze(mean(m2(:,6:15,:), 2, 'omitnan'));
+msD = ms1-ms2; 
+times = -.75:.1:3.749; 
+
+figure()
+plot(times, msD', 'color', [.5 .5 .5]); hold on; 
+%plot(mean(msD), 'k', 'LineWidth',2)
+mD = mean(msD);
+stdD = std(msD);
+seD = stdD / sqrt(26);
+shadedErrorBar(times, mD,seD, 'k', 1); hold on 
+
+
+[h p ci ts] = ttest(msD)
+t = ts.tstat
+clustinfo = bwconncomp(h);
+obsT = sum(t(clustinfo.PixelIdxList{2}));
+h(clustinfo.PixelIdxList{1}) = 0; 
+h(h==0) = nan; h(h==1) = 0;
+plot(times, h, 'r', 'LineWidth', 2)
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+set(gca, 'FontSize', 14)
+
+
+
+%% permutations 
+nPerm = 1000; 
+
+for permi = 1:nPerm
+    
+    for subji = 1:size(m1, 1)
+        if rand<.5
+            m1F(subji, :, :) = m1(subji, : ,:); 
+            m2F(subji, :, :) = m2(subji, : ,:); 
+        else
+            m1F(subji, :, :) = m2(subji, : ,:); 
+            m2F(subji, :, :) = m1(subji, : ,:); 
+        end
+        ms1 = squeeze(mean(m1F(:,6:15,:), 2, 'omitnan'));
+        ms2 = squeeze(mean(m2F(:,6:15,:), 2, 'omitnan'));        
+        msD = ms1-ms2; 
+    end
+
+    [hPerm p ci ts] = ttest(msD);
+    tPerm = ts.tstat;
+    clustinfo = bwconncomp(hPerm);
+    [numPixPermi(permi) maxi] = max([0 cellfun(@numel,clustinfo.PixelIdxList) ]); % the zero accounts for empty maps
+    if numPixPermi(permi) > 0
+        max_clust_sum(permi,:) = sum (tPerm(clustinfo.PixelIdxList{maxi-1}));
+    else
+        %disp (['no significant cluster in permutation ' num2str(permi)]);
+        max_clust_sum(permi,:) = 0; 
+    end
+
+    
+end
+
+
+%% 
+figure()
+histogram(max_clust_sum)
+
+%% permutations
+n_perm = 1000;
+
+allAb = max_clust_sum(abs(max_clust_sum) > obsT);
+%allAb = max_clust_sum(max_clust_sum > obs);
+p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
+
+disp (['p = ' num2str(p)]);
+%x = find(max_clust_sum_ranked(:,2) == index)
+
+
+
+%% 
+figure()
+imagesc(h)
+
+%% 
+mD = mean(msD);
+stdD = std(msD);
+seD = stdD / sqrt(26);
+figure()
+shadedErrorBar(1:45, mD,seD, 'r', 1); hold on 
+
+%plot(h, 'LineWidth', 2)
+
+
 
 
 %% LOAD all conditions IN LOOP
