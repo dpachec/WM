@@ -3,7 +3,7 @@
 clear
 %ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 %example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'RNN_pfc_1-56_13-29_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'Alex_vvs_7_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -56,10 +56,12 @@ load([paths.results.DNNs f2sav]);
 
 
 %% all plot cells start with nnH
+
 sub2exc = [];
 
 for subji = 1:length(nnFit)
     
+   %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
    nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
    %nnH(subji, : ,:) = nnFit{subji, 1};
         
@@ -88,11 +90,13 @@ set(gca, 'xlim', [-1 6])
 d2p = squeeze(mean(nnH, 'omitnan'));
 figure
 plot(d2p); hold on; 
-h(h==0) = nan; h(h==1) = .02;
-plot(h, 'lineWidth', 2)
-set(gca, 'xlim', [0 45])
+%h(h==0) = nan; h(h==1) = .02;
+%plot(h, 'lineWidth', 2)
+%set(gca, 'xlim', [0 45])
 %set(gca, 'clim', [-.025 .025])
 
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat);
 
 
 %% plot bands all layers

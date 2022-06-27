@@ -146,10 +146,11 @@ end
 cd (currentFolder)
 
 toc
-
+%% 
+save('out_cALL','out_cALL', '-v7.3');  
 
 %%
-clear tmp1 tmp2 D1 D2 mTrC1 mTrC2 DDiff
+clear tmp1 tmp2 D1 D2 mTrC1 mTrC2 DDiff D1A D2A
 for freqi = 1:54
    
     tmp1 = out_cALL{freqi}{1};
@@ -160,6 +161,8 @@ for freqi = 1:54
     for subji = 1:16
         D1 = mTrC1{subji}; 
         D2 = mTrC2{subji}; 
+        D1A(freqi, subji,:) = D1; 
+        D2A(freqi, subji,:) = D2; 
         
         DDiff(freqi, subji,:) = D2-D1; 
         
@@ -172,16 +175,83 @@ end
 %% 
 dDP = permute(DDiff, [2 1 3]); 
 mD = squeeze(mean(dDP));
+
+
+times = -.5:.01:1.099;
+freqs = 1:540;   
 figure()
-imagesc(mD); colorbar; 
+imagesc(times, 1:54, mD); colorbar; 
 set (gca, 'clim', [-.035 .035])
 
 [h p ci ts] = ttest(dDP); 
 h = squeeze(h); t = squeeze(ts.tstat)
 
+clustinfo = bwconncomp(h);
+% h (clustinfo.PixelIdxList{1}) = 0;
+% h (clustinfo.PixelIdxList{2}) = 0;
+% h (clustinfo.PixelIdxList{3}) = 0;
+% h (clustinfo.PixelIdxList{4}) = 0;
+% h (clustinfo.PixelIdxList{5}) = 0;
+% h (clustinfo.PixelIdxList{6}) = 0;
+% h (clustinfo.PixelIdxList{8}) = 0;
+% h (clustinfo.PixelIdxList{9}) = 0;
+% h (clustinfo.PixelIdxList{10}) = 0;
+% h (clustinfo.PixelIdxList{11}) = 0;
+
+
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+set(gca, 'Fontsize', 14)
+
+
+obsT = sum(t(clustinfo.PixelIdxList{7}));
+
+
+%% permutations 
+nPerm = 1000; 
+
+for permi = 1:nPerm
+    
+    for subji = 1:size(D1A, 2)
+        if rand<.5
+            m1F(subji, :, :) = D1A(:, subji ,:); 
+            m2F(subji, :, :) = D2A(:, subji ,:); 
+        else
+            m1F(subji, :, :) = D2A(:, subji ,:); 
+            m2F(subji, :, :) = D1A(:, subji ,:); 
+        end
+        DDiff= m1F-m2F; 
+    end
+    dDP = permute(DDiff, [2 1 3]); 
+
+    [hPerm p ci ts] = ttest(dDP);
+    tPerm = ts.tstat;
+    clustinfo = bwconncomp(hPerm);
+    [numPixPermi(permi) maxi] = max([0 cellfun(@numel,clustinfo.PixelIdxList) ]); % the zero accounts for empty maps
+    if numPixPermi(permi) > 0
+        max_clust_sum(permi,:) = sum (tPerm(clustinfo.PixelIdxList{maxi-1}));
+    else
+        %disp (['no significant cluster in permutation ' num2str(permi)]);
+        max_clust_sum(permi,:) = 0; 
+    end
+
+    
+end
+
+
 %% 
 figure()
-imagesc(h)
+histogram(max_clust_sum)
+
+%% permutations
+n_perm = 1000;
+
+allAb = max_clust_sum(abs(max_clust_sum) > obsT);
+%allAb = max_clust_sum(max_clust_sum > obs);
+p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
+
+disp (['p = ' num2str(p)]);
+%x = find(max_clust_sum_ranked(:,2) == index)
 
 
 

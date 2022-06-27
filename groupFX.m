@@ -7,7 +7,7 @@ paths = load_paths_WM(region);
 
 contrasts = {
               %'DISC_M2M2' 'DIDC_M2M2';
-              'DISC_EM2' 'DIDC_EM2';
+              'DISC_EE' 'DIDC_EE';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -29,6 +29,31 @@ end
 
 
 
+%% plot diagonal only 
+
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
+
+subj2exc = 1; 
+
+all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
+%exclude subjects
+if subj2exc > 0
+    all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
+    all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
+end
+
+cond1 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond1_A, 'un', 0));
+cond2 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond2_A, 'un', 0));
+
+%% 
+mc1 = squeeze(mean(cond1)); 
+mc2 = squeeze(mean(cond2)); 
+figure()
+plot(mc1, 'linewidth' ,2); hold on; 
+plot(mc2, 'linewidth' ,2); 
+plot(mc1-mc2, 'linewidth' ,2);
+
 
 %% COND1 - COND2 (NEW LAYOUT 1x3) SHUFFLING AT THE TRIAL LEVEL
 %clear all; 
@@ -37,8 +62,8 @@ tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 %define conditions 
 %cond1 = 'DISC_M2M2';
 %cond2 = 'DIDC_M2M2';
- cond1 = 'DISC_EM2';
- cond2 = 'DIDC_EM2';
+ cond1 = 'DISC_EE';
+ cond2 = 'DIDC_EE';
 % cond1 = 'DISC_M2A';
 % cond2 = 'DIDC_M2A';
  
@@ -46,7 +71,7 @@ all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
 %subj2exc        =       [18 22];% vvs;%[1] pfc
-subj2exc        =       [1];% vvs;%[1] pfc
+subj2exc        =       [];% vvs;%[1] pfc
 runperm         =       1; 
 n_perm          =       1000;
 saveperm        =       1; 
@@ -368,14 +393,14 @@ clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
 
-cd (paths.results.band_res)
+cd (paths.results.bands)
 
 disp(string(datetime));
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_EM2' 'DIDC_EM2'; ...
+                  'DISC_EE' 'DIDC_EE'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -400,7 +425,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-perms2use = {   '1-4' ...
+perms2use = {   '1-1' ...
                 '1-4' ...
                 '1-4' ...
                 '4-4' ...
@@ -454,6 +479,8 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
                 subj2exc        =       [1];
             elseif strcmp(region, 'vvs')
                  subj2exc        =       [18 22];
+            else
+                 subj2exc        =       [];
             end
             
             if permNoperm == 1
@@ -605,6 +632,51 @@ end
 
 disp ('all plots done');
 disp(string(datetime));
+
+
+%% Collect all diagonals in loop
+clear 
+
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
+
+subj2exc = 1; 
+
+disp(string(datetime));
+fold = dir(); dirs = find(vertcat(fold.isdir));
+fold = fold(dirs);
+
+for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
+    
+    direct = fold(foldi);
+    cd (direct.name)
+    load (cond1)
+    load (cond2)
+
+    all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
+    %exclude subjects
+    if subj2exc > 0
+        all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
+        all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
+    end
+
+    c1(foldi-2,:,:) = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond1_A, 'un', 0));
+    c2(foldi-2,:,:) = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond2_A, 'un', 0));
+    
+    cd ..
+end
+
+%% 
+mc1 = squeeze(mean(c1, 2));
+mc2 = squeeze(mean(c2, 2));
+mcD = mc1-mc2;
+
+times = -.25:.1:1.75;
+figure()
+plot(times, mcD', 'LineWidth', 2); hold on; 
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'),[0 0], 'k:', 'LineWidth', 2);
+legend({'13-29Hz', '3-8Hz', '3-150Hz', '30-75Hz', '75-150Hz', '9-12Hz'})
 
 
 %% permutations
