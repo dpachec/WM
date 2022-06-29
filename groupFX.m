@@ -7,7 +7,7 @@ paths = load_paths_WM(region);
 
 contrasts = {
               %'DISC_M2M2' 'DIDC_M2M2';
-              'DISC_EE' 'DIDC_EE';
+              'SISC_EE' 'DISC_EE';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -62,8 +62,8 @@ tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 %define conditions 
 %cond1 = 'DISC_M2M2';
 %cond2 = 'DIDC_M2M2';
- cond1 = 'DISC_EE';
- cond2 = 'DIDC_EE';
+ cond1 = 'SISC_EE';
+ cond2 = 'DISC_EE';
 % cond1 = 'DISC_M2A';
 % cond2 = 'DIDC_M2A';
  
@@ -72,7 +72,7 @@ all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %global parameters
 %subj2exc        =       [18 22];% vvs;%[1] pfc
 subj2exc        =       [];% vvs;%[1] pfc
-runperm         =       1; 
+runperm         =       0; 
 n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
@@ -83,7 +83,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %4 3 2.5 2 
+cfg.cut2        =       '1-1'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -130,7 +130,7 @@ end
 % end
 % 
 
-dupSym = 0; 
+dupSym = 1; 
 
 cfg.all_cond1_A =       all_cond1_A;
  
@@ -400,7 +400,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'DISC_EE' 'DIDC_EE'; ...
+                  'SISC_EE' 'DISC_EE'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -463,7 +463,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 1:2 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -518,35 +518,8 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
                 all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
             end
 
-    
-%     % % % duplicate for EM2
-%     typec = strsplit(cond1, '_');
-%     if length(typec) > 1
-%         if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2UV1') | strcmp(typec{2}, 'EM2UV2')
-%             dupSym = 0;
-%             for subji = 1:length(all_cond1_A)
-%                 d2c = all_cond1_A{subji};
-%                 for triali = 1:size(d2c, 1)
-%                     d2ct = squeeze(d2c(triali, :,:)); 
-%                     d2ct = triu(d2ct.',1) + tril(d2ct);
-%                     d2c(triali, :, :) = d2ct; 
-%                 end
-%                 all_cond1_A{subji} = d2c;
-%     
-%                 d2c = all_cond2_A{subji};
-%                 for triali = 1:size(d2c, 1)
-%                     d2ct = squeeze(d2c(triali, :,:)); 
-%                     d2ct = triu(d2ct.',1) + tril(d2ct);
-%                     d2c(triali, :, :) = d2ct; 
-%                 end
-%                 all_cond2_A{subji} = d2c;
-%             end
-%         else
-%             dupSym          =       1;
-%         end
-%     end
 
-dupSym = 0; 
+            dupSym = 1; 
 
             cfg.all_cond1_A =       all_cond1_A;
 
@@ -685,8 +658,8 @@ max_clust_sum = out_perm.max_clust_sum;
 %obs = max(abs(all_clust_tsum_real(:,1)));
 obs = abs(out_perm.max_clust_sum_real); 
 
-allAb = max_clust_sum(abs(max_clust_sum) > obs);
-%allAb = max_clust_sum(max_clust_sum > obs);
+%allAb = max_clust_sum(abs(max_clust_sum) > obs);
+allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
  

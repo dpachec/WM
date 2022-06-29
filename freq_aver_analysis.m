@@ -204,7 +204,7 @@ contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'Fontsize', 14)
 
 
-obsT = sum(t(clustinfo.PixelIdxList{7}));
+obsT = sum(t(clustinfo.PixelIdxList{14}));
 
 
 %% permutations 

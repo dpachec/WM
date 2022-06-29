@@ -3,7 +3,7 @@
 clear
 %ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 %example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'Alex_vvs_7_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E_56_3-54_1_1_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -16,8 +16,11 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
    
-    
-    ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    if strcmp(cfg.period, 'M')
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(cfg.period, 'E')
+        ids = cell2mat(cellfun(@(x) (strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3')) & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    end
     oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
     cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
     cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
@@ -27,7 +30,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
 
     neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
-    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths); %layers to load
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
     
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
@@ -46,7 +49,7 @@ etime(datevec(t2), datevec(t1))
 %% load file
 %ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 clear 
-f2sav = 'RNN_pfc_56_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_1-56_3-54_1_0_1_0_.1_5_1.mat'; 
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
 
@@ -62,8 +65,8 @@ sub2exc = [];
 for subji = 1:length(nnFit)
     
    %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
-   nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
-   %nnH(subji, : ,:) = nnFit{subji, 1};
+   %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
+   nnH(subji, : ,:,:) = nnFit{subji};
         
 end
 
@@ -124,6 +127,165 @@ for layi = 1:56
 end
 %h(h==0) = nan; h(h==1) = .02;
 %plot(h, 'lineWidth', 2)
+
+
+%% PLOT OBS DATA 
+
+sub2exc =[];
+
+all_r_Times = nnH; 
+
+nSubjs =size(all_r_Times, 1);  
+nLays = size(all_r_Times, 2); 
+nFreqs = size(all_r_Times, 3); 
+clear hL tL clustinfo
+for freqi = 1:nFreqs
+    allR = squeeze(all_r_Times(:, :, freqi, :));
+    allR(sub2exc,:,:) = []; 
+    for layi = 1:nLays
+        [hL(layi, freqi, :) p ci ts] = ttest(allR(:,layi,:)); 
+        tL(layi, freqi, :) = ts.tstat;
+    end
+end
+
+f = 1:52;
+
+clear max_clust_sum_obs allSTs
+for layi = 1:nLays
+    
+    hLay = squeeze(hL(layi,f,:)); 
+    tLay = squeeze(tL(layi,f,:));
+    
+    clear allSTs  
+    clustinfo = bwconncomp(hLay);
+    for pxi = 1:length(clustinfo.PixelIdxList)
+        % check whether it is a combined + and - cluster
+        V = tLay(clustinfo.PixelIdxList{pxi});
+        Vids = clustinfo.PixelIdxList{pxi}; 
+        if ~any(diff(sign(V(V~=0)))) %all time bins have tvalues of same sie
+            allSTs(pxi,:) = sum(tLay(clustinfo.PixelIdxList{pxi}));
+        else %remove the 
+            big0 = V>0; small0 = V<0; 
+            VidsS = Vids(small0); 
+            ids2k = Vids(big0); 
+            if sum(big0) > sum(small0)
+                V(small0) = NaN; 
+                hLay(VidsS) = 0; 
+                clustinfo.PixelIdxList{pxi} = ids2k; 
+            else
+                %V(big0) = NaN; 
+                %hLay(big0,:) = NaN; 
+            end
+            
+            allSTs(pxi,:) = sum(V, 'omitnan'); 
+        end
+    end
+
+    [maxh id] = max(abs(allSTs));
+    max_clust_sum_obs(layi,:) = allSTs(id); 
+
+    % % % % rem non-sig-clusters
+    for ci = 1:length(clustinfo.PixelIdxList)
+        modifiedCluster = abs(sum(tLay(clustinfo.PixelIdxList{ci})))+0.0001; %add this small number because removing negative values creates slighlly different valeus
+       if modifiedCluster < max(abs(allSTs))   + 1    %add +1 at the very end to delete all clusters
+          %disp(['layi > ' num2str(layi) ' > ' num2str(abs(sum(tLay(clustinfo.PixelIdxList{ci})))) '_' num2str(max(abs(allSTs)))]) 
+          %hLay (clustinfo.PixelIdxList{ci}) =  0; 
+       end
+    end
+    
+    hL(layi, f, :) = hLay; 
+    tL(layi, f, :) = tLay; 
+end
+
+
+
+figure()
+layT = tiledlayout(3, 3);
+layT.TileSpacing = 'compact';
+layT.Padding = 'compact';
+for layi = 1:nLays
+    
+    t = squeeze(tL(layi,:,:));
+    h = squeeze(hL(layi,:,:));
+    
+    if size(all_r_Times, 4) < 30 & size(all_r_Times, 4) > 5
+        % % % % encoding 
+        if nLays > 9
+            subplot(7, 8, layi)
+        else
+            subplot(3, 3, layi)
+        end
+        %times = -.5:.01:1.499;
+        times = 0:.01:1.499;
+        %freqs = [.1:.1:29.9 30:.5:150]; 
+        freqs = 1:520;
+        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
+        set(gca, 'xtick', [-0.055 .445 .945 1.45], 'xticklabel', [0 .5 1 1.5], 'clim', [-5 5]); colormap jet
+        set(gca,'XTick',[], 'YTick', [], 'xticklabel',[], 'FontSize', 12)
+
+    elseif size(all_r_Times, 4) == 5
+        % % % % encoding 
+        if nLays > 9
+            subplot(7, 8, layi)
+        else
+            subplot(3, 3, layi)
+        end
+        times = 0:.01:0.499;
+        %freqs = [.1:.1:29.9 30:.5:150]; 
+        freqs = 1:520;
+        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
+        set(gca, 'xtick', [-0.055 .445 .945 1.45], 'xticklabel', [0 .5 1 1.5], 'clim', [-5 5]); colormap jet
+        set(gca,'XTick',[], 'YTick', [], 'xticklabel',[], 'FontSize', 12)
+    elseif size(all_r_Times, 4) == 546
+        % % % % encoding 
+        if nLays > 9
+            subplot(7, 8, layi)
+        else
+            subplot(3, 3, layi)
+        end
+        times = 0:.01:5.009;
+        %freqs = [.1:.1:29.9 30:.5:150]; 
+        freqs = 1:52;
+        contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+        contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+        %plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+        %plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
+        %set(gca, 'xtick', [-0.055 .445 .945 1.45], 'xticklabel', [0 .5 1 1.5], 'clim', [-5 5]); colormap jet
+        %set(gca,'XTick',[], 'YTick', [], 'xticklabel',[], 'FontSize', 12)
+    else
+        if nLays > 9
+            subplot(7, 8, layi)
+        else
+            subplot(3, 3, layi)
+        end
+        times = -1.75:.01:6.849; 
+        freqs = 1:520;
+        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; 
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 1); %colorbar
+        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
+        set(gca, 'xtick', [-0.055 .945 1.945 2.945 3.945 ], 'xticklabel', [0 1 2 3 4], 'clim', [-3 3]); % 'xlim', [0 3.5],
+        set(gca, 'xlim', [-1 6])
+        set(gca,'XTick',[], 'YTick', [])
+        set(gca,'xticklabel',[], 'FontSize', 12)
+        colormap jet
+    end
+
+end
+        
+
+%f2p = [num2str(layi, '%02.f') '.png'];
+%exportgraphics(gcf, f2p, 'Resolution', 300)
+
+
+
+
 
 
 
@@ -222,7 +384,7 @@ toc
 
 %% PLOT OBS DATA 
 
-sub2exc =[28];
+sub2exc =[];
 
 all_r_Times = nnH; 
 

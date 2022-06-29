@@ -102,6 +102,7 @@ for i = 1:length(C1)
 end      
 
 
+if exist('dataF')
 for dfi = 1:length(dataF)
 
        if  length(dataF{dfi,2}) > 1
@@ -136,9 +137,10 @@ if size(Cpow, 2) == 1 %one electrode squeezes and creates problems
     oneListPowAv2 = permute(oneListPowAv2, [1 4 2 3]);
 end
 
+end
 
 % % % combine 123 and 7 trials
-if exist('oneListPowAv')
+if exist('oneListPowAv') & exist('oneListPowAv2') 
     oneListPowAv(61:end, :, :, :) = []; 
     oneListPowAv2(61:end, :, :, :) = []; 
     oneListIdsAv(61:end) = []; 
@@ -149,11 +151,25 @@ if exist('oneListPowAv')
     cfg_contrasts.oneListIds_maint = oneListIdsAv2;
     cfg_contrasts.oneListPow_enc = oneListPowAv; 
     cfg_contrasts.oneListPow_maint = oneListPowAv2;
+elseif exist('oneListPowAv') & ~exist('oneListPowAv2') 
+   cfg_contrasts.oneListIds_c = oneListIdsAv;
+   cfg_contrasts.oneListPow = oneListPowAv; 
+elseif ~exist('oneListPowAv') & exist('oneListPowAv2') 
+   cfg_contrasts.oneListIds_c = oneListIdsAv2;
+   cfg_contrasts.oneListPow = oneListPowAv2; 
 else %analysis locked to the probe
    cfg_contrasts.oneListIds_c = oneListIdsAv2;
    cfg_contrasts.oneListPow = oneListPowAv2; 
 end
 
+
+   
+
+
+
+
+
+end
 
 
 
