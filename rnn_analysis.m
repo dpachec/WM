@@ -131,6 +131,20 @@ end
 
 %% PLOT OBS DATA 
 
+sub2exc = [];
+
+for subji = 1:length(nnFit)
+   
+   nnH(subji, : ,:,:) = nnFit{subji};
+        
+end
+
+
+nnH(sub2exc, :, :) = []; 
+nnH = squeeze(nnH);
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat);
+
 sub2exc =[];
 
 all_r_Times = nnH; 
@@ -288,7 +302,54 @@ end
 
 
 
+%% PERMUTATIONS
+clear
+nPerm = 100;
+%ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+%example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
+f2sav = 'RNN_pfc_M_56_3-54_1_0_1_0_.1_5_1_p100.mat'; 
+cfg = getParams(f2sav);
+f2t = strsplit(f2sav, '_');
+region = f2t{2};
+paths = load_paths_WM(region);
+filelistSess = getFiles(paths.traces);
 
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.traces filelistSess{sessi}]);   
+   
+    if strcmp(cfg.period, 'M')
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(cfg.period, 'E')
+        ids = cell2mat(cellfun(@(x) (strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3')) & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    end
+    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
+    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
+    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+    if (cfg.avRep)
+        cfg_contrasts               = average_repetitions(cfg_contrasts);
+    end
+
+    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
+    
+    for permi = 1:nPerm
+        sC = size(networkRDMs, 2);
+        ids = randperm(sC);
+        networkRDMs = networkRDMs(:, ids, ids); 
+        nnFitPerm(permi, sessi,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+    end
+    
+end
+
+mkdir ([paths.results.DNNs]);
+save([paths.results.DNNs f2sav], 'nnFitPerm');
+
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
  
 

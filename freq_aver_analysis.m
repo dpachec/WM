@@ -3,7 +3,7 @@
 clear 
 region = 'vvs';
 paths = load_paths_WM(region);
-filelistSess = getFilesWM(paths.out_contrasts_path);
+filelistSess = getFilesWM(paths.out_contrasts);
 
 
 frequncies2test = [1:54]';
@@ -12,14 +12,14 @@ for i = 1:length(frequncies2test)
 end
 
 avTime              = 0; %define tROI in rsa_WM script
-win_width           = 50; 
-mf                  = 2; 
+win_width           = 5; 
+mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;    
-TG                  = 0; %temporal generalization
-contr2save          = {'DISC_EE' 'DIDC_EE'}; %{};
+TG                  = 1; %temporal generalization
+contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 100;
@@ -35,7 +35,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
-    load([paths.out_contrasts_path filelistSess{sessi}]);   
+    load([paths.out_contrasts filelistSess{sessi}]);   
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
  
@@ -104,8 +104,9 @@ disp ('done')
 
 
 
+%% process temporarily 
 
-%%
+
 region = 'vvs'
 clearvars -except region
 paths = load_paths_WM(region); 
@@ -125,7 +126,7 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
 
 
     contrasts = {
-                 'DISC_EE' 'DIDC_EE'
+                 'DISC_EM2' 'DIDC_EM2'
                  };
 
     c = unique (contrasts);
@@ -137,15 +138,19 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
         %idData{i,:} = [];
     end
 
-    noAv = 1;
-    [out_cALL{foldi} ] = averageSub_WM (c, d, contrData, idData, region, noAv);
-
+    for i = 1:length(contrData) 
+        %out_c{i} = cellfun(@(x) squeeze(mean(x(:, 8:17, :) , 2, 'omitnan')), contrData{i}, 'un', 0);
+        out_c{i} = cellfun(@(x) squeeze(mean(x(:, :, 8:42) , 3, 'omitnan')), contrData{i}, 'un', 0);
+    end
+    out_cALL{foldi} = out_c ;
     cd ..
+    
 end
 
 cd (currentFolder)
 
 toc
+
 %% 
 save('out_cALL','out_cALL', '-v7.3');  
 
@@ -158,7 +163,7 @@ for freqi = 1:54
     tmp2 = out_cALL{freqi}{2};
     mTrC2 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp2, 'un', 0); 
     
-    for subji = 1:16
+    for subji = 1:28
         D1 = mTrC1{subji}; 
         D2 = mTrC2{subji}; 
         D1A(freqi, subji,:) = D1; 
@@ -171,6 +176,31 @@ for freqi = 1:54
     
     
 end
+
+%% plot temporarily
+
+dDP = permute(DDiff, [2 1 3]); 
+mD = squeeze(mean(dDP));
+
+
+times = -.5:.01:4.79; 
+%times = -.5:.01:2.99; 
+freqs = 1:540;   
+figure()
+imagesc(times, 1:54, mD); colorbar; 
+set (gca, 'clim', [-.035 .035])
+
+[h p ci ts] = ttest(dDP); 
+h = squeeze(h); t = squeeze(ts.tstat)
+
+clustinfo = bwconncomp(h);
+
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+set(gca, 'Fontsize', 14)
+
+
+obsT = sum(t(clustinfo.PixelIdxList{14}));
 
 %% 
 dDP = permute(DDiff, [2 1 3]); 
@@ -252,6 +282,8 @@ p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
 disp (['p = ' num2str(p)]);
 %x = find(max_clust_sum_ranked(:,2) == index)
+
+
 
 
 
