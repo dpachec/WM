@@ -77,15 +77,26 @@ nnH = squeeze(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
 
 
+
 %% plot frequency resolved
 d2p = squeeze(mean(nnH, 'omitnan'));
 figure
 freqs = 1:520; 
 times = -1.75:.01:6.849; 
+clustinfo = bwconncomp(h);
+for pixi = 1:length(clustinfo.PixelIdxList)
+   h(clustinfo.PixelIdxList{pixi}) = 0;   
+end
+h(clustinfo.PixelIdxList{27}) = 1;
+tObs = sum(t(clustinfo.PixelIdxList{27}))
+
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'xlim', [-1 6])
 %set(gca, 'clim', [-.025 .025])
+
+%clustinfo = bwconncomp(h);
+
 
 
 
@@ -307,7 +318,9 @@ clear
 nPerm = 100;
 %ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 %example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'RNN_pfc_M_56_3-54_1_0_1_0_.1_5_1_p100.mat'; 
+%f2sav = ['RNN_pfc_M_56_3-54_1_0_1_0_.1_5_1_p' num2str(nPerm) '.mat']; 
+f2sav = ['RNN_vvs_M_1-56_3-54_1_0_1_0_.1_5_1_p' num2str(nPerm) '.mat']; 
+
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -350,6 +363,35 @@ save([paths.results.DNNs f2sav], 'nnFitPerm');
 
 t2 = datetime; 
 etime(datevec(t2), datevec(t1))
+
+
+%% compute clusters in each permutation
+
+nPerm = 100; 
+for permi = 1:nPerm
+    
+    dataP = squeeze(nnFitPerm(permi, :, :,21:55));
+    [h p ci ts] = ttest(dataP);
+    h = squeeze(h); t = squeeze(ts.tstat);
+    
+    clear allSTs  
+    clustinfo = bwconncomp(h);
+    if length(clustinfo.PixelIdxList) > 0
+        for pxi = 1:length(clustinfo.PixelIdxList)
+           allSTs(permi, pxi) = sum(t(clustinfo.PixelIdxList{pxi}));% 
+        end
+    else
+        allSTs(permi, :) = 0;
+    end
+
+    [maxh id] = max(abs(allSTs(permi)));
+    max_clust_sum_perm(permi,:) = allSTs(permi,id); 
+
+end
+
+
+
+
 
  
 
