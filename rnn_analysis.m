@@ -353,7 +353,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         sC = size(networkRDMs, 2);
         ids = randperm(sC);
         networkRDMs = networkRDMs(:, ids, ids); 
-        nnFitPerm(permi, sessi,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        nnFitPerm(permi, sessi,layi,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     end
     
 end
