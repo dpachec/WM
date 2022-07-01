@@ -13,8 +13,8 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
         for layi = 1:nLays
             M =  squeeze(networkRDMs(layi,:,:)); 
             M = vectorizeRDM(M);
-            for freqi = 1:nFreqs
-                parfor timei = 1:nTimes
+            parfor freqi = 1:nFreqs
+                for timei = 1:nTimes
                     rdm = squeeze(neuralRDMs(:, :, freqi, timei));
                     rdm = vectorizeRDM(rdm);
                     allTEst = corr(rdm', M', 'type', 's');
