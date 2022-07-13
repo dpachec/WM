@@ -6,8 +6,8 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              %'DISC_M2M2' 'DIDC_M2M2';
-              'SISC_EE' 'DISC_EE';
+              'DISC_M2M2' 'DIDC_M2M2';
+              %'DISC_EE' 'DIDC_EE';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -31,8 +31,8 @@ end
 
 %% plot diagonal only 
 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'SISC_EE';
+cond2 = 'DISC_EE';
 
 subj2exc = 1; 
 
@@ -60,37 +60,37 @@ plot(mc1-mc2, 'linewidth' ,2);
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-%cond1 = 'DISC_M2M2';
-%cond2 = 'DIDC_M2M2';
- cond1 = 'SISC_EE';
- cond2 = 'DISC_EE';
-% cond1 = 'DISC_M2A';
-% cond2 = 'DIDC_M2A';
+cond1 = 'DISC_M2M2';
+cond2 = 'DIDC_M2M2';
  
+
+
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-%subj2exc        =       [18 22];% vvs;%[1] pfc
-subj2exc        =       [];% vvs;%[1] pfc
-runperm         =       0; 
+subj2exc        =       [1];% vvs;%[1] pfc
+%subj2exc        =       [];% vvs;%[1] pfc
+runperm         =       1;
+plotClust       =       1; 
+dupSym          =       1; 
 n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
-cfg.clim        =       [-.0075 .0075];
+cfg.clim        =       [-.01 .0115];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.square      =       1;
 cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %4 3 2.5 2 
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '4-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
 test2use        =       'ttest'; %'wilcox'; %'ttest';
 cfg.remClust    =       1; %remove clusters from plot (only if run permutation is true)
 cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
-cfg.clust2plot  =       2;
+cfg.clust2plot  =       1;
 cfg.subj2exc    =       subj2exc;
 cfg.lwd1        =       2; %baseline 
 cfg.lwd2        =       2; %significant outline
@@ -102,35 +102,7 @@ if subj2exc > 0
     all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
 end
 
-% % % % % duplicate for EM2
-% typec = strsplit(cond1, '_');
-% if length(typec) > 1
-%     if strcmp(typec{2}, 'EM2') | strcmp(typec{2}, 'EM2U')
-%         dupSym = 0;
-%         for subji = 1:length(all_cond1_A)
-%             d2c = all_cond1_A{subji};
-%             for triali = 1:size(d2c, 1)
-%                 d2ct = squeeze(d2c(triali, :,:)); 
-%                 d2ct = triu(d2ct.',1) + tril(d2ct);
-%                 d2c(triali, :, :) = d2ct; 
-%             end
-%             all_cond1_A{subji} = d2c;
-% 
-%             d2c = all_cond2_A{subji};
-%             for triali = 1:size(d2c, 1)
-%                 d2ct = squeeze(d2c(triali, :,:)); 
-%                 d2ct = triu(d2ct.',1) + tril(d2ct);
-%                 d2c(triali, :, :) = d2ct; 
-%             end
-%             all_cond2_A{subji} = d2c;
-%         end
-%     else
-%         dupSym          =       1;
-%     end
-% end
-% 
 
-dupSym = 1; 
 
 cfg.all_cond1_A =       all_cond1_A;
  
@@ -185,6 +157,8 @@ cfg_plot.lwd2           = cfg.lwd2;
 cfg_plot.out_real       = out_real;
 cfg_plot.dupSym         = dupSym; 
 cfg_plot.plotD          = 0; 
+cfg_plot.plotClust      = plotClust;
+
  
 if strcmp(test2use, 'wilcox')
     cfg_plot.diff     = 'diff'; % or 'tmap';
@@ -200,7 +174,8 @@ end
 
         %first find 
         obs = max(out_real.all_clust_tsum_real(:,1));
-        allAb = max_clust_sum(abs(max_clust_sum) > obs);
+        %allAb = max_clust_sum(abs(max_clust_sum) > obs);
+        allAb = max_clust_sum((max_clust_sum) > obs);
         p =1 - (n_perm - (length (allAb)-1) )  /n_perm;
         disp (['p = ' num2str(p)]);
         %x = find(max_clust_sum_ranked(:,2) == index)
@@ -210,11 +185,12 @@ end
 toc
  
 %% average in period 
-
+clear m1 m2
 for subji = 1:length(all_cond1)
-    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
-    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
-
+    %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
+    %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
 
 end
 
@@ -227,10 +203,11 @@ m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
 %mm2 = triu(mm2.',1) + tril(mm2);
 mmm2 = squeeze(mean(mm2,'omitnan'));
 
-%%  full maintenance period 
+%%full maintenance period 
 msD = m1A-m2A;
 [h p ci ts] = ttest(msD);
 t = ts.tstat
+p
 
 
 
@@ -243,7 +220,6 @@ data.data = [msD];
 figure(2); set(gcf,'Position', [0 0 500 650]); 
 mean_S = mean(data.data, 1);
 std_S = std(data.data, [], 1);
-se_S = std_S / sqrt(26); 
 hb = plot ([1], data.data); hold on;
 set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
 h = bar (mean_S);hold on;
@@ -251,7 +227,7 @@ h = bar (mean_S);hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
 %set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
 set(gca,'XTick',[1],'XTickLabel',{'', ''}, ...
-    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0045] );
+    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0075] );
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 
 %[h p ci t] = ttest (data.data(:,1), data.data(:,2));
@@ -260,8 +236,8 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 set(gca, 'LineWidth', 3);
 
-%export_fig(2, '_2.png','-transparent', '-r80');
-%close all;   
+export_fig(2, '_2.png','-transparent', '-r80');
+close all;   
 
 %% encoding - maintenance similarity (average full maintenance period)
 ms1 = squeeze(mean(m1, 3, 'omitnan'));
@@ -295,14 +271,30 @@ h(h==0) = nan; h(h==1) = 0;
 plot(h, 'LineWidth', 2)
 
 %% encoding - maintenance similarity (average full encoding period)
-clearvars -except m1 m2 
-ms1 = squeeze(mean(m1(:,6:15,:), 2, 'omitnan'));
-ms2 = squeeze(mean(m2(:,6:15,:), 2, 'omitnan'));
-msD = ms1-ms2; 
-times = -.75:.1:3.749; 
+clearvars -except all_cond1 all_cond2 
 
-figure()
-plot(times, msD', 'color', [.5 .5 .5]); hold on; 
+for subji = 1:length(all_cond1)
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}));
+
+
+end
+mm1 = squeeze(mean(m1,'omitnan'));
+m1A = squeeze(mean(mean(m1,2,'omitnan'),3,'omitnan'));
+%mm1 = triu(mm1.',1) + tril(mm1);
+mmm1 = squeeze(mean(mm1,'omitnan'));
+mm2 = squeeze(mean(m2,'omitnan'));
+m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
+%mm2 = triu(mm2.',1) + tril(mm2);
+mmm2 = squeeze(mean(mm2,'omitnan'));
+
+ms1 = squeeze(mean(m1, 3, 'omitnan'));
+ms2 = squeeze(mean(m2, 3, 'omitnan'));
+msD = ms1-ms2; 
+times = -.5:.1:0.9; 
+
+figure(); set(gcf, 'Position', [100 100 500 200])
+%plot(times, msD', 'color', [.5 .5 .5]); hold on; 
 %plot(mean(msD), 'k', 'LineWidth',2)
 mD = mean(msD);
 stdD = std(msD);
@@ -313,14 +305,12 @@ shadedErrorBar(times, mD,seD, 'k', 1); hold on
 [h p ci ts] = ttest(msD)
 t = ts.tstat
 clustinfo = bwconncomp(h);
-obsT = sum(t(clustinfo.PixelIdxList{2}));
-h(clustinfo.PixelIdxList{1}) = 0; 
 h(h==0) = nan; h(h==1) = 0;
 plot(times, h, 'r', 'LineWidth', 2)
 plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
 set(gca, 'FontSize', 14)
 
-
+exportgraphics(gcf, 'myPlot.png', 'Resolution', 300)
 
 %% permutations 
 nPerm = 1000; 
@@ -362,8 +352,8 @@ histogram(max_clust_sum)
 %% permutations
 n_perm = 1000;
 
-allAb = max_clust_sum(abs(max_clust_sum) > obsT);
-%allAb = max_clust_sum(max_clust_sum > obs);
+%allAb = max_clust_sum(abs(max_clust_sum) > obsT);
+allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
 disp (['p = ' num2str(p)]);
@@ -393,14 +383,14 @@ clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
 
-cd (paths.results.bands)
+%cd (paths.results.bands)
 
 disp(string(datetime));
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'SISC_EE' 'DISC_EE'; ...
+                  'SISC_EM2' 'DISC_EM2'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -425,7 +415,7 @@ cmaps2use = {[-.02 .02] [-.02 .02] [-.02 .02] [-.01 .015] [-.02 .02] ...
              };
    
 
-perms2use = {   '1-1' ...
+perms2use = {   '1-4' ...
                 '1-4' ...
                 '1-4' ...
                 '4-4' ...
@@ -463,13 +453,15 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 1:2 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
             cond1 = contrasts{imi, 1};
             cond2 = contrasts{imi, 2};
+            
+
 
 
             all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
@@ -492,7 +484,9 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             saveperm        =       1;
             cfg             =       [];
             cfg.clim        =       cmaps2use{cmapi}; cmapi = cmapi+1; 
-            cfg.climT       =       [-3 3]; %color scale for t-map
+            cfg.climT       =       [-7 7]; %color scale for t-map
+            plotClust       =       1; 
+            dupSym          =       0; 
             cfg.square      =       1;
             cfg.saveimg     =       1;
             cfg.enc_ret     =      'e';
@@ -519,7 +513,6 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             end
 
 
-            dupSym = 1; 
 
             cfg.all_cond1_A =       all_cond1_A;
 
@@ -575,6 +568,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
             cfg_plot.out_real       = out_real;
             cfg_plot.dupSym         = dupSym; 
             cfg_plot.plotD          = 0; 
+            cfg_plot.plotClust      = plotClust; 
 
 
             if strcmp(test2use, 'wilcox')

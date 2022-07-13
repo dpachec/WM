@@ -87,8 +87,8 @@ end
 
 if strcmp(cfg.res, '100_perm')
     if strcmp(cfg.cut2, '1-1')
-        reinst_plot_cfg.mlimE = 6:15; %1:85;
-        reinst_plot_cfg.mlimR = 6:15; %1:85
+        reinst_plot_cfg.mlimE = 8:15; %1:85;
+        reinst_plot_cfg.mlimR = 8:15; %1:85
         x = 10; %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = x; reinst_plot_cfg.binsR = x; 
         reinst_plot_cfg.labels_to_plotE = 0:.5:1; 

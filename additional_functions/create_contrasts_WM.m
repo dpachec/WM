@@ -55,7 +55,7 @@ if ~isempty(intersect(c2c, 'EE'))
                         countSISC_EE = countSISC_EE+1;
                      end
                   elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
-                     %disp (['DISC_EE > ' num2str(trlij)]);    
+                     %disp (['DISC_EE > ' trlij]);    
                      if exist('countDISC_EE')
                          new_disc_ee{countDISC_EE} = [i, j];
                          countDISC_EE = countDISC_EE+1;

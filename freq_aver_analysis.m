@@ -1,7 +1,7 @@
 %% generate maps for each frequency
 %%
 clear 
-region = 'vvs';
+region = 'hipp';
 paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts);
 
@@ -18,7 +18,7 @@ meanInTime          = 0;
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;    
-TG                  = 1; %temporal generalization
+TG                  = 0; %temporal generalization
 contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
@@ -107,7 +107,7 @@ disp ('done')
 %% process temporarily 
 
 
-region = 'vvs'
+region = 'hipp'
 clearvars -except region
 paths = load_paths_WM(region); 
 currentFolder = pwd;
@@ -126,7 +126,7 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
 
 
     contrasts = {
-                 'DISC_EM2' 'DIDC_EM2'
+                 'DISC_EE' 'DIDC_EE'
                  };
 
     c = unique (contrasts);
@@ -151,6 +151,53 @@ cd (currentFolder)
 
 toc
 
+
+%% process diagonal
+
+
+region = 'hipp'
+clearvars -except region
+paths = load_paths_WM(region); 
+currentFolder = pwd;
+cd (paths.results.fRes)
+fold = dir(); dirs = find(vertcat(fold.isdir));
+fold = fold(dirs);
+fold([1 2]) = [];
+
+for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
+    
+    direct = fold(foldi);
+    cd (direct.name)
+    
+    sublist = dir('*.mat'); sublist = {sublist.name};
+
+
+
+    contrasts = {
+                 'DISC_EE' 'DIDC_EE'
+                 };
+
+    c = unique (contrasts);
+    d = cellfun(@(x) [x '_id'], c, 'un', 0);
+    for i = 1:length(c) 
+        load([c{i} '.mat']);
+        contrData{i,:} = eval(c{i});
+        idData{i,:} = all_IDs;
+        %idData{i,:} = [];
+    end
+
+    for i = 1:length(contrData) 
+        out_c{i} = contrData{i};
+    end
+    out_cALL{foldi} = out_c ;
+    cd ..
+    
+end
+
+cd (currentFolder)
+
+toc
+
 %% 
 save('out_cALL','out_cALL', '-v7.3');  
 
@@ -163,7 +210,7 @@ for freqi = 1:54
     tmp2 = out_cALL{freqi}{2};
     mTrC2 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp2, 'un', 0); 
     
-    for subji = 1:28
+    for subji = 1:length(tmp1)
         D1 = mTrC1{subji}; 
         D2 = mTrC2{subji}; 
         D1A(freqi, subji,:) = D1; 
@@ -179,7 +226,9 @@ end
 
 %% plot temporarily
 
+sub2exc = [18 22]; 
 dDP = permute(DDiff, [2 1 3]); 
+dDP(sub2exc, :, :) = []; 
 mD = squeeze(mean(dDP));
 
 
@@ -194,22 +243,36 @@ set (gca, 'clim', [-.035 .035])
 h = squeeze(h); t = squeeze(ts.tstat)
 
 clustinfo = bwconncomp(h);
+for pixi = 1:length(clustinfo.PixelIdxList)
+    h (clustinfo.PixelIdxList{pixi}) = 0;
+end
+%h (clustinfo.PixelIdxList{5}) = 1;%Maintenance
+%h (clustinfo.PixelIdxList{8}) = 1;%Maintenance
+h (clustinfo.PixelIdxList{7}) = 1;
+h (clustinfo.PixelIdxList{9}) = 1;
 
+myCmap = colormap(brewermap([],'YlOrRd'));
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; colorbar
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-set(gca, 'Fontsize', 14)
+set(gca, 'Fontsize', 14, 'clim', [-7 7])
+set(gca, 'xlim', [-.5 1])
 
+obsT = sum(t(clustinfo.PixelIdxList{8}));
 
-obsT = sum(t(clustinfo.PixelIdxList{14}));
+exportgraphics(gca, 'myPlot.jpg', 'Resolution', 300)
 
 %% 
-dDP = permute(DDiff, [2 1 3]); 
+sub2exc = []; 
+d1 = DDiff; d1(:, sub2exc, :) = []; 
+dDP = permute(d1, [2 1 3]); 
 mD = squeeze(mean(dDP));
 
 
-times = -.5:.01:1.099;
+%times = -.75:.01:0.849;
+%times = 1:160
+times = 1:210
 freqs = 1:540;   
-figure()
+figure(); set(gcf, 'Position', [100 100 200 500])
 imagesc(times, 1:54, mD); colorbar; 
 set (gca, 'clim', [-.035 .035])
 
@@ -217,24 +280,22 @@ set (gca, 'clim', [-.035 .035])
 h = squeeze(h); t = squeeze(ts.tstat)
 
 clustinfo = bwconncomp(h);
-% h (clustinfo.PixelIdxList{1}) = 0;
-% h (clustinfo.PixelIdxList{2}) = 0;
-% h (clustinfo.PixelIdxList{3}) = 0;
-% h (clustinfo.PixelIdxList{4}) = 0;
-% h (clustinfo.PixelIdxList{5}) = 0;
-% h (clustinfo.PixelIdxList{6}) = 0;
-% h (clustinfo.PixelIdxList{8}) = 0;
-% h (clustinfo.PixelIdxList{9}) = 0;
-% h (clustinfo.PixelIdxList{10}) = 0;
-% h (clustinfo.PixelIdxList{11}) = 0;
+for pixi = 1:length(clustinfo.PixelIdxList)
+    h (clustinfo.PixelIdxList{pixi}) = 0;
+end
+%h (clustinfo.PixelIdxList{3}) = 1;
+obsT = sum(t(clustinfo.PixelIdxList{3})); 
 
-
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; colorbar
+myCmap = colormap(brewermap([],'YlOrRd'));
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; 
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-set(gca, 'Fontsize', 14)
+plot([65 65], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
+%plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
+set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xlim', [20 150])
+%set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xlim', [-.5 .8])
 
 
-obsT = sum(t(clustinfo.PixelIdxList{14}));
+exportgraphics(gca, 'myPlot.jpg', 'Resolution', 300)
 
 
 %% permutations 
@@ -244,15 +305,16 @@ for permi = 1:nPerm
     
     for subji = 1:size(D1A, 2)
         if rand<.5
-            m1F(subji, :, :) = D1A(:, subji ,:); 
-            m2F(subji, :, :) = D2A(:, subji ,:); 
+            m1F(subji, :, :) = D1A(:, subji ,8:15); 
+            m2F(subji, :, :) = D2A(:, subji ,8:15); 
         else
-            m1F(subji, :, :) = D2A(:, subji ,:); 
-            m2F(subji, :, :) = D1A(:, subji ,:); 
+            m1F(subji, :, :) = D2A(:, subji ,8:15); 
+            m2F(subji, :, :) = D1A(:, subji ,8:15); 
         end
         DDiff= m1F-m2F; 
     end
-    dDP = permute(DDiff, [2 1 3]); 
+    d1 = DDiff; d1(:, sub2exc, :) = []; 
+    dDP = permute(d1, [2 1 3]); 
 
     [hPerm p ci ts] = ttest(dDP);
     tPerm = ts.tstat;
@@ -276,7 +338,7 @@ histogram(max_clust_sum)
 %% permutations
 n_perm = 1000;
 
-allAb = max_clust_sum(abs(max_clust_sum) > obsT);
+allAb = max_clust_sum(max_clust_sum > obsT);
 %allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 

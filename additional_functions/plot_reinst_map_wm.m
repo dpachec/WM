@@ -84,7 +84,9 @@ if cfg.square
     imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; % colorbar; 
     
     % % % take contour
-    contour(flipud(myresizem(cfg.sigMH_thres, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k');colorbar; %axis square; 
+    if cfg.plotClust
+        contour(flipud(myresizem(cfg.sigMH_thres, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k');colorbar; %axis square; 
+    end
     
     
     % % % %draw a square in each pixel
