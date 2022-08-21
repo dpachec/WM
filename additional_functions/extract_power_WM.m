@@ -7,11 +7,11 @@ function [oneListPow] = extract_power_WM (oneListTraces_c , timeRes)
 
     
     if timeRes == 0.01
-        lim_1   = 1; %
-        lim_2   = 901; 
+%        lim_1   = 1; %
+%        lim_2   = 901; 
 %         disp ('10ms');  
-%         lim_1   = 101; %
-%         lim_2   = 650; 
+         lim_1   = 101; %
+         lim_2   = 650; 
 %         disp(['lim_1 = ' num2str(lim_1) ' lim_2 = ' num2str(lim_2)]);
     end
     

@@ -2,28 +2,28 @@
 %% 
 
 clearvars
-region              = 'vvs';
+region              = 'hipp';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
 
-frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
+%frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+%fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-%frequncies2test = [{30:38}]';
-%fnames = {'30-75Hz'}'; fnames = fnames';
+frequncies2test = [{3:54}]';
+fnames = {'3-150Hz'}'; fnames = fnames';
 
 
-win_width           = 5; 
+win_width           = 50; 
 mf                  = 1; 
-meanInTime          = 0; 
-avMeth              = 'none';  % average across image repetitions or not
+meanInTime          = 1; 
+avMeth              = 'pow';  % average across image repetitions or not
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
 TG                  = 1; %temporal generalization
 %contr2save          = {'DISC_EM2UV1' 'DIDC_EM2UV1' 'SISC_EM2UV2' 'DISC_EM2UV2' 'DIDC_EM2UV2' 'DISC_M2123NC' 'DIDC_M2123NC'}; %{};
-contr2save          = {'SISC_EM2' 'DISC_EM2'};
+contr2save          = {'DISC_EE' 'DIDC_EE'};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
@@ -100,6 +100,7 @@ cd ..
 clearvars -except region
 paths = load_paths_WM(region); 
 currentDir = pwd; 
+mkdir(paths.results.bands)
 cd (paths.results.bands)
 fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
@@ -279,7 +280,7 @@ imagesc(squeeze(oneListPow(10,20,:,:))); colorbar;
  
 %% count electrodes
 %%load cfg_contrasts
-%clearvars
+clearvars
 tic
 sublist = dir('*contr.mat');
 sublist = {sublist.name};
@@ -293,6 +294,10 @@ for subji=1:length(sublist)
     %size(cfg_contrasts.oneListPow)
 end
 s_all = s_all';
+
+elLength = cell2mat(cellfun(@length, s_all, 'un', 0))
+sum(elLength)
+
 toc
 
 %% count hippocapmal electrodes

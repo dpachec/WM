@@ -6,8 +6,9 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_M2M2' 'DIDC_M2M2';
+              'DISC_EE' 'DIDC_EE';
               %'DISC_EE' 'DIDC_EE';
+              %'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -29,12 +30,120 @@ end
 
 
 
-%% plot diagonal only 
+%% plot simple
 
-cond1 = 'SISC_EE';
-cond2 = 'DISC_EE';
+subj2exc = []; 
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
+lim1 = [3:17]; lim2 = [3:47];
 
-subj2exc = 1; 
+all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
+
+
+%exclude subjects
+if subj2exc > 0
+    all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
+    all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
+end
+cond1 = cellfun(@(x) squeeze(mean(x)), all_cond1_A, 'un', 0);
+c1 = cat(3, cond1{:}); c1 = permute(c1, [3 1 2]);c1 = c1 (: , lim1, lim2); 
+
+cond2 = cellfun(@(x) squeeze(mean(x)), all_cond2_A, 'un', 0);
+c2 = cat(3, cond2{:}); c2 = permute(c2, [3 1 2]);c2 = c2 (: , lim1, lim2); 
+
+[h p ci ts] = ttest(c1, c2); 
+h = squeeze(h); 
+t = squeeze(ts.tstat); 
+
+%remove non-sig clusters
+clustinfo = bwconncomp(h);
+for pixi = 1:length(clustinfo.PixelIdxList)
+   h(clustinfo.PixelIdxList{pixi}) = 0;   
+end
+%h(clustinfo.PixelIdxList{4}) = 1; % VVS
+%h(clustinfo.PixelIdxList{10}) = 1; % VVS
+% nothing in PFC
+
+c1 = squeeze(mean(c1(:, 6:15, :), 2));
+c2 = squeeze(mean(c2(:, 6:15, :), 2));
+d = c1-c2; 
+[h2 p2 ci2 ts2] = ttest(d); 
+%remove non-sig clusters
+clustinfo = bwconncomp(h2);
+for pixi = 1:length(clustinfo.PixelIdxList)
+   h2(clustinfo.PixelIdxList{pixi}) = 0;   
+end
+h2(clustinfo.PixelIdxList{2}) = 1;
+h2(h2==0) = nan; h2(h2 == 1) = 0; 
+t2 = ts2.tstat ;
+%h2Obs = sum(t2(clustinfo.PixelIdxList{2})); 
+
+md = mean(d); 
+stdd = std(d); 
+sed = stdd/sqrt(size(c1, 1)); 
+
+
+colormap(brewermap([],'YlOrRd')); 
+%times = -.5:.1:3.99;
+times = 1:45;
+set(gcf, 'Position', [100 100 500 300])
+tiledlayout(2,1, 'Padding', 'none', 'TileSpacing', 'none'); 
+nexttile
+%shadedErrorBar(times, md,sed, 'k', 1); hold on 
+errorbar(times, md, sed, 'k', 'LineWidth', 3); hold on 
+%set(gca, 'xlim', [.5 45.5], 'ylim', [-.001 .003], 'xtick',[], 'ytick', []) % VVS
+set(gca, 'xlim', [.5 45.5], 'ylim', [-.001 .003], 'xtick',[], 'ytick', []) % PFC
+plot([4.95 4.95], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot([9.95 9.95], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(times, h2, 'Color', [.9 .7 .1], 'LineWidth', 10)
+plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
+nexttile
+contourf(1:450, 1:150, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(1:450, 1:150, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+plot([45 45], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot([95 95], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [50 50], 'k:', 'LineWidth', 2);
+set(gca,'xtick',[], 'ytick', [], 'clim', [-3 7]); %colorbar
+
+exportgraphics(gcf, 'myP.png', 'Resolution', 150);
+
+
+%% permutations 
+nPerm = 1000; 
+
+for permi = 1:nPerm
+    
+    for subji = 1:size(c1, 1)
+        if rand<.5
+            m1F(subji, :) = c1(subji,:); 
+            m2F(subji, :) = c2(subji,:); 
+        else
+            m1F(subji, :) = c2(subji,:); 
+            m2F(subji, :) = c1(subji,:); 
+        end 
+    end
+    d = m1F-m2F; 
+    [hPerm p ci ts] = ttest(d);
+    tPerm = ts.tstat;
+    clustinfo = bwconncomp(hPerm);
+    [numPixPermi(permi) maxi] = max([0 cellfun(@numel,clustinfo.PixelIdxList) ]); % the zero accounts for empty maps
+    if numPixPermi(permi) > 0
+        max_clust_sum(permi,:) = sum (tPerm(clustinfo.PixelIdxList{maxi-1}));
+    else
+        %disp (['no significant cluster in permutation ' num2str(permi)]);
+        max_clust_sum(permi,:) = 0; 
+    end
+
+    
+end
+
+
+%% plot diagonal only
+
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
+
+subj2exc = [18 22] ; 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %exclude subjects
@@ -43,16 +152,84 @@ if subj2exc > 0
     all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
 end
 
+%% extract full map 
 cond1 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond1_A, 'un', 0));
 cond2 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond2_A, 'un', 0));
 
+%% extract only diagonal for each subject in each conditoon
+cond1 = cell2mat(cellfun(@(x) diag(squeeze(mean(x, 1, 'omitnan')))', all_cond1_A, 'un', 0));
+cond2 = cell2mat(cellfun(@(x) diag(squeeze(mean(x, 1, 'omitnan')))', all_cond2_A, 'un', 0));
+
+
+
+%%
+mc1 = mean(cond1); 
+mc2 = mean(cond2); 
+
+[h p ci ts] = ttest(cond1-cond2); 
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0; 
+
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+plot(mc1-mc2, 'linewidth' ,2);hold on; 
+plot(hb, 'linewidth' ,2);
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+
+
+
+%% plot both
+mc1PFC = mean(cond1_PFC); 
+mc2PFC = mean(cond2_PFC); 
+cPFC = cond1_PFC-cond2_PFC;
+mcPFC = mean(cPFC)
+stdPFC = std(cPFC); 
+sePFC = stdPFC/sqrt(size(cPFC, 1))
+
+mc1VVS = mean(cond1_VVS); 
+mc2VVS = mean(cond2_VVS); 
+cVVS = cond1_VVS - cond2_VVS; 
+mcVVS = mean(cVVS); 
+stdVVS = std(cVVS); 
+seVVS = stdVVS/sqrt(size(cVVS, 1))
+
+
+l2y = -.015; 
+[hPFC p ci ts] = ttest(cPFC); 
+hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y; 
+[hVVS p ci ts] = ttest(cVVS); 
+hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y -.002; 
+
+
+times = -.75:.01:.75
+
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+shadedErrorBar(times, mcPFC, sePFC, 'b', 1); hold on; 
+shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
+%plot(times, mcPFC, 'linewidth' ,2);hold on; 
+%plot(times, mcVVS, 'linewidth' ,2);hold on; 
+plot(times, hbPFC, 'b', 'linewidth' ,4);
+plot(times, hbVVS, 'r', 'linewidth' ,4);
+set(gca, 'FontSize', 18, 'xlim', [-.25, .75])
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
 %% 
+
 mc1 = squeeze(mean(cond1)); 
 mc2 = squeeze(mean(cond2)); 
 figure()
-plot(mc1, 'linewidth' ,2); hold on; 
-plot(mc2, 'linewidth' ,2); 
-plot(mc1-mc2, 'linewidth' ,2);
+imagesc(mc1)
+figure()
+imagesc(mc2); 
+figure()
+imagesc(mc1-mc2);
 
 
 %% COND1 - COND2 (NEW LAYOUT 1x3) SHUFFLING AT THE TRIAL LEVEL
@@ -60,15 +237,15 @@ plot(mc1-mc2, 'linewidth' ,2);
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_M2M2';
-cond2 = 'DIDC_M2M2';
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
  
 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [1];% vvs;%[1] pfc
+subj2exc        =       [1];% vvs;%[1] pfc %[2] in hipp
 %subj2exc        =       [];% vvs;%[1] pfc
 runperm         =       1;
 plotClust       =       1; 
@@ -83,7 +260,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '4-4'; %4 3 2.5 2 
+cfg.cut2        =       '1-1'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -183,14 +360,111 @@ end
 
  
 toc
+
+%% permutations
+n_perm = 1000;
+
+%allAb = max_clust_sum(abs(max_clust_sum) > obsT);
+allAb = max_clust_sum(max_clust_sum > obs);
+p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
+
+disp (['p = ' num2str(p)]);
+%x = find(max_clust_sum_ranked(:,2) == index)
+
  
+
+%% plot simple
+
+subj2exc = [18 22]; 
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
+lim1 = [3:17]; lim2 = [3:47];
+
+all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
+
+
+%exclude subjects
+if subj2exc > 0
+    all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
+    all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
+end
+cond1 = cellfun(@(x) squeeze(mean(x)), all_cond1_A, 'un', 0);
+c1 = cat(3, cond1{:}); c1 = permute(c1, [3 1 2]);c1 = c1 (: , lim1, lim2); 
+
+cond2 = cellfun(@(x) squeeze(mean(x)), all_cond2_A, 'un', 0);
+c2 = cat(3, cond2{:}); c2 = permute(c2, [3 1 2]);c2 = c2 (: , lim1, lim2); 
+
+[h p ci ts] = ttest(c1, c2); 
+h = squeeze(h); 
+t = squeeze(ts.tstat); 
+
+%remove non-sig clusters
+clustinfo = bwconncomp(h);
+for pixi = 1:length(clustinfo.PixelIdxList)
+   h(clustinfo.PixelIdxList{pixi}) = 0;   
+end
+h(clustinfo.PixelIdxList{4}) = 1;
+h(clustinfo.PixelIdxList{10}) = 1;
+
+c1 = squeeze(mean(c1(:, 6:15, :), 2));
+c2 = squeeze(mean(c2(:, 6:15, :), 2));
+d = c1-c2; 
+[h2 p2 ci2 ts2] = ttest(d); 
+%remove non-sig clusters
+clustinfo = bwconncomp(h2);
+for pixi = 1:length(clustinfo.PixelIdxList)
+   h2(clustinfo.PixelIdxList{pixi}) = 0;   
+end
+h2(clustinfo.PixelIdxList{2}) = 1;
+h2(h2==0) = nan; h2(h2 == 1) = 0; 
+t2 = ts2.tstat ;
+
+
+md = mean(d); 
+stdd = std(d); 
+sed = stdd/sqrt(26); 
+
+
+colormap(brewermap([],'YlOrRd')); 
+%times = -.5:.1:3.99;
+times = 1:45;
+set(gcf, 'Position', [100 100 500 300])
+tiledlayout(2,1, 'Padding', 'none', 'TileSpacing', 'none'); 
+nexttile
+%shadedErrorBar(times, md,sed, 'k', 1); hold on 
+errorbar(times, md, sed, 'k', 'LineWidth', 3); hold on 
+plot([4.95 4.95], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(times, h2, 'LineWidth', 4)
+set(gca, 'xlim', [.5 45.5], 'xtick',[], 'ytick', [])
+nexttile
+contourf(1:450, 1:150, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(1:450, 1:150, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+plot([45 45], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [50 50], 'k:', 'LineWidth', 2);
+set(gca,'xtick',[], 'ytick', [], 'clim', [-3 7]); %colorbar
+
+exportgraphics(gcf, 'myP.png', 'Resolution', 150)
+
+
+
+%%
+figure()
+tiledlayout(2,2, 'Padding', 'none', 'TileSpacing', 'none'); 
+for i=1:4    
+    nexttile    
+    plot(rand(1,10)); 
+    set(gca,'xtick',[], 'ytick', [])
+end
+
+
+
 %% average in period 
 clear m1 m2
 for subji = 1:length(all_cond1)
-    %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
-    %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
-    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
-    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
+    %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
+    %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
 
 end
 
@@ -240,8 +514,8 @@ export_fig(2, '_2.png','-transparent', '-r80');
 close all;   
 
 %% encoding - maintenance similarity (average full maintenance period)
-ms1 = squeeze(mean(m1, 3, 'omitnan'));
-ms2 = squeeze(mean(m2, 3, 'omitnan'));
+ms1 = squeeze(mean(m1, 2, 'omitnan'));
+ms2 = squeeze(mean(m2, 2, 'omitnan'));
 msD = ms1-ms2; 
 
 figure()
@@ -271,6 +545,48 @@ h(h==0) = nan; h(h==1) = 0;
 plot(h, 'LineWidth', 2)
 
 %% encoding - maintenance similarity (average full encoding period)
+clearvars -except all_cond1 all_cond2 
+
+for subji = 1:length(all_cond1)
+   m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,1:45)));
+   m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,1:45)));
+end
+
+mm1 = squeeze(mean(m1,'omitnan'));
+m1A = squeeze(mean(mean(m1,2,'omitnan'),3,'omitnan'));
+%mm1 = triu(mm1.',1) + tril(mm1);
+mmm1 = squeeze(mean(mm1,'omitnan'));
+mm2 = squeeze(mean(m2,'omitnan'));
+m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
+%mm2 = triu(mm2.',1) + tril(mm2);
+mmm2 = squeeze(mean(mm2,'omitnan'));
+
+ms1 = squeeze(mean(m1, 2, 'omitnan'));
+ms2 = squeeze(mean(m2, 2, 'omitnan'));
+msD = ms1-ms2; 
+times = -.5:.1:3.9; 
+
+figure(); set(gcf, 'Position', [100 100 500 200])
+%plot(times, msD', 'color', [.5 .5 .5]); hold on; 
+%plot(mean(msD), 'k', 'LineWidth',2)
+mD = mean(msD);
+stdD = std(msD);
+seD = stdD / sqrt(26);
+shadedErrorBar(times, mD,seD, 'k', 1); hold on 
+
+
+[h p ci ts] = ttest(msD)
+t = ts.tstat
+clustinfo = bwconncomp(h);
+h(h==0) = nan; h(h==1) = 0;
+plot(times, h, 'r', 'LineWidth', 2)
+set(gca, 'ylim', [-.0025 .005])
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+set(gca, 'FontSize', 18, 'xlim', [-.5 3.5])
+
+exportgraphics(gcf, 'myPlot.png', 'Resolution', 300)
+
+%% encoding - maintenance similarity (average full maintenance period)
 clearvars -except all_cond1 all_cond2 
 
 for subji = 1:length(all_cond1)

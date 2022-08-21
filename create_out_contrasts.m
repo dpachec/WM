@@ -21,7 +21,7 @@ montage         =       'bipo';            %   'aver', 'bipo'
 finalCut        =       [-.5 5];            %   in secs
 timeRes         =       0.01; %0.01;               %    0.1 = 100ms; 0.01 = 10ms; 0.05 = 50ms or 'all' 
 takeAllTrials   =       0; 
-region          =       'pfc';
+region          =       'hipp';
 rawD            =       1; %power or raw amplitude time series
   
 disp ([ 'eLim = ' num2str(eLim) newline ...
@@ -123,7 +123,7 @@ for subji = [1 8:9 25:26 29:39 51:54 59:60 63:64 65:83] %subjfir:subjend % subjs
     
 end
 
-%%
+
 % % % create folder to store the subject data
 fname = 'D:\_WM\analysis\out_contrasts\raw_traces\pfc\allTrials';
 mkdir(fname);

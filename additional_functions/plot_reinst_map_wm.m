@@ -60,6 +60,8 @@ if cfg.square
     if cfg.plotD
         plot([length(meanReal_cond1) 1] + [0.5 -1.5],get(gca,'xlim') + [0 1], 'k:'); % diagonal
     end
+    
+    
 else
 contourf (meanReal_cond2, 500, 'linecolor', 'none'); axis equal; 
     hold on; colorbar;

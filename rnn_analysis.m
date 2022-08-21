@@ -2,8 +2,8 @@
 %% first load traces
 clear
 %ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-%example f2sav = 'pfc_8-16-24-32-40-48-56_13-29_0_1_500_1_1'; 
-f2sav = 'RNN_vvs_E_56_3-54_1_1_1_0_.1_5_1.mat'; 
+%example f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -49,7 +49,7 @@ etime(datevec(t2), datevec(t1))
 %% load file
 %ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 clear 
-f2sav = 'RNN_pfc_1-56_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
 
@@ -65,8 +65,8 @@ sub2exc = [];
 for subji = 1:length(nnFit)
     
    %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
-   %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
-   nnH(subji, : ,:,:) = nnFit{subji};
+   nnH(subji, : ,:) = nnFit{subji, 1}(4,:);
+   %nnH(subji, : ,:,:) = nnFit{subji};
         
 end
 
@@ -100,10 +100,31 @@ set(gca, 'xlim', [-1 6])
 
 
 
+%% all plot cells start with nnH
+
+sub2exc = [];
+
+for subji = 1:length(nnFit)
+    
+   %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
+   nnH(subji, : ,:) = nnFit{subji, 1}(5,:);
+   %nnH(subji, : ,:,:) = nnFit{subji};
+        
+end
+
+
+nnH(sub2exc, :, :) = []; 
+nnH = squeeze(nnH);
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat);
+
 %% plot bands
+
 d2p = squeeze(mean(nnH, 'omitnan'));
+
+times = -1.75:.1:6.849; 
 figure
-plot(d2p); hold on; 
+plot(times, d2p); hold on; 
 %h(h==0) = nan; h(h==1) = .02;
 %plot(h, 'lineWidth', 2)
 %set(gca, 'xlim', [0 45])
