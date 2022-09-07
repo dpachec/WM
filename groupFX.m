@@ -6,9 +6,9 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_EE' 'DIDC_EE';
+              %'SISC_EE' 'DISC_EE';
               %'DISC_EE' 'DIDC_EE';
-              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -232,6 +232,35 @@ figure()
 imagesc(mc1-mc2);
 
 
+%%
+clearvars
+
+region = 'vvs'; 
+paths = load_paths_WM(region);
+
+contrasts = {
+              %'SISC_EE' 'DISC_EE';
+              'DISC_EE' 'DIDC_EE';
+              %'DISC_EM2' 'DIDC_EM2';
+              %'DISC_M2A' 'DIDC_M2A';
+             };
+
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    idData{i,:} = all_IDs;
+    %idData{i,:} = [];
+end
+
+noAv = 1;
+[out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
+for i = 1:length(out_c) 
+    eval([c{i} ' = out_c{i};']);
+    %eval([d{i} ' = out_id{i};']);
+end
+
 %% COND1 - COND2 (NEW LAYOUT 1x3) SHUFFLING AT THE TRIAL LEVEL
 %clear all; 
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
@@ -245,8 +274,8 @@ cond2 = 'DIDC_EE';
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [1];% vvs;%[1] pfc %[2] in hipp
-%subj2exc        =       [];% vvs;%[1] pfc
+%subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
+subj2exc        =       [1];
 runperm         =       1;
 plotClust       =       1; 
 dupSym          =       1; 
@@ -362,12 +391,16 @@ end
 toc
 
 %% permutations
-n_perm = 1000;
+n_perm = 1000; 
 
-%allAb = max_clust_sum(abs(max_clust_sum) > obsT);
-allAb = max_clust_sum(max_clust_sum > obs);
-p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
+max_clust_sum = out_perm.max_clust_sum;
 
+%first find 
+obs = max(all_clust_tsum_real(:,1));
+
+%allAb = max_clust_sum(abs(max_clust_sum) > obs);
+allAb = max_clust_sum((max_clust_sum) > obs);
+p =1 - (n_perm - (length (allAb)-1) )  /n_perm;
 disp (['p = ' num2str(p)]);
 %x = find(max_clust_sum_ranked(:,2) == index)
 
@@ -706,7 +739,7 @@ fold = dir(); dirs = find(vertcat(fold.isdir));
 fold = fold(dirs);
 
 contrasts = {   
-                  'SISC_EM2' 'DISC_EM2'; ...
+                  'SISC_EE' 'DISC_EE'; ...
 %                 'DISC_EM2UV1' 'DIDC_EM2UV1'; ...
 %                 'SISC_EM2UV2' 'DISC_EM2UV2'; ...
 %                 'DISC_EM2UV2' 'DIDC_EM2UV2'; ...
@@ -769,7 +802,7 @@ for foldi = 3:length(fold) %start at 3 cause 1 and 2 are . and ...
 
 
 
-    for permNoperm = 1:1 %1 = just plots (no perm) (2:2) just permutation
+    for permNoperm = 2:2 %1 = just plots (no perm) (2:2) just permutation
         for imi = 1:size(contrasts,1)
 
             clear all_cond1 all_cond2 all_cond1_A all_cond2_A;

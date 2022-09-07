@@ -3,7 +3,8 @@
 clear
 %ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 %example f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
-f2sav = 'RNN_vvs_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+%f2sav = 'RNN_vvs_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E_[56]_9-12_1_0_0_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -49,7 +50,7 @@ etime(datevec(t2), datevec(t1))
 %% load file
 %ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
 clear 
-f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E_[56]_3-8_1_0_0_0_.1_5_1.mat'; 
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
 
@@ -65,8 +66,8 @@ sub2exc = [];
 for subji = 1:length(nnFit)
     
    %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
-   nnH(subji, : ,:) = nnFit{subji, 1}(4,:);
-   %nnH(subji, : ,:,:) = nnFit{subji};
+   %nnH(subji, : ,:) = nnFit{subji, 1}(4,:);
+   nnH(subji, : ,:,:) = nnFit{subji, 1};
         
 end
 
@@ -84,11 +85,11 @@ figure
 freqs = 1:520; 
 times = -1.75:.01:6.849; 
 clustinfo = bwconncomp(h);
-for pixi = 1:length(clustinfo.PixelIdxList)
-   h(clustinfo.PixelIdxList{pixi}) = 0;   
-end
-h(clustinfo.PixelIdxList{27}) = 1;
-tObs = sum(t(clustinfo.PixelIdxList{27}))
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%    h(clustinfo.PixelIdxList{pixi}) = 0;   
+% end
+% h(clustinfo.PixelIdxList{27}) = 1;
+% tObs = sum(t(clustinfo.PixelIdxList{27}))
 
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);

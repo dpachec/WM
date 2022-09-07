@@ -202,7 +202,10 @@ toc
 save('out_cALL','out_cALL', '-v7.3');  
 
 %%
-clear tmp1 tmp2 D1 D2 mTrC1 mTrC2 DDiff D1A D2A
+clear 
+%load out_cALL_8-42M
+load out_cALL_8-17
+
 for freqi = 1:54
    
     tmp1 = out_cALL{freqi}{1};
@@ -211,8 +214,8 @@ for freqi = 1:54
     mTrC2 = cellfun(@(x) squeeze(mean(x, 'omitnan')), tmp2, 'un', 0); 
     
     for subji = 1:length(tmp1)
-        D1 = mTrC1{subji}; 
-        D2 = mTrC2{subji}; 
+        D1 = mTrC1{subji}(3:47); 
+        D2 = mTrC2{subji}(3:47); 
         D1A(freqi, subji,:) = D1; 
         D2A(freqi, subji,:) = D2; 
         
@@ -224,7 +227,7 @@ for freqi = 1:54
     
 end
 
-%% plot temporarily
+%% maintenance
 
 sub2exc = [18 22]; 
 dDP = permute(DDiff, [2 1 3]); 
@@ -232,7 +235,7 @@ dDP(sub2exc, :, :) = [];
 mD = squeeze(mean(dDP));
 
 
-times = -.5:.01:4.79; 
+times = -.5:.01:3.99; 
 %times = -.5:.01:2.99; 
 freqs = 1:540;   
 figure()
@@ -243,59 +246,94 @@ set (gca, 'clim', [-.035 .035])
 h = squeeze(h); t = squeeze(ts.tstat)
 
 clustinfo = bwconncomp(h);
-for pixi = 1:length(clustinfo.PixelIdxList)
-    h (clustinfo.PixelIdxList{pixi}) = 0;
-end
-%h (clustinfo.PixelIdxList{5}) = 1;%Maintenance
-%h (clustinfo.PixelIdxList{8}) = 1;%Maintenance
-h (clustinfo.PixelIdxList{7}) = 1;
-h (clustinfo.PixelIdxList{9}) = 1;
+
+% clear obsT
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%  obsT{pixi} = sum(t(clustinfo.PixelIdxList{pixi})); 
+% end
+%  
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%  h (clustinfo.PixelIdxList{pixi}) = 0;
+% end
+% h (clustinfo.PixelIdxList{4}) = 1;%Maintenance
+
 
 myCmap = colormap(brewermap([],'YlOrRd'));
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; colorbar
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-set(gca, 'Fontsize', 14, 'clim', [-7 7])
-set(gca, 'xlim', [-.5 1])
+plot([-.05 -.05 ], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
+set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xtick', [], 'ytick', [])
 
-obsT = sum(t(clustinfo.PixelIdxList{8}));
+%set(gca, 'xlim', [-.5 1])
+
+%obsT = sum(t(clustinfo.PixelIdxList{8}));
 
 exportgraphics(gca, 'myPlot.jpg', 'Resolution', 300)
 
-%% 
-sub2exc = []; 
-d1 = DDiff; d1(:, sub2exc, :) = []; 
-dDP = permute(d1, [2 1 3]); 
+
+%% average in time 
+
+sub2exc = [18 22]; 
+dDP = permute(DDiff, [2 1 3]); 
+dDP(sub2exc, :, :) = []; 
+mD = squeeze(mean(dDP));
+
+m1 = squeeze(mean(mD(:, 6:40), 2)); 
+std1 = squeeze(std(mD(:, 6:40), [], 2)); 
+se1 = std1 / sqrt(size(dDP, 1))
+figure()
+%plot(squeeze(mean(mD, 2))); 
+shadedErrorBar(1:54, m1, se1, 'r', 1); hold on;
+[h p ci ts] = ttest(mean(dDP, 3))
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0.002; 
+plot (hb, 'linewidth', 2)
+
+
+
+%% encoding
+
+sub2exc = [18 22]; 
+dDP = permute(DDiff, [2 1 3]); 
+dDP(sub2exc, :, :) = []; 
 mD = squeeze(mean(dDP));
 
 
-%times = -.75:.01:0.849;
-%times = 1:160
-times = 1:210
+times = -.5:.01:3.99; 
+%times = -.5:.01:2.99; 
 freqs = 1:540;   
-figure(); set(gcf, 'Position', [100 100 200 500])
+figure(); set(gcf, 'Position', [100 100 200 500]);
 imagesc(times, 1:54, mD); colorbar; 
 set (gca, 'clim', [-.035 .035])
 
 [h p ci ts] = ttest(dDP); 
 h = squeeze(h); t = squeeze(ts.tstat)
 
-clustinfo = bwconncomp(h);
+ clustinfo = bwconncomp(h);
+ 
+ clear obsT
+ for pixi = 1:length(clustinfo.PixelIdxList)
+     obsT{pixi} = sum(t(clustinfo.PixelIdxList{pixi})); 
+ end
+  
 for pixi = 1:length(clustinfo.PixelIdxList)
-    h (clustinfo.PixelIdxList{pixi}) = 0;
+ h (clustinfo.PixelIdxList{pixi}) = 0;
 end
-%h (clustinfo.PixelIdxList{3}) = 1;
-obsT = sum(t(clustinfo.PixelIdxList{3})); 
+h (clustinfo.PixelIdxList{5}) = 1;%Maintenance
+%h (clustinfo.PixelIdxList{3}) = 1;%Maintenance
 
 myCmap = colormap(brewermap([],'YlOrRd'));
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; 
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-plot([65 65], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
-%plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
-set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xlim', [20 150])
-%set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xlim', [-.5 .8])
+plot([-.05 -.05 ], get(gca, 'ylim'), 'k:', 'LineWidth', 3);
+set(gca, 'Fontsize', 14, 'clim', [-7 7], 'xtick', [], 'ytick', [])
+set(gca, 'xlim', [-.5 1])
 
+%set(gca, 'xlim', [-.5 1])
+
+%obsT = sum(t(clustinfo.PixelIdxList{8}));
 
 exportgraphics(gca, 'myPlot.jpg', 'Resolution', 300)
+
 
 
 %% permutations 
@@ -305,11 +343,15 @@ for permi = 1:nPerm
     
     for subji = 1:size(D1A, 2)
         if rand<.5
-            m1F(subji, :, :) = D1A(:, subji ,8:15); 
-            m2F(subji, :, :) = D2A(:, subji ,8:15); 
+%             m1F(subji, :, :) = D1A(:, subji ,8:15); 
+%             m2F(subji, :, :) = D2A(:, subji ,8:15); 
+            m1F(subji, :, :) = D1A(:, subji ,6:40); 
+            m2F(subji, :, :) = D2A(:, subji ,6:40); 
         else
-            m1F(subji, :, :) = D2A(:, subji ,8:15); 
-            m2F(subji, :, :) = D1A(:, subji ,8:15); 
+            %m1F(subji, :, :) = D2A(:, subji ,8:15); 
+            %m2F(subji, :, :) = D1A(:, subji ,8:15); 
+            m1F(subji, :, :) = D2A(:, subji ,6:40); 
+            m2F(subji, :, :) = D1A(:, subji ,6:40); 
         end
         DDiff= m1F-m2F; 
     end
@@ -337,8 +379,8 @@ histogram(max_clust_sum)
 
 %% permutations
 n_perm = 1000;
-
-allAb = max_clust_sum(max_clust_sum > obsT);
+obsT1 = 701.583623797456
+allAb = max_clust_sum(max_clust_sum > obsT1);
 %allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
 
