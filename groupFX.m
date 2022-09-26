@@ -2,7 +2,7 @@
 %%
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region);
 
 contrasts = {
@@ -240,8 +240,8 @@ paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EE' 'DISC_EE';
-              'DISC_EE' 'DIDC_EE';
-              %'DISC_EM2' 'DIDC_EM2';
+              %'DISC_EE' 'DIDC_EE';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -266,8 +266,8 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
  
 
 
@@ -275,10 +275,10 @@ all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
 %subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
-subj2exc        =       [1];
+subj2exc        =       [2];
 runperm         =       1;
 plotClust       =       1; 
-dupSym          =       1; 
+dupSym          =       0; 
 n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
@@ -289,7 +289,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %4 3 2.5 2 
+cfg.cut2        =       '1-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -408,7 +408,7 @@ disp (['p = ' num2str(p)]);
 
 %% plot simple
 
-subj2exc = [18 22]; 
+subj2exc = [2]; 
 cond1 = 'DISC_EM2';
 cond2 = 'DIDC_EM2';
 lim1 = [3:17]; lim2 = [3:47];
@@ -455,7 +455,7 @@ t2 = ts2.tstat ;
 
 md = mean(d); 
 stdd = std(d); 
-sed = stdd/sqrt(26); 
+sed = stdd/sqrt(size(d, 1)); 
 
 
 colormap(brewermap([],'YlOrRd')); 

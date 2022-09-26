@@ -1,7 +1,7 @@
 %% generate maps for each frequency
 %%
 clear 
-region = 'hipp';
+region = 'pfc';
 paths = load_paths_WM(region);
 filelistSess = getFilesWM(paths.out_contrasts);
 
@@ -107,7 +107,7 @@ disp ('done')
 %% process temporarily 
 
 
-region = 'hipp'
+region = 'pfc'
 clearvars -except region
 paths = load_paths_WM(region); 
 currentFolder = pwd;
@@ -126,7 +126,7 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
 
 
     contrasts = {
-                 'DISC_EE' 'DIDC_EE'
+                 'DISC_EM2' 'DIDC_EM2'
                  };
 
     c = unique (contrasts);
@@ -155,7 +155,7 @@ toc
 %% process diagonal
 
 
-region = 'hipp'
+region = 'pfc'
 clearvars -except region
 paths = load_paths_WM(region); 
 currentFolder = pwd;
@@ -174,7 +174,7 @@ for foldi = 1:length(fold) % start at 3 cause 1 and 2 are . and ...
 
 
     contrasts = {
-                 'DISC_EE' 'DIDC_EE'
+                 'DISC_EM2' 'DIDC_EM2'
                  };
 
     c = unique (contrasts);
