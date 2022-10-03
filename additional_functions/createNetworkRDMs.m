@@ -1,4 +1,4 @@
-function [networkRDMS] = createNetworkRDMs(oneListIDs, net2load, lays2load, brainROI, subji, paths, period)
+function [networkRDMs] = createNetworkRDMs(oneListIDs, net2load, lays2load, brainROI, subji, paths, period)
 
 if strcmp(brainROI, 'vvs')  subj_ch_fr = 17; end %%VVS
 if strcmp(brainROI, 'pfc')  subj_ch_fr = 7; end %%PFC
@@ -9,6 +9,10 @@ if strcmp (net2load , 'RNN')
 else
     [ACT] = load_alex_activ(lays2load, subji, subj_ch_fr, paths.stim);%load network if not loaded yet
 end
+if strcmp (net2load , 'BLnext2')
+    [ACT] = load_blnext(net2load, lays2load, subji, subj_ch_fr, paths.multi_item_activations);%load network if not loaded yet
+end
+
 
 if strcmp(period, 'M')
     for i = 1:length(oneListIDs)
@@ -29,4 +33,8 @@ end
 idx = find(~mod(ids3, 10)); 
 ids4 = ids3-10; ids4(idx) = ids3(idx);
 
-networkRDMS = ACT(:, ids4, ids4); 
+if strcmp (net2load , 'RNN') | strcmp (net2load , 'Alex')
+    networkRDMs = ACT(:, ids4, ids4); 
+else
+    networkRDMs = ACT; 
+end

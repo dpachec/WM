@@ -380,9 +380,109 @@ p = 1 - ((nPerm-1) - (length (allAb)))  / nPerm
 
 
 
+%% MULTI - ITEM TRIALS
+clear
+%...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+f2sav = 'BLnext2_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+f2t = strsplit(f2sav, '_');
+region = f2t{2};
+paths = load_paths_WM(region);
+filelistSess = getFiles(paths.traces);
+
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.traces filelistSess{sessi}]);   
+   
+    ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+
+    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
+    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
+    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+    if (cfg.avRep)
+        cfg_contrasts               = average_repetitions(cfg_contrasts);
+    end
+
+    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
+    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, ...
+                                    sessi, paths, cfg.period);
+    
+    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+    nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
+    
+end
+
+mkdir ([paths.results.DNNs]);
+save([paths.results.DNNs f2sav], 'nnFit');
+
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
 
 
+
+
+
+
+
+%% load file to plot multi-item
+%ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+clear 
+f2sav = 'BLnext2_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1.mat'; 
+sub2exc = [];
+
+f2t = strsplit(f2sav, '_');
+region = f2t{2};
+paths = load_paths_WM(region);
+load([paths.results.DNNs f2sav]);
+
+clear nnH
+for subji = 1:length(nnFit)
+    
+   nnH(subji, : ,:) = nnFit{subji, 1}(2,:,:);
+   %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
+   %nnH(subji, : ,:,:) = squeeze(nnFit{subji, 1});
+        
+end
+
+
+nnH(sub2exc, :, :) = []; 
+nnH = squeeze(nnH);
+[h p ci ts] = ttest(nnH);
+h = squeeze(h); t = squeeze(ts.tstat);
+
+
+
+%%plot frequency resolved
+d2p = squeeze(mean(nnH, 'omitnan'));
+freqs = 1:520; 
+times = -1.75:.01:6.849; 
+clustinfo = bwconncomp(h);
+%clen = max(cellfun(@length, clustinfo.PixelIdxList))
+
+
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%    h(clustinfo.PixelIdxList{pixi}) = 0;   
+% end
+%  h(clustinfo.PixelIdxList{11}) = 1; % VVS ENV
+%  tObs = sum(t(clustinfo.PixelIdxList{7})) % VVS ENC
+ 
+ 
+
+myCmap = colormap(brewermap([],'YlOrRd'));
+colormap(myCmap)
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+set(gca, 'xlim', [-1 4], 'FontSize', 40, 'clim', [-5 5])
+%set(gca, 'xlim', [-.5 1.5], 'FontSize', 40, 'clim', [-5 5])
+plot([0 0],get(gca,'ylim'), 'k:','lineWidth', 6);
+%set(gca, 'clim', [-.025 .025])
+
+
+%exportgraphics(gcf, 'myP.png', 'Resolution', 300); 
 
 %% PLOT OBS DATA 
 
@@ -5848,8 +5948,31 @@ plot ([0 560],  [540-300 540-300],'k:', 'LineWidth', 2);axis equal
 
 
 
+%% export sequences
 
+clear
+%ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+%example f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+%f2sav = 'RNN_vvs_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M_[56]_30-38_1_0_0_0_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+f2t = strsplit(f2sav, '_');
+region = f2t{2};
+paths = load_paths_WM(region);
+filelistSess = getFiles(paths.traces);
 
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.traces filelistSess{sessi}]);   
+    ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    ids2save = cfg_contrasts.oneListIds_c(ids); 
+    id3 = cellfun(@(x) strsplit(x), ids2save, 'un', 0);
+    id4 = cellfun(@(x) double(x(:, 13:15)), id3, 'un', 0);
+    id5 = cell2mat(cat(1, id4{:}))
+
+end
 
 
 
