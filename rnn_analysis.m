@@ -124,90 +124,12 @@ for listi = 1:length(listF2sav)
 end
 
 
-%% load file to plot frequency resolved
-%ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-clear 
-f2sav = 'Alex_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'
-sub2exc = [1];
-lay2plot = 56; 
-
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-paths = load_paths_WM(region);
-load([paths.results.DNNs f2sav]);
-
-
-
-clear nnH
-for subji = 1:length(nnFit)
-    
-   nnH(subji, : ,:) = nnFit{subji, 1}(lay2plot,:,:);
-   %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
-   %nnH(subji, : ,:,:) = squeeze(nnFit{subji, 1});
-        
-end
-
-
-nnH(sub2exc, :, :) = []; 
-nnH = squeeze(nnH);
-[h p ci ts] = ttest(nnH);
-h = squeeze(h); t = squeeze(ts.tstat);
-
-
-
-%%plot frequency resolved
-d2p = squeeze(mean(nnH, 'omitnan'));
-freqs = 1:520; 
-times = -1.75:.01:6.849; 
-clustinfo = bwconncomp(h);
-%clen = max(cellfun(@length, clustinfo.PixelIdxList))
-
-
-% for pixi = 1:length(clustinfo.PixelIdxList)
-%    h(clustinfo.PixelIdxList{pixi}) = 0;   
-% end
-% 
-% % %h(clustinfo.PixelIdxList{25}) = 1; % PFC
-% % %tObs = sum(t(clustinfo.PixelIdxList{25})) % PFC
-% % 
-% % h(clustinfo.PixelIdxList{18}) = 1; % VVS
-% % h(clustinfo.PixelIdxList{10}) = 1; % VVS
-% % %h(clustinfo.PixelIdxList{34}) = 1; % VVS
-% % tObs = sum(t(clustinfo.PixelIdxList{18})) % VVS
-% 
-% h(clustinfo.PixelIdxList{29}) = 1; % PFC
-% tObs = sum(t(clustinfo.PixelIdxList{29})) % PFC
-
-
-%  h(clustinfo.PixelIdxList{7}) = 1; % VVS ENV
-%  h(clustinfo.PixelIdxList{11}) = 1; % VVS ENV
-%  tObs = sum(t(clustinfo.PixelIdxList{7})) % VVS ENC
- 
-%  
-% h(clustinfo.PixelIdxList{15}) = 1; % HIPP ENV
-% tObs = sum(t(clustinfo.PixelIdxList{15})) % HIPP ENC
-
-
-myCmap = colormap(brewermap([],'YlOrRd'));
-colormap(myCmap)
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
-if strcmp(f2t{3}, 'E')
-    set(gca, 'xlim', [-.5 1], 'clim', [-5 5], 'ytick', [1 300 520], 'yticklabels', {'1' '30' '150'}, 'FontSize', 18);
-else
-    set(gca, 'xlim', [-.5 4], 'clim', [-5 5], 'ytick', [1 300 520], 'yticklabels', {'1' '30' '150'}, 'FontSize', 18);
-end
-plot([0 0],get(gca,'ylim'), 'k:','lineWidth', 4);
-
-
-
-exportgraphics(gcf, 'myP.png', 'Resolution', 300); 
 
 
 %%  plot all layers ALEX
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'Alex_vvs_E_[1-8]_3-54_1_1_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 f2t = strsplit(f2sav, '_');
@@ -269,7 +191,7 @@ end
 %%  plot all layers RNN
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_hipp_M_[1-56]_3-54_1_1_1_0_.1_5_1.mat'
+f2sav = 'RNN_vvs_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'
 
 
 f2t = strsplit(f2sav, '_');
@@ -312,19 +234,21 @@ for layi = 1:size(nnFit{1}, 1)
     times = -1.75:.1:6.849; 
     clustinfo = bwconncomp(h);
     
+    if strcmp(f2t{3}, 'E')
+        times = 1:15; 
+    end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
     if strcmp(f2t{3}, 'E')
-        daspect(ax1,[1 24 24]); 
-        set(gca, 'xlim', [-.5 1], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'1' '30' '150'}, 'FontSize', 8);
-    else
-        set(gca, 'xlim', [-.5 4], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'1' '30' '150'}, 'FontSize', 8);
+        set(gca, 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'1' '30' '150'}, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'FontSize', 12);
+    elseif strcmp(f2t{3}, 'M')
+        %set(gca, 'xlim', [-.5 4], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'1' '30' '150'}, 'FontSize', 16);
     end
-    plot([0 0],get(gca,'ylim'), 'k:','lineWidth', 2);
-    
-    
+    plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    pbaspect(ax1,[1 2 1])
 
 end
 
@@ -455,6 +379,7 @@ etime(datevec(t2), datevec(t1))
 
 
 %% PERMUTATIONS IN LOOP
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
 nPerm = 100;
@@ -462,16 +387,12 @@ nPerm = 100;
 listF2sav = {
                 'Alex_vvs_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'Alex_pfc_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'Alex_vvs_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'Alex_pfc_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_vvs_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_pfc_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 
              };
     
@@ -538,7 +459,7 @@ etime(datevec(t2), datevec(t1))
 
 %% compute clusters in each permutation frequency resolved
 clear
-f2sav       = 'Alex_vvs_E_[1-8]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
+f2sav       = 'Alex_vvs_M_[1-8]_3-54_1_1_1_0_.1_5_1_100p.mat'; 
     
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
