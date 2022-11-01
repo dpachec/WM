@@ -32,7 +32,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     ER = f2t{3};
     if strcmp(ER, 'E')
         neuralRDMs = neuralRDMs(:,:,:,16:30);
-    elseif strcmp(ER, 'R')
+    elseif strcmp(ER, 'M')
         neuralRDMs = neuralRDMs(:,:,:,16:55);
     end
     networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
@@ -105,7 +105,7 @@ for listi = 1:length(listF2sav)
         ER = f2t{3};
         if strcmp(ER, 'E')
             neuralRDMs = neuralRDMs(:,:,:,16:30);
-        elseif strcmp(ER, 'R')
+        elseif strcmp(ER, 'M')
             neuralRDMs = neuralRDMs(:,:,:,16:55);
         end
         networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
@@ -358,7 +358,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     ER = f2t{3};
     if strcmp(ER, 'E')
         neuralRDMs = neuralRDMs(:,:,:,20:30);
-    elseif strcmp(ER, 'R')
+    elseif strcmp(ER, 'M')
         neuralRDMs = neuralRDMs(:,:,:,20:55);
     end
     
@@ -385,15 +385,8 @@ clear
 nPerm = 100;
 
 listF2sav = {
-                'Alex_vvs_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_vvs_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                
+                %'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
              };
     
 
@@ -434,7 +427,7 @@ for listi = 1:length(listF2sav)
         ER = f2t{3};
         if strcmp(ER, 'E')
             neuralRDMs = neuralRDMs(:,:,:,21:30);
-        elseif strcmp(ER, 'R')
+        elseif strcmp(ER, 'M')
             neuralRDMs = neuralRDMs(:,:,:,21:55);
         end
         
@@ -541,7 +534,7 @@ for layi = 1:size(nnFit{1}, 1)
     ER = f2t{3};
     if strcmp(ER, 'E')
         h = h(:, 21:30); t = t(:, 21:30);
-    elseif strcmp(ER, 'R')
+    elseif strcmp(ER, 'M')
         h = h(:, 20:55); t = t(:, 20:55);
     end
 
