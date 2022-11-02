@@ -21,23 +21,24 @@ function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, path
     
 
     
-    nLays = 2; % for now
+    nLays = 1; % for now
     if strcmp(net2load, 'BLnext2')
         all_act{1} = load('Features_BLnext-2samples.mat');
-        all_act{2} = load('Features_BLnext-ReLU_Layer_6-2samples.mat');
+        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-2samples.mat');
         seqEnd = 6; 
     elseif strcmp(net2load, 'BLnext4')
 
         all_act{1} = load('Features_BLnext-4samples.mat');
-        all_act{2} = load('Features_BLnext-ReLU_Layer_6-4samples.mat');
+        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-4samples.mat');
         seqEnd = 12; 
     elseif strcmp(net2load, 'BLnext8')
         all_act{1} = load('Features_BLnext-8samples.mat');
-        all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
+        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
         seqEnd = 24; 
     elseif strcmp(net2load, 'BLnext12')
         all_act{1} = load('Features_BLnext-12samples.mat');
-        all_act{2} = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        %all_act{1} = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
         seqEnd = 36; 
     end
 
@@ -51,17 +52,31 @@ function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, path
             id2u = strmatch(seqStr, all_act_H(:,1)); 
             %actSub{subji,:}(seqi, :) = squeeze(all_act{id2u, 2}.predictions(6,:,:));
             if ~isempty(id2u)
-                %acts(seqi,:) = all_act_H{id2u, 2}.predictions(seqEnd,:,:);
-                acts(seqi,:) = mean(all_act_H{id2u, 2}.predictions(1:seqEnd,:,:), 1);
+                %disp (['L > ' length(all_act_H{id2u, 2}.events)]);
+                for evi = 1:length(all_act_H{id2u, 2}.events)
+                    acts(seqi,evi, :) = all_act_H{id2u, 2}.predictions(evi,:,:);
+                end
             end
         end
-        out=acts;
-        ids2rem = all(acts==0,2); 
-        out(ids2rem,:) = [];
+
+        for evi = 1:size(acts, 2)
+            out=squeeze(acts(:, evi, :));
+            ids2rem = all(out==0,2); 
+            out(ids2rem,:) = [];
+            
+            ACT_prev = corr(out', 'type', 's');
+            ACT(evi, :, :) = ACT_prev;
+        end
         
-        ACT_prev = corr(out', 'type', 's');
-        ACT(layi, :, :) = ACT_prev;
-        
+            
+            
+%         out=acts;
+%         ids2rem = all(acts==0,2); 
+%         out(ids2rem,:) = [];
+%         
+%         ACT_prev = corr(out', 'type', 's');
+%         ACT(layi, :, :) = ACT_prev;
+%         
         
         
         cd (currentFolder)
