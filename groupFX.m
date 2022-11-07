@@ -2,13 +2,13 @@
 %%
 clearvars
 
-region = 'pfc'; 
+region = 'vvs'; 
 paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EE' 'DISC_EE';
-              %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
+              'DISC_EE' 'DIDC_EE';
+              %'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
