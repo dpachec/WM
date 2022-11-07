@@ -475,7 +475,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav  = 'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
+f2sav  = 'RNN_hipp_E_[1-56]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
 
     
 f2t = strsplit(f2sav, '_');
@@ -530,7 +530,7 @@ end
 %%  get tOBS
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
-f2sav = 'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 f2t = strsplit(f2sav, '_');
@@ -709,7 +709,7 @@ elseif strcmp(region, 'pfc')
 elseif strcmp(region, 'hipp')
     sub2exc = [2]
 end
-
+ 
 
 paths = load_paths_WM(region);
 load([paths.results.DNNs f2sav]);
