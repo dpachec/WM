@@ -703,7 +703,7 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'BLnext12_vvs_E_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
+f2sav = 'BLnext12_vvs_M_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
 
 
 f2t = strsplit(f2sav, '_');
