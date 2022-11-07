@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -197,7 +197,7 @@ end
 %%  plot all layers RNN
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_hipp_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'
+f2sav = 'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 
@@ -406,15 +406,9 @@ clear
 nPerm = 100;
 
 listF2sav = {
-                'Alex_vvs_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_vvs_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                
+                %'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                %'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
              };
     
 
@@ -481,7 +475,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav       = 'Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
+f2sav  = 'RNN_hipp_E_[1-56]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
 
     
 f2t = strsplit(f2sav, '_');
@@ -510,11 +504,11 @@ for permi = 1:nPerm
         [h p ci ts] = ttest(dataP);
         h = squeeze(h); t = squeeze(ts.tstat);
 
-        ER = f2t{3};
-        if strcmp(ER, 'M')
-            t = t(:,21:55);
-            h = h(:,21:55);
-        end
+%         ER = f2t{3};
+%         if strcmp(ER, 'M')
+%             t = t(:,21:55);
+%             h = h(:,21:55);
+%         end
         
         clear allSTs  
         clustinfo = bwconncomp(h);
@@ -536,7 +530,7 @@ end
 %%  get tOBS
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
-f2sav = 'Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 f2t = strsplit(f2sav, '_');
@@ -715,7 +709,7 @@ elseif strcmp(region, 'pfc')
 elseif strcmp(region, 'hipp')
     sub2exc = [2]
 end
-
+ 
 
 paths = load_paths_WM(region);
 load([paths.results.DNNs f2sav]);
