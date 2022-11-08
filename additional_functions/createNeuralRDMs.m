@@ -1,4 +1,4 @@
-function[neuralRDMs] = createNeuralRDMs(oneListPow, freqs2test, win_width, mf, fR, avTFV)
+function[neuralRDMs] = createNeuralRDMs(oneListPow, freqs2test, win_width, mf, fR, avTFV, period)
 
 if fR
     for freqi = 1:length(freqs2test)
@@ -43,5 +43,11 @@ else
 
     
 end
+
+    if strcmp(period(1), 'E')
+        neuralRDMs = neuralRDMs(:,:,:,16:30);
+    elseif strcmp(period, 'M')
+        neuralRDMs = neuralRDMs(:,:,:,16:55);
+    end
 
 end

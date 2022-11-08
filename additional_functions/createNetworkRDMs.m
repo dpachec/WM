@@ -14,7 +14,7 @@ else
 end
 
 
-if strcmp(period, 'M')
+if strcmp(period(1), 'M')
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});
         toSum = double(string(idh(2)));
@@ -23,7 +23,7 @@ if strcmp(period, 'M')
     ids3 = double(string(ids2(:,[1 3])));
     idx = find(~mod(ids3, 10)); 
     ids4 = ids3-10; ids4(idx) = ids3(idx);
-elseif strcmp(period, 'E') & (strcmp (net2load , 'RNN') | strcmp (net2load , 'Alex'))
+elseif strcmp(period(1), 'E') & (strcmp (net2load , 'RNN') | strcmp (net2load , 'Alex'))
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});
         idT = char(idh(3));
