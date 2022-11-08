@@ -1,7 +1,7 @@
 %%
-clearvars
+clear, clc
 
-region = 'pfc'; 
+region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
@@ -11,7 +11,7 @@ contrasts = {
 c = unique (contrasts);
 d = cellfun(@(x) [x '_id'], c, 'un', 0);
 for i = 1:length(c) 
-    load([paths.currSess c{i} '.mat']);
+    load([paths.currSessEE c{i} '.mat']);
     contrData{i,:} = eval(c{i});
     idData{i,:} = all_IDs;
     %idData{i,:} = [];
@@ -25,21 +25,24 @@ for i = 1:length(out_c)
 end
 
 
-%%
-clear mC1
+%% ENCODING 
+
+
 meanC1 = cellfun(@(x) squeeze(mean(x)), DISC_EE, 'un', 0); 
 meanC2 = cellfun(@(x) squeeze(mean(x)), DIDC_EE, 'un', 0); 
 mC1F  = cellfun(@(x) triu(x.',1) + tril(x), meanC1, 'un', 0); 
 mC2F  = cellfun(@(x) triu(x.',1) + tril(x), meanC2, 'un', 0); 
-mC1FD = cat(3, mC1F{:}); mC1FD = reshape(mC1FD, [21 21 28]); mC1FD = permute(mC1FD, [3 1 2]);
-mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [21 21 28]); mC2FD = permute(mC2FD, [3 1 2]);
+nSubj = size(out_c{1}, 1);
+lM = size(meanC1{1},1 ); 
+mC1FD = cat(3, mC1F{:}); mC1FD = reshape(mC1FD, [lM lM nSubj]); mC1FD = permute(mC1FD, [3 1 2]);
+mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [lM lM nSubj]); mC2FD = permute(mC2FD, [3 1 2]);
 
 mDiff = mC1FD - mC2FD; 
 
 
-for timei = 6:15
+for timei = 51:150
 
-    for timej = 6:15
+    for timej = 51:150
 
         if timei~=timej
             offDiag = mDiff(:, timei, timej); 
@@ -60,50 +63,53 @@ end
 
 
 clustinfo = bwconncomp(dynMatrx);
-clusL = max(cellfun(@length, clustinfo.PixelIdxList))
+[clusL id] = max(cellfun(@length, clustinfo.PixelIdxList))
 
 
 
 
 
-%% test it 
-figure
-imagesc(squeeze(mean(DISC_EE{1})))
-
-
-figure
-imagesc(squeeze(mC1(1,:,:)))
 
 
 %% 
 figure; 
 %imagesc(dynMatrx)
-contourf(dynMatrx)
+contourf(dynMatrx); 
+
+%% 
+d2p = mean(dynMatrx, 1); 
+
+figure
+plot(d2p)
+
+
+
 
 
 %% permutations 
 
-nPerm = 10
+nPerm = 100
 
 clear clusL dynMatrxPerm
 
 for permi = 1:nPerm
-    clear dynMatrxPerm
-
+    
     meanC1 = cellfun(@(x) squeeze(mean(x)), DISC_EE, 'un', 0); 
     meanC2 = cellfun(@(x) squeeze(mean(x)), DIDC_EE, 'un', 0); 
     mC1F  = cellfun(@(x) triu(x.',1) + tril(x), meanC1, 'un', 0); 
     mC2F  = cellfun(@(x) triu(x.',1) + tril(x), meanC2, 'un', 0); 
-    mC1FD = cat(3, mC1F{:}); mC1FD = reshape(mC1FD, [21 21 28]); mC1FD = permute(mC1FD, [3 1 2]);
-    mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [21 21 28]); mC2FD = permute(mC2FD, [3 1 2]);
-    
+    nSubj = size(out_c{1}, 1);
+    lM = size(meanC1{1},1 ); 
+    mC1FD = cat(3, mC1F{:}); mC1FD = reshape(mC1FD, [lM lM nSubj]); mC1FD = permute(mC1FD, [3 1 2]);
+    mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [lM lM nSubj]); mC2FD = permute(mC2FD, [3 1 2]);
+
     mDiff = mC1FD - mC2FD; 
     
 
     
-    for timei = 6:15
+    for timei = 51:150
     
-        for timej = 6:15
+        for timej = 51:150
     
             if timei~=timej
     
@@ -112,6 +118,7 @@ for permi = 1:nPerm
                     onDiag2 = mDiff(:, timej, timej); 
 
                     all3 = [onDiag1 onDiag2 offDiag]; 
+                    
                     all3 = all3(:, randperm(3));
 
                     [h1 p1 ci1 ts1] = ttest(all3(:, 1), all3(:,3)); 
@@ -141,7 +148,7 @@ end
 
 
 %% 
-d2p = squeeze(dynMatrxPerm(10,:,:));
+d2p = squeeze(dynMatrxPerm(2,:,:));
 figure
 imagesc(d2p)
 clustinfo = bwconncomp(d2p)
