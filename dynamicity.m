@@ -1,7 +1,7 @@
 %%
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region);
 
 contrasts = {

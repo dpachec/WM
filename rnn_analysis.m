@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_vvs_E_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
@@ -18,7 +18,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     if strcmp(cfg.period, 'M')
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(cfg.period, 'E')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3'), cfg_contrasts.oneListIds_c, 'un', 0));
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '3') | strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
     end
     oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
     cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
@@ -91,7 +91,7 @@ for listi = 1:length(listF2sav)
         if strcmp(cfg.period, 'M')
             ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
         elseif strcmp(cfg.period, 'E')
-            ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3'), cfg_contrasts.oneListIds_c, 'un', 0));
+            ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '3') | strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
         end
         oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
         cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
@@ -129,7 +129,7 @@ end
 %%  plot all layers ALEX
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'Alex_pfc_E_[1-8]_3-54_1_1_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_vvs_E_[1-8]_3-54_0_0_1_0_.1_5_1.mat'; 
 
 
 f2t = strsplit(f2sav, '_');
@@ -363,7 +363,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     if strcmp(cfg.period, 'M')
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(cfg.period, 'E')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3'), cfg_contrasts.oneListIds_c, 'un', 0));
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '3') | strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
     end
     oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
     cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
@@ -433,7 +433,7 @@ for listi = 1:length(listF2sav)
         if strcmp(cfg.period, 'M')
             ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
         elseif strcmp(cfg.period, 'E')
-            ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '2') | strcmp(x(1), '3'), cfg_contrasts.oneListIds_c, 'un', 0));
+            ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '3') | strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
         end
         oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
         cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
