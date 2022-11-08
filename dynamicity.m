@@ -40,9 +40,9 @@ mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [lM lM nSubj]); mC2FD = permute(
 mDiff = mC1FD - mC2FD; 
 
 
-for timei = 51:150
+for timei = 1:lM
 
-    for timej = 51:150
+    for timej = 1:lM
 
         if timei~=timej
             offDiag = mDiff(:, timei, timej); 
@@ -88,12 +88,13 @@ plot(d2p)
 
 %% permutations 
 
-nPerm = 100
+nPerm = 100;
 
-clear clusL dynMatrxPerm
+clear clusL dynMatrxPerm mDiffPerm
 
 for permi = 1:nPerm
     
+    permi 
     meanC1 = cellfun(@(x) squeeze(mean(x)), DISC_EE, 'un', 0); 
     meanC2 = cellfun(@(x) squeeze(mean(x)), DIDC_EE, 'un', 0); 
     mC1F  = cellfun(@(x) triu(x.',1) + tril(x), meanC1, 'un', 0); 
@@ -106,23 +107,33 @@ for permi = 1:nPerm
     mDiff = mC1FD - mC2FD; 
     
 
+    % % % shuffle matrix for all subjects 
+    for subji = 1:nSubj
+        mDiffSubj = squeeze(mDiff(subji, :, :)); 
+        onDiag = diag(mDiffSubj); 
+        for timei = 1:lM
+            idR = randi(lM); 
+            tmp = mDiffSubj(timei, idR); 
+            onDiagPerm(timei) = tmp; 
+            mDiffSubj(timei, idR) = diag(timei); 
+            %mDiffSubj(timei, :) = diag(timei); 
+            mDiffSubj(timei, timei) = onDiagPerm(timei); 
+        end
+        mDiffPerm(subji, :, :) = mDiffSubj ;
+    end
     
-    for timei = 51:150
+    for timei = 1:lM
     
-        for timej = 51:150
+        for timej = 1:lM
     
             if timei~=timej
     
-                    offDiag = mDiff(:, timei, timej); 
-                    onDiag1 = mDiff(:, timei, timei); 
-                    onDiag2 = mDiff(:, timej, timej); 
-
-                    all3 = [onDiag1 onDiag2 offDiag]; 
-                    
-                    all3 = all3(:, randperm(3));
-
-                    [h1 p1 ci1 ts1] = ttest(all3(:, 1), all3(:,3)); 
-                    [h2 p2 ci2 ts2] = ttest(all3(:, 2), all3(:,3)); 
+                
+                offDiag = mDiffPerm(:, timei, timej); 
+                onDiag1 = mDiffPerm(:, timei, timei); 
+                onDiag2 = mDiffPerm(:, timej, timej); 
+                [h1 p1 ci1 ts1] = ttest(onDiag1, offDiag); 
+                [h2 p2 ci2 ts2] = ttest(onDiag2, offDiag); 
                
                 
                 if h1 & h2 
@@ -137,20 +148,16 @@ for permi = 1:nPerm
     end
 
     clustinfo = bwconncomp(squeeze(dynMatrxPerm(permi, :, :)));
-    clusL(permi,:) = max(cellfun(@length, clustinfo.PixelIdxList));
+    clusLPerm(permi,:) = max(cellfun(@length, clustinfo.PixelIdxList));
 
 end
 
 
 
-
-
-
-
 %% 
-d2p = squeeze(dynMatrxPerm(2,:,:));
+d2p = squeeze(dynMatrxPerm(5,:,:));
 figure
-imagesc(d2p)
+contourf(d2p)
 clustinfo = bwconncomp(d2p)
 
 %%
