@@ -13,10 +13,9 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
 
-    ids = getIdsWM(cfg.period, cfg_contrasts);
-    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     if (cfg.avRep)
         cfg_contrasts               = average_repetitions(cfg_contrasts);
@@ -89,10 +88,9 @@ for listi = 1:length(listF2sav)
         disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
        
-        ids = getIdsWM(cfg.period, cfg_contrasts);
-        oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-        cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-        cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+        
         cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
         if (cfg.avRep)
             cfg_contrasts               = average_repetitions(cfg_contrasts);
@@ -343,10 +341,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
    
-    ids = getIdsWM(cfg.period, cfg_contrasts);
-    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     if (cfg.avRep)
         cfg_contrasts               = average_repetitions(cfg_contrasts);
@@ -411,10 +407,9 @@ for listi = 1:length(listF2sav)
         disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
        
-        ids = getIdsWM(cfg.period, cfg_contrasts);
-        oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-        cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-        cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+        cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+        
         cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
         if (cfg.avRep)
             cfg_contrasts               = average_repetitions(cfg_contrasts);
@@ -424,8 +419,9 @@ for listi = 1:length(listF2sav)
         networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
 
 
+        % % % restrict extra time for permutation data
         if strcmp(cfg.period, 'M')
-            neuralRDMs = neuralRDMs(:,:,:,6:15); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
+            neuralRDMs = neuralRDMs(:,:,:,6:15); 
         else
             neuralRDMs = neuralRDMs(:,:,:,6:15);
         end
@@ -621,7 +617,6 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
    
 
     [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    
     cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     if (cfg.avRep)
