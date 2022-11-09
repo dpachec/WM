@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_pfc_M_[56]_3-54_1_0_1_1_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[56]_3-54_1_0_1_1_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -22,8 +22,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         cfg_contrasts               = average_repetitions(cfg_contrasts);
     end
 
-    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV, cfg.period);
-    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
+    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
 
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
@@ -67,12 +67,12 @@ listF2sav = {
                 'RNN_vvs_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_pfc_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_hipp_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat';
-                'Alex_vvs_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_hipp_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
              };
     
 
@@ -98,8 +98,8 @@ for listi = 1:length(listF2sav)
             cfg_contrasts               = average_repetitions(cfg_contrasts);
         end
     
-        neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV, cfg.period);
-        networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
         
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
         nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
@@ -118,26 +118,25 @@ end
 %%  plot all layers ALEX
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'Alex_vvs_E_[1-8]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-if strcmp(region, 'vvs')
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
-elseif strcmp(region, 'pfc')
+elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
-elseif strcmp(region, 'hipp')
+elseif strcmp(cfg.brainROI, 'hipp')
     sub2exc = [2]
 end
 
 
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
 
 tiledlayout(3,3)
-if strcmp(f2t{3}, 'M')
+if strcmp(cfg.period, 'M')
     set(gcf, 'Position', [100 100 1200 1000])
 else
     set(gcf, 'Position', [100 100 700 1000])
@@ -157,24 +156,24 @@ for layi = 1:size(nnFit{1}, 1)
     d2p = squeeze(mean(nnH, 'omitnan'));
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
-    if strcmp(f2t{3}, 'E')
+    if strcmp(cfg.period, 'M')
+        times = 1:40; % for now
+    else
         times = 1:15; 
-    elseif strcmp(f2t{3}, 'M')
-        times = 1:86; % for now
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
-    if strcmp(f2t{3}, 'E')
+    if strcmp(cfg.period, 'M')
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 16);
+        set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 24);
+        plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
         set(gca, 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
         set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'FontSize', 22);
         plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth', 2);
-    elseif strcmp(f2t{3}, 'M')
-        set(gca, 'xlim', [16 60], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 16);
-        set(gca, 'xtick', [16 20.5 60], 'xticklabels', {'-.5' '0' '4'}, 'FontSize', 24);
-        plot([20.5 20.5],get(gca,'ylim'), 'k:','lineWidth', 2);
     end
     
     
@@ -186,26 +185,26 @@ end
 %%  plot all layers RNN
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-if strcmp(region, 'vvs')
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
-elseif strcmp(region, 'pfc')
+elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
-elseif strcmp(region, 'hipp')
-    sub2exc = []
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2]
 end
 
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
 
 tiledlayout(8,8, 'TileSpacing', 'tight', 'Padding', 'compact');
-if strcmp(f2t{3}, 'M')
+if strcmp(cfg.period, 'M')
     set(gcf, 'Position', [100 100 1200 1000])
 else
     set(gcf, 'Position', [100 100 700 1200])
@@ -227,17 +226,26 @@ for layi = 1:size(nnFit{1}, 1)
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
     
-    if strcmp(f2t{3}, 'E')
+    if strcmp(cfg.period, 'M')
+        times = 1:40; 
+    else
         times = 1:15; 
-    elseif strcmp(f2t{3}, 'M')
-        times = 1:86; 
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
-    if strcmp(f2t{3}, 'E')
+    if strcmp(cfg.period, 'M')
+        if layi == 49
+            set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
+            set(gca, 'xtick', [16 20.5 60], 'xticklabels', {'-.5' '0' '4'});
+        else
+            set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        end
+        set(gca, 'xlim', [16 60], 'clim', [-5 5], 'FontSize', 10);
+        plot([20.5 20.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
         if layi == 49
             set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
             set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'})
@@ -247,16 +255,6 @@ for layi = 1:size(nnFit{1}, 1)
         set(gca, 'FontSize', 8, 'clim', [-5 5]);
         plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth', 2);
         
-        
-    elseif strcmp(f2t{3}, 'M')
-        if layi == 49
-            set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
-            set(gca, 'xtick', [16 20.5 60], 'xticklabels', {'-.5' '0' '4'});
-        else
-            set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        end
-        set(gca, 'xlim', [16 60], 'clim', [-5 5], 'FontSize', 10);
-        plot([20.5 20.5],get(gca,'ylim'), 'k:','lineWidth', 2);
     end
     
 
@@ -335,7 +333,7 @@ end
 clear
 nPerm = 100;
 
-f2sav = ['Alex_hipp_E_[1-8]_3-54_1_0_1_0_.1_5_1_' num2str(nPerm) 'p.mat']; 
+f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -354,9 +352,14 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         cfg_contrasts               = average_repetitions(cfg_contrasts);
     end
 
-    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV, cfg.period);
-    networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
-    
+    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+
+    if strcmp(cfg.period, 'M')
+        neuralRDMs = neuralRDMs(:,:,:,6:40); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
+    else
+        neuralRDMs = neuralRDMs(:,:,:,6:15);
+    end
     for permi = 1:nPerm
         sC = size(networkRDMs, 2);
         ids = randperm(sC);
@@ -367,7 +370,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 end
 
 mkdir ([paths.results.DNNs]);
-save([paths.results.DNNs f2sav], 'nnFitPerm');
+save([paths.results.DNNs f2sav(1:end-4) '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
 
 
 %% PERMUTATIONS IN LOOP
@@ -377,9 +380,18 @@ clear
 nPerm = 100;
 
 listF2sav = {
-                %'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                %'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_vvs_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_vvs_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'Alex_pfc_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'Alex_hipp_M_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_vvs_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_pfc_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
              };
     
 
@@ -408,14 +420,14 @@ for listi = 1:length(listF2sav)
             cfg_contrasts               = average_repetitions(cfg_contrasts);
         end
     
-        neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV, cfg.period);
-        networkRDMs                 = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, sessi, paths, cfg.period); %layers to load
-        
-        ER = f2t{3};
-        if strcmp(ER, 'E')
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+
+
+        if strcmp(cfg.period, 'M')
+            neuralRDMs = neuralRDMs(:,:,:,6:15); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
+        else
             neuralRDMs = neuralRDMs(:,:,:,6:15);
-        elseif strcmp(ER, 'M')
-            neuralRDMs = neuralRDMs(:,:,:,6:40); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
         end
         
         for permi = 1:nPerm
@@ -598,11 +610,9 @@ end
 
 clear
 %...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-f2sav = 'BLnext12_vvs_E_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
+f2sav = 'BLnext12_vvs_E41_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
 cfg = getParams(f2sav);
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
 
 t1 = datetime; 
@@ -611,34 +621,19 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
    
-    if strcmp(cfg.period, 'M')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
-    elseif strcmp(cfg.period, 'E')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '5') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
-    end
-    
-    
 
-    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
+    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+    
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     if (cfg.avRep)
         cfg_contrasts               = average_repetitions(cfg_contrasts);
     end
 
-    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
-    [networkRDMs ids2rem]       = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, ...
-                                    sessi, paths, cfg.period);
+    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+    [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+    
     neuralRDMs(ids2rem, :, : ,:) = []; 
-    ER = f2t{3};
-    if strcmp(ER, 'E')
-        neuralRDMs = neuralRDMs(:,:,:,16:55); % does not matter here!
-        % UGLY HACK!!
-    elseif strcmp(ER, 'M')
-        neuralRDMs = neuralRDMs(:,:,:,16:55);
-    end
-
     neuralRDMs(:,ids2rem, : ,:) = []; 
     
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
@@ -662,28 +657,27 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'BLnext12_vvs_M_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
+f2sav = 'BLnext12_vvs_E43_[7]_3-54_0_0_1_0_.1_5_1_AV.mat' ; 
+cfg = getParams(f2sav);
 
 
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-if strcmp(region, 'vvs')
+if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
-elseif strcmp(region, 'pfc')
+elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
-elseif strcmp(region, 'hipp')
+elseif strcmp(cfg.brainROI, 'hipp')
     sub2exc = [2]
 end
  
 
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
 
-tiledlayout(6,8)
-set(gcf, 'Position', [100 100 1200 1000])
+tiledlayout(4,12)
+set(gcf, 'Position', [100 100 1400 800])
 
-for layi = 1:size(nnFit{1}, 1)
+for layi = 1:size(nnFit{1}, 1)-4
     nexttile
     clear nnH
     for subji = 1:length(nnFit)
@@ -698,9 +692,9 @@ for layi = 1:size(nnFit{1}, 1)
     d2p = squeeze(mean(nnH, 'omitnan'));
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
-    if strcmp(f2t{3}, 'E')
-        times = 1:40; 
-    elseif strcmp(f2t{3}, 'M')
+    if strcmp(cfg.period(1), 'E')
+        times = 1:15; 
+    elseif strcmp(cfg.period(1), 'M')
         times = 1:40; % for now
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
@@ -708,11 +702,11 @@ for layi = 1:size(nnFit{1}, 1)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
-    if strcmp(f2t{3}, 'E')
-        set(gca, 'xlim', [16 35], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 8);
-        set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 8);
+    if strcmp(cfg.period(1), 'E')
+        set(gca, 'xlim', [1 15], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 8);
+        set(gca, 'xtick', [1 6.5 15], 'xticklabels', {'-.5' '0' '1.5'}, 'FontSize', 8);
         plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
-    elseif strcmp(f2t{3}, 'M')
+    elseif strcmp(cfg.period(1), 'M')
         set(gca, 'xlim', [1 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 8);
         set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 8);
         plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
@@ -730,91 +724,48 @@ end
 
 clear
 
-
-listF2sav = {
-                'BLnext2_hipp_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_hipp_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_hipp_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_hipp_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext2_vvs_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_vvs_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_vvs_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_vvs_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext2_pfc_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_pfc_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_pfc_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_pfc_E_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext2_hipp_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_hipp_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_hipp_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_hipp_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext2_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext2_pfc_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext4_pfc_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext8_pfc_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-                'BLnext12_pfc_M_[6:7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
-
-
-
-
+listF2sav = {   
+                'BLnext12_pfc_E41_[7]_3-54_0_0_1_0_.1_5_1_AV.mat' 
+                'BLnext12_pfc_E42_[7]_3-54_0_0_1_0_.1_5_1_AV.mat' 
+                'BLnext12_pfc_E43_[7]_3-54_0_0_1_0_.1_5_1_AV.mat' 
              };
     
 
 for listi = 1:length(listF2sav)
     
-clearvars -except listF2sav listi 
+    clearvars -except listF2sav listi 
 
-f2sav       = listF2sav{listi}
-cfg = getParams(f2sav);
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-paths = load_paths_WM(region);
-filelistSess = getFiles(paths.traces);
 
-t1 = datetime; 
-
-for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(sessi)]);
-    load([paths.traces filelistSess{sessi}]);   
-   
-    if strcmp(cfg.period, 'M')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
-    elseif strcmp(cfg.period, 'E')
-        ids = cell2mat(cellfun(@(x) strcmp(x(1), '5') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    f2sav = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    paths = load_paths_WM(cfg.brainROI);
+    filelistSess = getFiles(paths.traces);
+    
+    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+        
+        load([paths.traces filelistSess{sessi}]);   
+        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+        
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+        cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
+        if (cfg.avRep)
+            cfg_contrasts               = average_repetitions(cfg_contrasts);
+        end
+    
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+        [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        
+        neuralRDMs(ids2rem, :, : ,:) = []; 
+        neuralRDMs(:,ids2rem, : ,:) = []; 
+        
+        nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
+        
     end
     
+    mkdir ([paths.results.DNNs]);
+    save([paths.results.DNNs f2sav], 'nnFit');
     
-
-    oneListTraces = cfg_contrasts.oneListTraces(:,:,ids);
-    cfg_contrasts.oneListIds_c    = cfg_contrasts.oneListIds_c(ids); 
-    cfg_contrasts.oneListPow    = extract_power_WM (oneListTraces, cfg.timeRes); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    if (cfg.avRep)
-        cfg_contrasts               = average_repetitions(cfg_contrasts);
-    end
-
-    neuralRDMs                  = createNeuralRDMs(cfg_contrasts.oneListPow, cfg.freqs, cfg.win_width, cfg.mf, cfg.fR, cfg.avTFV);
-    [networkRDMs ids2rem]       = createNetworkRDMs(cfg_contrasts.oneListIds_c, cfg.net2load, cfg.lays2load, cfg.brainROI, ...
-                                    sessi, paths, cfg.period);
-    neuralRDMs(ids2rem, :, : ,:) = []; 
-    neuralRDMs(:,ids2rem, : ,:) = []; 
-    
-    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-    nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
-    
-end
-
-mkdir ([paths.results.DNNs]);
-save([paths.results.DNNs f2sav], 'nnFit');
-
-t2 = datetime; 
-etime(datevec(t2), datevec(t1))
-
-
-
 
 end
 
@@ -825,20 +776,26 @@ end
 %% load file to plot multi-item
 %ROI__layers__freqs__avRepet__avTFV__fRes(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'BLnext8_vvs_M_[6:7]_3-54_0_0_1_0_.1_5_1.mat'
-sub2exc = [];
+f2sav = 'BLnext12_vvs_E41_[7]_3-54_0_0_1_0_.1_5_1_AV.mat' 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2]
+end
+
 
 f2t = strsplit(f2sav, '_');
-region = f2t{2};
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
 clear nnH
 for subji = 1:length(nnFit)
     
-   nnH(subji, : ,:) = nnFit{subji, 1}(2,:,:);
-   %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
-   %nnH(subji, : ,:,:) = squeeze(nnFit{subji, 1});
+   nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
         
 end
 
@@ -849,11 +806,10 @@ nnH = squeeze(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
 
 
-
 %%plot frequency resolved
 d2p = squeeze(mean(nnH, 'omitnan'));
 freqs = 1:520; 
-times = -1.75:.01:6.849; 
+times = 1:150; 
 clustinfo = bwconncomp(h);
 %clen = max(cellfun(@length, clustinfo.PixelIdxList))
 
@@ -870,7 +826,7 @@ myCmap = colormap(brewermap([],'YlOrRd'));
 colormap(myCmap)
 contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
 contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
-set(gca, 'xlim', [-1 4], 'FontSize', 40, 'clim', [-5 5])
+%set(gca, 'xlim', [-1 4], 'FontSize', 40, 'clim', [-5 5])
 %set(gca, 'xlim', [-.5 1.5], 'FontSize', 40, 'clim', [-5 5])
 plot([0 0],get(gca,'ylim'), 'k:','lineWidth', 6);
 %set(gca, 'clim', [-.025 .025])
