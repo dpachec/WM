@@ -53,7 +53,7 @@ end
 
     if strcmp(period(1), 'E')
         neuralRDMs = neuralRDMs(:,:,:,16:30);
-    elseif strcmp(period, 'M')
+    elseif strcmp(period(1), 'M')
         neuralRDMs = neuralRDMs(:,:,:,16:55);
     end
 

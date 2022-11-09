@@ -71,7 +71,7 @@ function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, path
             
             itH = itIDs(itemi); 
             items2Cons = all_act_H(:,1); 
-            items2Cons = cellfun(@(x) x(5:7), items2Cons, 'un', 0 );
+            items2Cons = cellfun(@(x) x(9:11), items2Cons, 'un', 0 ); % 5:7 = 1 ; 9:11 = 2; 13:15 = 3
             id2u = contains(items2Cons, itH); 
             j2check = all_act_H(id2u, 1);
             
