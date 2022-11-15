@@ -24,8 +24,8 @@ function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network
         %all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
         seqEnd = 24; 
     elseif strcmp(net2load, 'BLnext12')
-        %all_act = load('Features_BLnext-12samples.mat');
-        all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        all_act = load('Features_BLnext-12samples.mat');
+        %all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
         
         seqEnd = 36; 
     end
@@ -89,21 +89,31 @@ function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network
             
             if ~isempty(id2u)
                 allMatchingImages = all_act_H(id2u, 2); 
-                currentImage = allMatchingImages{1}; 
-                for evi = 1:length(currentImage.events) % This loops over time 
-                    acts(itemi,evi, :) = currentImage.predictions(evi,:,:);
+                %currentImage = allMatchingImages{1}; 
+                for matchiMi = 1:length(allMatchingImages)
+                    currentImage = allMatchingImages{matchiMi}; 
+                    for evi = 1:length(currentImage.events) % This loops over time 
+                        allMacts(matchiMi, itemi, evi, :) = currentImage.predictions(evi,:,:);
+                    end
                 end
             end
         end
 
-        for evi = 1:size(acts, 2)
-            out=squeeze(acts(:, evi, :));
-            ids2rem = all(out==0,2); % remove items not present 
-            out(ids2rem,:) = [];
+        for allmi = 1:size(allMacts, 1)
+            acts = squeeze(allMacts(allmi, :, :, :)); 
+            for evi = 1:size(acts, 2)
+                out=squeeze(acts(:, evi, :));
+                ids2rem = all(out==0,2); % remove items not present 
+                out(ids2rem,:) = nan;
             
-            ACT_prev = corr(out', 'type', 's');
-            ACT(evi, :, :) = ACT_prev;
+                ACT_prev = corr(out', 'type', 's');
+                ACT(allmi, evi, :, :) = ACT_prev;
+                
+            end
         end
+
+
+     ACT = squeeze(mean(ACT, 'omitnan')); 
 
      end
 

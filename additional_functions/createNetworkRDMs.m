@@ -1,4 +1,4 @@
-function [networkRDMs ids2rem] = createNetworkRDMs(cfg, oneListIDs, sessi, paths)
+function [networkRDMs ids2rem]  = createNetworkRDMs(cfg, oneListIDs, sessi, paths)
          
 
 

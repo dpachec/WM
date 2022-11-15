@@ -14,7 +14,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     load([paths.traces filelistSess{sessi}]);   
 
     [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     if (cfg.avRep)
@@ -597,7 +597,7 @@ end
 
 clear
 %...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials;1:Trials)__timeRes__win-width__mf_FST
-f2sav = 'BLnext12_pfc_E123_[6]_3-54_1_0_1_0_.1_5_1_T.mat'; 
+f2sav = 'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1_O.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -606,22 +606,25 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
    
-
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    if cfg.avRep
-        cfg_contrasts               = average_repetitions(cfg_contrasts);
+    nChans = size(cfg_contrasts.chanNames, 1); 
+    
+    if nChans > 1
+        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+        cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+        if cfg.avRep
+            cfg_contrasts               = average_repetitions(cfg_contrasts);
+        end
+    
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+        [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        
+        neuralRDMs(ids2rem, :, : ,:) = []; 
+        neuralRDMs(:,ids2rem, : ,:) = []; 
+        
+        nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
     end
-
-    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
-    
-    neuralRDMs(ids2rem, :, : ,:) = []; 
-    neuralRDMs(:,ids2rem, : ,:) = []; 
-    
-    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-    nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
     
 end
 
@@ -637,7 +640,7 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext12_pfc_E123_[7]_3-54_1_0_1_0_.1_5_1_T.mat'; 
+f2sav = 'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1_O.mat'; 
 cfg = getParams(f2sav);
 
 
@@ -661,11 +664,13 @@ elseif strcmp(cfg.period(1), 'M')
     set(gcf, 'Position', [100 100 2000 500])
 end
 
-for layi = 1:size(nnFit{1}, 1)-4
+for layi = 1:size(nnFit{2}, 1)-4
     nexttile
     clear nnH
     for subji = 1:length(nnFit)
-       nnH(subji, : ,:) = nnFit{subji, 1}(layi,:,:);       
+       if ~isempty(nnFit{subji, 1})
+            nnH(subji, : ,:) = nnFit{subji, 1}(layi,:,:);       
+       end
     end
     
     nnH(sub2exc, :, :) = []; 
@@ -676,12 +681,10 @@ for layi = 1:size(nnFit{1}, 1)-4
     d2p = squeeze(mean(nnH, 'omitnan'));
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
-    if strcmp(cfg.period(1), 'E')
-        endT = size(nnFit{1}, 3);
-        times = 1:endT; 
-    elseif strcmp(cfg.period(1), 'M')
-        times = 1:40; % for now
-    end
+    
+    endT = size(nnFit{2}, 3);
+    times = 1:endT; 
+
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
