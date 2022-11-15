@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_pfc_M123_[56]_3-54_1_0_1_1_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -183,7 +183,7 @@ end
 %%  plot all layers RNN
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 
@@ -596,8 +596,8 @@ end
 %% MULTI - ITEM TRIALS
 
 clear
-%...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-f2sav = 'BLnext12_hipp_MALL_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
+%...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials;1:Trials)__timeRes__win-width__mf_FST
+f2sav = 'BLnext12_pfc_E123_[6]_3-54_1_0_1_0_.1_5_1_T.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -608,9 +608,9 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
    
 
     [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    if (cfg.avRep)
+    if cfg.avRep
         cfg_contrasts               = average_repetitions(cfg_contrasts);
     end
 
@@ -635,9 +635,9 @@ save([paths.results.DNNs f2sav], 'nnFit');
 
 
 %%  plot all layers MULTI-ITEM
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext12_hipp_MALL_[7]_3-54_0_0_1_0_.1_5_1_AV.mat'; 
+f2sav = 'BLnext12_pfc_E123_[7]_3-54_1_0_1_0_.1_5_1_T.mat'; 
 cfg = getParams(f2sav);
 
 
@@ -677,7 +677,8 @@ for layi = 1:size(nnFit{1}, 1)-4
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
     if strcmp(cfg.period(1), 'E')
-        times = 1:15; 
+        endT = size(nnFit{1}, 3);
+        times = 1:endT; 
     elseif strcmp(cfg.period(1), 'M')
         times = 1:40; % for now
     end

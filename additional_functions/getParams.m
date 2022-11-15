@@ -18,5 +18,8 @@ function [cfg] = getParams(f2sav)
     cfg.win_width   = double(string((f2t{11})));
     mf = strsplit(f2t{12}, '.');
     cfg.mf          = double(string((mf{1})));
+    if length(f2t) > 12
+        cfg.BLIT        = f2t{13}(1);
+    end
 
 end

@@ -1,5 +1,9 @@
 
-function [oneListPow] = extract_power_WM (oneListTraces_c , timeRes)
+function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
+
+    oneListTraces_c = cfg_contrasts.oneListTraces; 
+    timeRes = cfg.timeRes;  
+    period = cfg.period; 
     
     disp ('>> extracting power ... ');
     sr = 1000;
@@ -25,7 +29,7 @@ function [oneListPow] = extract_power_WM (oneListTraces_c , timeRes)
     if timeRes == 0.1
         
          lim_1   = 1; %
-         lim_2   = 90; 
+         lim_2   = 70; 
         
 %         disp ('100ms');  
 %         %lim_1   = 14; %
@@ -91,7 +95,12 @@ function [oneListPow] = extract_power_WM (oneListTraces_c , timeRes)
 
     oneListPow = dataLH;
         
-    
+     if strcmp(period(1), 'E')
+        oneListPow = oneListPow(:,:,:,16:40);
+     elseif strcmp(period(1), 'M')
+        oneListPow = oneListPow(:,:,:,16:65);
+    end
+
 
 
 

@@ -1,16 +1,16 @@
-function[ACT] = load_rnn(lays2load, subji, subj_ch_fr, path);%load network if not loaded yet
+function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
 
 currentFolder = pwd; 
-cd (path)
+cd (paths.activations)
 
-if subji < subj_ch_fr
+if sessi < subj_ch_fr
     cd FR
     sublist = dir('*FR.mat');
     sublist = {sublist.name};  sublist = sort(sublist');
 
-    for layi=1:length(lays2load)
-        load(sublist{lays2load(layi)});
+    for layi=1:length(cfg.lays2load)
+        load(sublist{cfg.lays2load(layi)});
         fs2= squeeze(a(1, :, :)); 
         %fs2= a; 
         ACT(layi,:,:) = fs2;   
@@ -23,8 +23,8 @@ else
 
     tic
 
-    for layi=1:length(lays2load)
-        load(sublist{lays2load(layi)});
+    for layi=1:length(cfg.lays2load)
+        load(sublist{cfg.lays2load(layi)});
         fs2= squeeze(a(1, :, :)); 
         %fs2= a; 
         ACT(layi,:,:) = fs2;     

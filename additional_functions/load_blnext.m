@@ -1,5 +1,10 @@
 %%
-function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, paths, brainROI, oneListIDs, period);%load network if not loaded yet
+function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not loaded yet
+
+    net2load = cfg.net2load; 
+    lays2load = cfg.lays2load; 
+    brainROI  = cfg.brainROI; 
+    period = cfg.period; 
 
     cd (paths.multi_item_activations)
 
@@ -19,9 +24,9 @@ function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, path
         %all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
         seqEnd = 24; 
     elseif strcmp(net2load, 'BLnext12')
-        all_act = load('Features_BLnext-12samples.mat');
-        %all_act{1} = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
-        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        %all_act = load('Features_BLnext-12samples.mat');
+        all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        
         seqEnd = 36; 
     end
 
@@ -71,7 +76,14 @@ function[ACT ids2rem] = load_blnext(net2load, lays2load, subji, subj_ch_fr, path
             
             itH = itIDs(itemi); 
             items2Cons = all_act_H(:,1); 
-            items2Cons = cellfun(@(x) x(9:11), items2Cons, 'un', 0 ); % 5:7 = 1 ; 9:11 = 2; 13:15 = 3
+            % take first second or third position in the item sequence
+            if strcmp(cfg.BLIT, 'F')
+                items2Cons = cellfun(@(x) x(5:7), items2Cons, 'un', 0 ); % 5:7 = 1 ; 9:11 = 2; 13:15 = 3
+            elseif strcmp(cfg.BLIT, 'S')
+                items2Cons = cellfun(@(x) x(9:11), items2Cons, 'un', 0 ); % 5:7 = 1 ; 9:11 = 2; 13:15 = 3
+            elseif strcmp(cfg.BLIT, 'T')
+                items2Cons = cellfun(@(x) x(13:15), items2Cons, 'un', 0 ); % 5:7 = 1 ; 9:11 = 2; 13:15 = 3
+            end
             id2u = contains(items2Cons, itH); 
             j2check = all_act_H(id2u, 1);
             
