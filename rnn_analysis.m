@@ -116,7 +116,7 @@ end
 %%  plot all layers ALEX
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -134,7 +134,7 @@ load([paths.results.DNNs f2sav]);
 
 
 tiledlayout(3,3)
-if strcmp(cfg.period, 'M')
+if strcmp(cfg.period(1), 'M')
     set(gcf, 'Position', [100 100 1200 1000])
 else
     set(gcf, 'Position', [100 100 700 1000])
@@ -154,7 +154,7 @@ for layi = 1:size(nnFit{1}, 1)
     d2p = squeeze(mean(nnH, 'omitnan'));
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
-    if strcmp(cfg.period, 'M')
+    if strcmp(cfg.period(1), 'M')
         times = 1:40; % for now
     else
         times = 1:15; 
@@ -164,7 +164,7 @@ for layi = 1:size(nnFit{1}, 1)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
-    if strcmp(cfg.period, 'M')
+    if strcmp(cfg.period(1), 'M')
         set(gca, 'xlim', [1 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 16);
         set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 24);
         plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
@@ -329,9 +329,9 @@ end
 %% PERMUTATIONS
 
 clear
-nPerm = 100;
+nPerm = 200;
 
-f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -340,27 +340,32 @@ filelistSess = getFiles(paths.traces);
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
+
+    nChans = size(cfg_contrasts.chanNames, 1); 
+    
+    if nChans > 1
    
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    if (cfg.avRep)
-        cfg_contrasts               = average_repetitions(cfg_contrasts);
-    end
-
-    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
-
-    if strcmp(cfg.period, 'M')
-        neuralRDMs = neuralRDMs(:,:,:,6:40); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
-    else
-        neuralRDMs = neuralRDMs(:,:,:,6:15);
-    end
-    for permi = 1:nPerm
-        sC = size(networkRDMs, 2);
-        ids = randperm(sC);
-        networkRDMs = networkRDMs(:, ids, ids); 
-        nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+        cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+        if (cfg.avRep)
+            cfg_contrasts               = average_repetitions(cfg_contrasts);
+        end
+    
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+    
+        if strcmp(cfg.period(1), 'M')
+            neuralRDMs = neuralRDMs(:,:,:,6:15); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
+        else
+            neuralRDMs = neuralRDMs(:,:,:,6:15);
+        end
+        for permi = 1:nPerm
+            sC = size(networkRDMs, 2);
+            ids = randperm(sC);
+            networkRDMs = networkRDMs(:, ids, ids); 
+            nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        end
     end
     
 end
@@ -373,12 +378,12 @@ save([paths.results.DNNs f2sav(1:end-4) '_' num2str(nPerm) 'p.mat'], 'nnFitPerm'
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
-nPerm = 100;
+nPerm = 300;
 
 listF2sav = {
-                'RNN_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 'RNN_hipp_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                %'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
              };
     
 
@@ -397,33 +402,39 @@ for listi = 1:length(listF2sav)
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
-       
-        cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
-        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
-        
-        cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-        if (cfg.avRep)
-            cfg_contrasts               = average_repetitions(cfg_contrasts);
-        end
+
+        nChans = size(cfg_contrasts.chanNames, 1); 
     
-        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        if nChans > 1
 
+            cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
+            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+            
+            cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+            if (cfg.avRep)
+                cfg_contrasts               = average_repetitions(cfg_contrasts);
+            end
+        
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+    
+    
+            % % % restrict extra time for permutation data
+            if strcmp(cfg.period, 'M')
+                neuralRDMs = neuralRDMs(:,:,:,6:15); 
+            else
+                neuralRDMs = neuralRDMs(:,:,:,6:15);
+            end
+            
+            for permi = 1:nPerm
+                sC = size(networkRDMs, 2);
+                ids = randperm(sC);
+                networkRDMs = networkRDMs(:, ids, ids); 
+                nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+            end
 
-        % % % restrict extra time for permutation data
-        if strcmp(cfg.period, 'M')
-            neuralRDMs = neuralRDMs(:,:,:,6:15); 
-        else
-            neuralRDMs = neuralRDMs(:,:,:,6:15);
         end
-        
-        for permi = 1:nPerm
-            sC = size(networkRDMs, 2);
-            ids = randperm(sC);
-            networkRDMs = networkRDMs(:, ids, ids); 
-            nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-        end
-        
+
     end
     
     mkdir ([paths.results.DNNs]);
@@ -439,7 +450,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav  = 'RNN_hipp_E_[1-56]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
+f2sav  =  'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1_200p.mat'; 
 
     
 f2t = strsplit(f2sav, '_');
@@ -468,11 +479,6 @@ for permi = 1:nPerm
         [h p ci ts] = ttest(dataP);
         h = squeeze(h); t = squeeze(ts.tstat);
 
-%         ER = f2t{3};
-%         if strcmp(ER, 'M')
-%             t = t(:,21:55);
-%             h = h(:,21:55);
-%         end
         
         clear allSTs  
         clustinfo = bwconncomp(h);
@@ -494,20 +500,20 @@ end
 %%  get tOBS
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
-f2sav = 'RNN_hipp_M_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-if strcmp(region, 'vvs')
+cfg = getParams(f2sav);
+
+if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
-elseif strcmp(region, 'pfc')
+elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
-elseif strcmp(region, 'hipp')
+elseif strcmp(cfg.brainROI, 'hipp')
     sub2exc = [2]
 end
 
-paths = load_paths_WM(region);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
 
@@ -522,10 +528,9 @@ for layi = 1:size(nnFit{1}, 1)
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat);
 
-    ER = f2t{3};
-    if strcmp(ER, 'E')
+    if strcmp(cfg.period, 'E')
         h = h(:, 6:15); t = t(:, 6:15);
-    elseif strcmp(ER, 'M')
+    elseif strcmp(cfg.period, 'M')
         h = h(:, 20:55); t = t(:, 20:55);
     end
 
@@ -1745,6 +1750,53 @@ for subji = 1:length(sublist)
 end
 
 
+%% GET ALL SEQUENCES 
+clear
+%Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
+f2sav = 'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+paths = load_paths_WM(cfg.brainROI);
+filelistSess = getFiles(paths.traces);
 
+seq2 = []; 
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.traces filelistSess{sessi}]);   
 
+    ids0 = cfg_contrasts.oneListIds_c; 
+    ids = cellfun(@(x) strsplit(x), ids0, 'un', 0)
+    ids = cat(1, ids{:})
+    seq2use = double(string(ids(:, 13:15)));
+    fSeq = unique(seq2use, 'row'); 
+    allSeqs{sessi, :} = fSeq; 
+    seq2 = [seq2; fSeq];
  
+
+
+end 
+
+
+
+%% 
+allSeqs = [seq2VVS; seq2PFC; seq2HIPP]
+
+all_seqs = unique (allSeqs, 'row')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

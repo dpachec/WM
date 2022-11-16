@@ -1,12 +1,15 @@
 
-function [act_CH act_FR] = load_alex_activ(lays2load, subji, subj_ch_fr, path);%load network if not loaded yet
+function [act_CH act_FR] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);
+
+lays2load = cfg.lays2load;
+
 
     lays = {'conv1' 'conv2' 'conv3' 'conv4' 'conv5' 'fc6' 'fc7' 'fc8'};
     currentFolder = pwd; 
     net = alexnet;
     
-    if subji < subj_ch_fr
-        imgPath = [path 'freiburg'];
+    if sessi < subj_ch_fr
+        imgPath = [paths.stim 'freiburg'];
         imageDS = imageDatastore(imgPath); 
         imageDS.ReadFcn = @customReadDatstoreImage;
         
@@ -18,7 +21,7 @@ function [act_CH act_FR] = load_alex_activ(lays2load, subji, subj_ch_fr, path);%
             ACT(layi,:,:) = corr(fs2', 'type', 's');    
         end            
     else
-        imgPath = [path 'china'];
+        imgPath = [paths.stim 'china'];
         imageDS = imageDatastore(imgPath); 
         imageDS.ReadFcn = @customReadDatstoreImage;
         for layi=1:length(lays2load)
