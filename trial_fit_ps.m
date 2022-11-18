@@ -91,6 +91,12 @@ for subji = 1:10
 end
 
 
+[h p ci ts] = ttest(allR)
+t = ts.tstat; 
+disp(['p = ' num2str(p) '   t = ' num2str(t)])
+
+
+
 %% plot one bar
 clear data
 ylim = [-.1 .4];
@@ -105,7 +111,7 @@ set(h,'FaceColor', 'none', 'lineWidth', 3);set(hb,'linestyle','none', 'lineWidth
 set(gca,'XTick',[1],'XTickLabel',{''}, 'FontSize', 30, 'linew',2, 'ylim', ylim, 'xlim', [0 2]);
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 ylabel('Rho')
-%exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+exportgraphics(gcf, 'myP.png', 'Resolution', 100)
 
 
 
@@ -195,6 +201,10 @@ for subji = 1:10
     
     allR(subji, :) = corr(dVVS, dPFC, 'type', 's'); 
 end
+
+[h p ci ts] = ttest(allR)
+t = ts.tstat; 
+disp(['p = ' num2str(p) '   t = ' num2str(t)])
 
 
 

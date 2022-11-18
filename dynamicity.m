@@ -32,7 +32,7 @@ clearvars -except DISC_EE DIDC_EE out_c
 
 
 
-timeL =  [51:150]; 
+timeL =  [1:21]; 
 
 
 meanC1 = cellfun(@(x) squeeze(mean(x)), DISC_EE, 'un', 0); 
@@ -113,7 +113,7 @@ for permi = 1:nPerm
     mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [lM lM nSubj]); mC2FD = permute(mC2FD, [3 1 2]);
 
     mDiff = mC1FD - mC2FD; 
-    mDiff = mDiff(:, 1:15, 1:15);
+    mDiff = mDiff(:, timeL,timeL );
 
     % % % shuffle matrix for all subjects 
     for subji = 1:nSubj
@@ -123,8 +123,7 @@ for permi = 1:nPerm
             idR = randi(size(mDiff, 2)); 
             tmp = mDiffSubj(timei, idR); 
             onDiagPerm(timei) = tmp; 
-            mDiffSubj(timei, idR) = diag(timei); 
-            %mDiffSubj(timei, :) = diag(timei); 
+            mDiffSubj(timei, idR) = onDiag(timei); 
             mDiffSubj(timei, timei) = onDiagPerm(timei); 
         end
         mDiffPerm(subji, :, :) = mDiffSubj ;
@@ -163,12 +162,17 @@ end
 
 
 %% 
-d2p = squeeze(dynMatrxPerm(22,:,:));
+d2p = squeeze(dynMatrxPerm(1,:,:));
 figure
 contourf(d2p)
 clustinfo = bwconncomp(d2p)
 
 
+%% 
+
+figure
+histogram(clusLPerm); hold on
+scatter(clusL, 0, 2000, 'r.')
 
 
 
@@ -183,7 +187,7 @@ clustinfo = bwconncomp(d2p)
 
 clearvars -except DISC_EE DIDC_EE out_c
 
-timeL = [1:150]; 
+timeL = [1:21]; 
 
 C1 = DISC_EE; 
 C2 = DIDC_EE; 
@@ -196,10 +200,10 @@ for subji = 1:length(C1)
     C2Sub = C2{subji}; 
 
     % % % compute mean C2 and substract same mean matrix to all trials ? ? ? 
-    meanC2 = mean(C2Sub); 
-    nTrials = size(C1Sub, 1); 
-    meanC2 = repmat(meanC2, nTrials, 1, 1);
-    C1Sub = C1Sub - meanC2; 
+%     meanC2 = mean(C2Sub); 
+%     nTrials = size(C1Sub, 1); 
+%     meanC2 = repmat(meanC2, nTrials, 1, 1);
+%     C1Sub = C1Sub - meanC2; 
 
     for triali = 1:size(C1Sub, 1)
 
@@ -256,7 +260,7 @@ d2p = squeeze(mean(mDYMS))
 
 %imagesc(d2p); axis square
 
-d2p(triu(d2p) == 0) = nan
+%d2p(triu(d2p) == 0) = nan
 contourf(d2p, 100, 'linecolor', 'none'); axis square; colorbar
 set(gca, 'clim', [.2 .45]); 
 
@@ -296,14 +300,14 @@ for subji = 1:size(C1, 1)
 %         psT(triali, :) = mean(C1ST, 'all'); 
 
         % % % % only off-diagonal
-        C1ST = squeeze(C1Sub(triali, timeL, timeL));
-        C1ST(eye(size(C1ST))>0) = nan; 
-        psT(triali, :) = mean(C1ST, 'all', 'omitnan'); 
+%         C1ST = squeeze(C1Sub(triali, timeL, timeL));
+%         C1ST(eye(size(C1ST))>0) = nan; 
+%         psT(triali, :) = mean(C1ST, 'all', 'omitnan'); 
 
         
         % % % only diagonal
-        %C1STD = diag(C1ST(timeL, timeL)); % restricted to the period of significant dynamicity
-        %psT(triali, :) = mean(C1STD); 
+        C1STD = diag(C1ST(timeL, timeL)); % restricted to the period of significant dynamicity
+        psT(triali, :) = mean(C1STD); 
 
     end
 
@@ -316,14 +320,14 @@ end
 
 %% correlate dynamicity with PS
 
-
+clear allR
 for subji = 1:size(allPST, 1)
 
     ps = allPST{subji}; 
     dy = allSClust{subji}; 
 
 
-    allR(subji) = corr(ps, dy, 'type', 's');
+    allR(subji,:) = corr(ps, dy, 'type', 's');
 
 
 end
