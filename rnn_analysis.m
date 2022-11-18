@@ -450,7 +450,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav  =  'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1_200p.mat'; 
+f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1_200p.mat'; 
 
     
 f2t = strsplit(f2sav, '_');
@@ -500,7 +500,7 @@ end
 %%  get tOBS
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
-f2sav = 'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -528,10 +528,10 @@ for layi = 1:size(nnFit{1}, 1)
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat);
 
-    if strcmp(cfg.period, 'E')
+    if strcmp(cfg.period(1), 'E')
         h = h(:, 6:15); t = t(:, 6:15);
-    elseif strcmp(cfg.period, 'M')
-        h = h(:, 20:55); t = t(:, 20:55);
+    elseif strcmp(cfg.period(1), 'M')
+        h = h(:, 1:40); t = t(:, 1:40);
     end
 
     clustinfo = bwconncomp(h);
