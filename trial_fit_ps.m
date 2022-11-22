@@ -5,7 +5,8 @@ clear, clc
 region = 'vvs'; 
 paths = load_paths_WM(region);
 
-contrasts = { 'DISC_EE' 'DIDC_EE'};
+%contrasts = { 'DISC_EE' 'DIDC_EE'};
+contrasts = { 'DISC_EE' };
 
 c = unique (contrasts);
 d = cellfun(@(x) [x '_id'], c, 'un', 0);
@@ -22,14 +23,15 @@ for i = 1:length(out_c)
 end
 
 DISC_EE_VVS = DISC_EE; 
-DIDC_EE_VVS = DIDC_EE; 
+%DIDC_EE_VVS = DIDC_EE; 
 
 clearvars -except DISC_EE_VVS DIDC_EE_VVS
 
 region = 'pfc'; 
 paths = load_paths_WM(region);
 
-contrasts = { 'DISC_EE' 'DIDC_EE'};
+%contrasts = { 'DISC_EE' 'DIDC_EE'};
+contrasts = { 'DISC_EE' };
 
 c = unique (contrasts);
 d = cellfun(@(x) [x '_id'], c, 'un', 0);
@@ -46,7 +48,7 @@ for i = 1:length(out_c)
 end
 
 DISC_EE_PFC = DISC_EE; 
-DIDC_EE_PFC = DIDC_EE; 
+%DIDC_EE_PFC = DIDC_EE; 
 
 
 

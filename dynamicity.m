@@ -7,7 +7,8 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'DISC_EE' 'DIDC_EE';
+              'DISC_EE' 
+              'DIDC_EE';
              };
 
 c = unique (contrasts);
@@ -25,6 +26,18 @@ for i = 1:length(out_c)
     eval([c{i} ' = out_c{i};']);
     %eval([d{i} ' = out_id{i};']);
 end
+
+
+
+%% plot one example trial 
+
+%d2p = squeeze(DISC_EE{1}(1, :, :)); 
+d2p = squeeze(mean(DISC_EE{22}, 1, 'omitnan')); 
+d2p =  triu(d2p.',1) + tril(d2p); 
+imagesc(d2p)
+
+
+
 
 
 %% Compute dynamicity scores at the group level 
@@ -46,6 +59,8 @@ mC2FD = cat(3, mC2F{:}); mC2FD = reshape(mC2FD, [lM lM nSubj]); mC2FD = permute(
 
 mDiff = mC1FD - mC2FD; 
 mDiff = mDiff(:,timeL, timeL);
+
+%mDiff = mC1FD ;
 
 
 for timei = 1:size(mDiff, 2)
@@ -185,9 +200,43 @@ scatter(clusL, 0, 2000, 'r.')
 
 %% Compute dynamicity scores at the trial level 
 
+% % % % % load data
+
+clear, clc
+
+region = 'vvs';
+paths = load_paths_WM(region);
+
+contrasts = {
+              'DISC_EE' 
+              'DIDC_EE';
+             };
+
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([paths.currSessEE c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    idData{i,:} = all_IDs;
+    %idData{i,:} = [];
+end
+
+noAv = 1;
+[out_c ] = averageSub_WM (c, d, contrData, idData, region, noAv);
+for i = 1:length(out_c) 
+    eval([c{i} ' = out_c{i};']);
+    %eval([d{i} ' = out_id{i};']);
+end
+
+
 clearvars -except DISC_EE DIDC_EE out_c
 
-timeL = [1:21]; 
+
+
+
+%% compute dynamicity scores
+
+timeL = [6:15]; 
 
 C1 = DISC_EE; 
 C2 = DIDC_EE; 
@@ -195,21 +244,22 @@ C2 = DIDC_EE;
 
 for subji = 1:length(C1)
 
-    clear clustL
+    clear clustL dyNB
     C1Sub = C1{subji}; 
     C2Sub = C2{subji}; 
 
     % % % compute mean C2 and substract same mean matrix to all trials ? ? ? 
-%     meanC2 = mean(C2Sub); 
-%     nTrials = size(C1Sub, 1); 
-%     meanC2 = repmat(meanC2, nTrials, 1, 1);
-%     C1Sub = C1Sub - meanC2; 
+     meanC2 = mean(C2Sub); 
+     nTrials = size(C1Sub, 1); 
+     meanC2 = repmat(meanC2, nTrials, 1, 1);
+     C1Sub = C1Sub - meanC2; 
 
     for triali = 1:size(C1Sub, 1)
 
         C1ST = squeeze(C1Sub(triali, :, :));
         C1ST =  triu(C1ST.',1) + tril(C1ST ); 
         C1ST = C1ST(timeL, timeL);
+        dynMatrx = zeros(length(timeL));
            
         for timei = 1:size(C1ST, 2)
         
@@ -241,13 +291,22 @@ for subji = 1:length(C1)
         end
     
         dynMTrial(triali, : ,:) = dynMatrx; 
+        dyNB(triali,:) = sum(dynMatrx, 'all');
     end
 
     allDynMatrix{subji,:} = dynMTrial; 
 
     allSClust{subji,:} = clustL;
+    allSClustB{subji,:} = dyNB; 
 
 end
+
+%% plot example dyn matrix
+
+d2p = squeeze(allDynMatrix{1}(5, :, :));
+
+figure; imagesc(d2p); axis square
+
 
 %% 
 
@@ -268,6 +327,7 @@ set(gca, 'clim', [.2 .45]);
 
 [h p ci ts] = ttest(mDYMS); 
 h = squeeze(h); t = squeeze(ts.tstat);
+figure(); 
 imagesc(h); axis square; colorbar
 
 
@@ -278,7 +338,7 @@ contourf(meanDYM{6}); axis square; colorbar
 
 %% compute PS (on diagonal, off diagonal , full matrix) 
 
-clearvars -except DISC_EE DIDC_EE out_c allSClust
+clearvars -except DISC_EE DIDC_EE out_c allSClust allSClustB
 
 timeL = [6:15]; 
 
@@ -295,9 +355,9 @@ for subji = 1:size(C1, 1)
         C1ST = squeeze(C1Sub(triali, :, :));
 
         % % % entire matrix 
-%         C1ST =  triu(C1ST.',1) + tril(C1ST ); 
-%         C1ST = C1ST(timeL, timeL);
-%         psT(triali, :) = mean(C1ST, 'all'); 
+         C1ST =  triu(C1ST.',1) + tril(C1ST ); 
+         C1ST = C1ST(timeL, timeL);
+         psT(triali, :) = mean(C1ST, 'all'); 
 
         % % % % only off-diagonal
 %         C1ST = squeeze(C1Sub(triali, timeL, timeL));
@@ -306,8 +366,8 @@ for subji = 1:size(C1, 1)
 
         
         % % % only diagonal
-        C1STD = diag(C1ST(timeL, timeL)); % restricted to the period of significant dynamicity
-        psT(triali, :) = mean(C1STD); 
+%        C1STD = diag(C1ST(timeL, timeL)); % restricted to the period of significant dynamicity
+%        psT(triali, :) = mean(C1STD); 
 
     end
 
@@ -320,14 +380,31 @@ end
 
 %% correlate dynamicity with PS
 
-clear allR
+clear allR allSlopes
+
+tiledlayout(6, 5); set(gcf, 'Position', [10 10 1000 1000])
 for subji = 1:size(allPST, 1)
+    clear dy 
+
+    set(gca, 'xlim', [-.15 .15], 'ylim', [-10 100])
+    %set(gca, 'xlim', [-.15 .15], 'ylim', [-10 10000])
+    ax= nexttile
 
     ps = allPST{subji}; 
     dy = allSClust{subji}; 
 
 
     allR(subji,:) = corr(ps, dy, 'type', 's');
+
+
+    scatter(ps, dy,'.')
+    set(gca, 'xlim', [-.15 .15], 'ylim', [0 100])
+    h2 = lsline(ax);h2.LineWidth = 2;h2.Color = [.5 .5 .5 ]
+    B = [ones(size(h2.XData(:))), h2.XData(:)]\h2.YData(:);
+    allSlopes(subji, :) = B(2);
+    allIntercepts(subji, :) = B(1);
+
+
 
 
 end
@@ -343,7 +420,7 @@ clear data
 ylim = [-1 1];
 
 
-data.data = allR';
+data.data = allR;
 figure(); set (gcf, 'Position', [300 300 520 650]);
 mean_S = mean(data.data, 1);std_S = std(data.data, [], 1); h = bar (mean_S);hold on;
 hb = plot ([1], data.data); hold on; 
