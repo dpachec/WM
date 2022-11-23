@@ -58,9 +58,9 @@ clearvars -except DISC_EE_VVS DIDC_EE_VVS DISC_EE_PFC DIDC_EE_PFC
 %%
 
 DISC_EE_PFC = DISC_EE_PFC([2 3  5  9 10 11 12 14 15 16]);
-DIDC_EE_PFC = DIDC_EE_PFC([2 3  5  9 10 11 12 14 15 16]);
+%DIDC_EE_PFC = DIDC_EE_PFC([2 3  5  9 10 11 12 14 15 16]);
 DISC_EE_VVS = DISC_EE_VVS([7 9 13 18 19 20 21 23 27 28]); 
-DIDC_EE_VVS = DIDC_EE_VVS([7 9 13 18 19 20 21 23 27 28]); 
+%DIDC_EE_VVS = DIDC_EE_VVS([7 9 13 18 19 20 21 23 27 28]); 
 
 
 
@@ -68,12 +68,14 @@ DIDC_EE_VVS = DIDC_EE_VVS([7 9 13 18 19 20 21 23 27 28]);
 clc
 clear dVVS dPFC allR
 
+tiledlayout(5,2); set(gcf, 'Position', [10 10 1000 1000])
 for subji = 1:10
+    ax= nexttile
     
     vvsC1 = DISC_EE_VVS{subji};
-    vvsC2 = DIDC_EE_VVS{subji};
+    %vvsC2 = DIDC_EE_VVS{subji};
     pfcC1 = DISC_EE_PFC{subji};
-    pfcC2 = DIDC_EE_PFC{subji};
+    %pfcC2 = DIDC_EE_PFC{subji};
 
     for triali = 1:size(vvsC1, 1)
         
@@ -88,16 +90,24 @@ for subji = 1:10
         %dPFC(triali,:) = mean(pfcC1(triali, 6:15, 6:15), 'all', 'omitnan'); 
 
     end
+
+    scatter(dVVS, dPFC,'.')
+    h2 = lsline(ax);h2.LineWidth = 2;h2.Color = [.5 .5 .5 ]
+    B = [ones(size(h2.XData(:))), h2.XData(:)]\h2.YData(:);
+    allSlopes(subji, :) = B(2);
+    allIntercepts(subji, :) = B(1);
     
     allR(subji, :) = corr(dVVS, dPFC, 'type', 's'); 
 end
 
 
-[h p ci ts] = ttest(allR)
+[h p ci ts] = ttest(allR);
 t = ts.tstat; 
 disp(['p = ' num2str(p) '   t = ' num2str(t)])
 
-
+[h p ci ts] = ttest(allSlopes);
+t = ts.tstat; 
+disp(['p = ' num2str(p) '   t = ' num2str(t)])
 
 %% plot one bar
 clear data
