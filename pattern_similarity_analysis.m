@@ -7,11 +7,12 @@ paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
 
-%frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-%fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
+frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
-frequncies2test = [{3:54}]';
-fnames = {'3-150Hz'}'; fnames = fnames';
+
+%frequncies2test = [{3:54}]';
+%fnames = {'3-150Hz'}'; fnames = fnames';
 
 
 win_width           = 5; 

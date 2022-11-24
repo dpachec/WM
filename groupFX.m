@@ -6,8 +6,8 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              %'SISC_EE' 'DISC_EE';
-              'DISC_EE' 'DIDC_EE';
+              'SISC_EEC' 'DISC_EEC';
+              %'DISC_EEC' 'DIDC_EEC';
               %'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
@@ -140,8 +140,8 @@ end
 
 %% plot diagonal only
 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'SISC_EEC';
+cond2 = 'DISC_EEC';
 
 subj2exc = [18 22] ; 
 
@@ -239,9 +239,9 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              %'SISC_EE' 'DISC_EE';
+              'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
+              %'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -266,19 +266,19 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+cond1 = 'SISC_EEC';
+cond2 = 'DISC_EEC';
  
 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-%subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
-subj2exc        =       [2];
-runperm         =       1;
+subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
+%subj2exc        =       [2];
+runperm         =       0;
 plotClust       =       1; 
-dupSym          =       0; 
+dupSym          =       1; 
 n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
@@ -288,8 +288,8 @@ cfg.square      =       1;
 cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
-cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %4 3 2.5 2 
+cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '1-1'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;

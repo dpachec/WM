@@ -693,11 +693,11 @@ end
 % % % % % % Encoding - Encoding CORRECT
 if ~isempty(intersect(c2c, 'EEC'))
     if (strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5') ) & ... %* is for the average data
-        strcmp(evei{8}, '1') & strcmp(evei{1}, evei{2}) % correct at the item level
+        strcmp(evei{8}, '1') & ( strcmp(evei{1}, evei{2})  ) % correct at the item level
         for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
            evej = strsplit(oneListIds{j});
            if (strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') | strcmp(evej(1), '*') ) & ...
-               strcmp(evej{8}, '1') & strcmp(evej{1}, evej{2}) % correct at the item level
+               strcmp(evej{8}, '1') & ( strcmp(evej{1}, evej{2})  )
                 trli = string(evei(12)); trlj = string(evej(12));
                 trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
                 trlij = [trli trlj];
