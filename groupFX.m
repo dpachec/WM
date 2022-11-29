@@ -6,9 +6,9 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'SISC_EEC' 'DISC_EEC';
-              %'DISC_EEC' 'DIDC_EEC';
-              %'DISC_EM2' 'DIDC_EM2';
+              %'SISC_EEC' 'DISC_EEC';
+              %'DISC_EE' 'DIDC_EE';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -32,7 +32,7 @@ end
 
 %% plot simple
 
-subj2exc = []; 
+subj2exc = [18 22]; 
 cond1 = 'DISC_EM2';
 cond2 = 'DIDC_EM2';
 lim1 = [3:17]; lim2 = [3:47];
@@ -57,25 +57,26 @@ t = squeeze(ts.tstat);
 
 %remove non-sig clusters
 clustinfo = bwconncomp(h);
-for pixi = 1:length(clustinfo.PixelIdxList)
-   h(clustinfo.PixelIdxList{pixi}) = 0;   
-end
-%h(clustinfo.PixelIdxList{4}) = 1; % VVS
-%h(clustinfo.PixelIdxList{10}) = 1; % VVS
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%    h(clustinfo.PixelIdxList{pixi}) = 0;   
+% end
+% h(clustinfo.PixelIdxList{4}) = 1; % VVS
+% h(clustinfo.PixelIdxList{10}) = 1; % VVS
 % nothing in PFC
 
 c1 = squeeze(mean(c1(:, 6:15, :), 2));
 c2 = squeeze(mean(c2(:, 6:15, :), 2));
 d = c1-c2; 
 [h2 p2 ci2 ts2] = ttest(d); 
+
 %remove non-sig clusters
-clustinfo = bwconncomp(h2);
-for pixi = 1:length(clustinfo.PixelIdxList)
-   h2(clustinfo.PixelIdxList{pixi}) = 0;   
-end
-h2(clustinfo.PixelIdxList{2}) = 1;
-h2(h2==0) = nan; h2(h2 == 1) = 0; 
-t2 = ts2.tstat ;
+ clustinfo = bwconncomp(h2);
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%    h2(clustinfo.PixelIdxList{pixi}) = 0;   
+% end
+% h2(clustinfo.PixelIdxList{2}) = 1;
+ h2(h2==0) = nan; h2(h2 == 1) = 0; 
+% t2 = ts2.tstat ;
 %h2Obs = sum(t2(clustinfo.PixelIdxList{2})); 
 
 md = mean(d); 
@@ -138,12 +139,26 @@ for permi = 1:nPerm
 end
 
 
+%% permutations
+n_perm = 1000; 
+
+%first find 
+obs = sum(t(clustinfo.PixelIdxList{6}));
+
+allAb = max_clust_sum(abs(max_clust_sum) > obs);
+%allAb = max_clust_sum((max_clust_sum) > obs);
+p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/ n_perm);
+disp (['p = ' num2str(p)]);
+%x = find(max_clust_sum_ranked(:,2) == index)
+
+ 
+
 %% plot diagonal only
 
-cond1 = 'SISC_EEC';
-cond2 = 'DISC_EEC';
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
 
-subj2exc = [18 22] ; 
+subj2exc = [18 22]; 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %exclude subjects
@@ -155,6 +170,19 @@ end
 %% extract full map 
 cond1 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond1_A, 'un', 0));
 cond2 = cell2mat(cellfun(@(x) mean(x, 1, 'omitnan'), all_cond2_A, 'un', 0));
+
+%% plot 
+
+d2p1 = squeeze(mean(cond1))
+d2p2 = squeeze(mean(cond2))
+
+mDiff = d2p1-d2p2; 
+
+figure; contourf(mDiff); hold on
+h = ttest(cond1, cond2); 
+%contour(squeeze(h))
+
+
 
 %% extract only diagonal for each subject in each conditoon
 cond1 = cell2mat(cellfun(@(x) diag(squeeze(mean(x, 1, 'omitnan')))', all_cond1_A, 'un', 0));
@@ -232,6 +260,7 @@ figure()
 imagesc(mc1-mc2);
 
 
+
 %%
 clearvars
 
@@ -239,9 +268,9 @@ region = 'vvs';
 paths = load_paths_WM(region);
 
 contrasts = {
-              'SISC_EEC' 'DISC_EEC';
+              %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -262,23 +291,24 @@ for i = 1:length(out_c)
 end
 
 %% COND1 - COND2 (NEW LAYOUT 1x3) SHUFFLING AT THE TRIAL LEVEL
+
 %clear all; 
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'SISC_EEC';
-cond2 = 'DISC_EEC';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
  
 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
+subj2exc        =       [2];% vvs;%[1] pfc %[2] in hipp
 %subj2exc        =       [2];
 runperm         =       0;
 plotClust       =       1; 
-dupSym          =       1; 
+dupSym          =       0; 
 n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
@@ -288,15 +318,15 @@ cfg.square      =       1;
 cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %4 3 2.5 2 
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '1-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
 test2use        =       'ttest'; %'wilcox'; %'ttest';
 cfg.remClust    =       1; %remove clusters from plot (only if run permutation is true)
 cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
-cfg.clust2plot  =       1;
+cfg.clust2plot  =       6;
 cfg.subj2exc    =       subj2exc;
 cfg.lwd1        =       2; %baseline 
 cfg.lwd2        =       2; %significant outline
@@ -380,9 +410,9 @@ end
 
         %first find 
         obs = max(out_real.all_clust_tsum_real(:,1));
-        %allAb = max_clust_sum(abs(max_clust_sum) > obs);
-        allAb = max_clust_sum((max_clust_sum) > obs);
-        p =1 - (n_perm - (length (allAb)-1) )  /n_perm;
+        allAb = max_clust_sum(abs(max_clust_sum) > obs);
+        %allAb = max_clust_sum((max_clust_sum) > obs);
+        p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/ n_perm);
         disp (['p = ' num2str(p)]);
         %x = find(max_clust_sum_ranked(:,2) == index)
     end
@@ -395,12 +425,13 @@ n_perm = 1000;
 
 max_clust_sum = out_perm.max_clust_sum;
 
+%maintenance clusters : 192.369408876301 130.459520724292
 %first find 
 obs = max(all_clust_tsum_real(:,1));
 
-%allAb = max_clust_sum(abs(max_clust_sum) > obs);
-allAb = max_clust_sum((max_clust_sum) > obs);
-p =1 - (n_perm - (length (allAb)-1) )  /n_perm;
+allAb = max_clust_sum(abs(max_clust_sum) > obs);
+%allAb = max_clust_sum((max_clust_sum) > obs);
+p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/ n_perm);
 disp (['p = ' num2str(p)]);
 %x = find(max_clust_sum_ranked(:,2) == index)
 

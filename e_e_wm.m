@@ -110,9 +110,12 @@ for subji = [1 8:9 25:26 29:39 51:54 59:60 63:64 65:83] %subjfir:subjend % subjs
         cfg_contrasts.subj                =       EEG.subj; 
         
     else
-        [oneListPow] = extract_power_WM (oneListTraces_c, oneListIds_c, timeRes);
-        cfg_contrasts.oneListIds_c        =       oneListIds_c; 
-        cfg_contrasts.oneListPow          =       oneListPow; 
+        cfg.timeRes = timeRes; 
+        cfg_contrasts.oneListTraces = oneListTraces_c; 
+        cfg_contrasts.oneListIds_c = oneListIds_c; 
+        [oneListPow] = extract_power_WM (cfg_contrasts, cfg);
+        cfg_contrasts.oneListPow          = oneListPow; 
+        cfg_contrasts.oneListTraces = []; 
         cfg_contrasts.chanNames           =       struct2cell(EEG.chanlocs)'; %[{EEG.chanlocs.labels}']; 
         cfg_contrasts.subj                =       EEG.subj; 
     

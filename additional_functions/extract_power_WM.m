@@ -5,7 +5,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     timeRes = cfg.timeRes;  
     period = cfg.period; 
     
-    disp ('>> extracting power ... ');
+   % disp ('>> extracting power ... ');
     sr = 1000;
     data_ft = mat2ft(oneListTraces_c, sr);
 
@@ -57,6 +57,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     end
     cfg.keeptrials   = 'yes'; % keep individual trials or average
     cfg.showcallinfo = 'no';% no log console
+    cfg.feedback     = 'none'; 
     tf_data_L          = ft_freqanalysis(cfg, data_ft);
     dataL = tf_data_L.powspctrm;
 
@@ -76,6 +77,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
         cfg.toi          = 0:timeRes:(length(oneListTraces_c)/sr); % 50ms; 
     end
     cfg.showcallinfo = 'no';% no log console
+    cfg.feedback     = 'none'; 
     cfg.keeptrials   = 'yes'; % keep individual trials, if not, it makes an average 
     tf_data_H          = ft_freqanalysis(cfg, data_ft);
     dataH = tf_data_H.powspctrm;

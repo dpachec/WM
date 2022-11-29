@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -42,41 +42,79 @@ clear
 
 
 listF2sav = {
-                'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_vvs_E1_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E1_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_E1_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_vvs_E2_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E2_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_E2_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_vvs_E3_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_E3_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_E3_[1-8]_3-54_1_0_1_0_.1_5_1.mat';
-                'RNN_vvs_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_E1_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E1_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_E1_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_E2_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E2_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_E2_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_E3_[1-56]_3-54_1_0_1_0_.1_5_1.mat';
-                'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'RNN_hipp_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+               'RNN_pfc_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_pfc_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_vvs_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'RNN_hipp_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+                
+
              };
     
 
 for listi = 1:length(listF2sav)
-    
+    disp(['File > ' num2str(listi)]);
     clearvars -except listF2sav listi 
         
     f2sav       = listF2sav{listi}
@@ -85,11 +123,10 @@ for listi = 1:length(listF2sav)
     filelistSess = getFiles(paths.traces);
     
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-        disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
        
         [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts.oneListTraces, cfg.timeRes); % 
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
         
         cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
         if (cfg.avRep)
@@ -263,7 +300,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS
 
 clear 
-f2sav = 'RNN_vvs_E_[56]_30-38_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
 f2t = strsplit(f2sav, '_');
 region = f2t{2};
 
@@ -280,9 +317,9 @@ end
 
 for subji = 1:length(nnFit)
     
-   %nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
+   nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
    %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
-   nnH(subji, : ,:,:) = nnFit{subji};
+   %nnH(subji, : ,:,:) = nnFit{subji};
         
 end
 
@@ -292,10 +329,11 @@ nnH = squeeze(nnH);
 [h p ci ts] = ttest(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
 clustinfo = bwconncomp(h);
-tObs = sum(t(clustinfo.PixelIdxList{2}))
+%tObs = sum(t(clustinfo.PixelIdxList{2}))
 d2p = squeeze(mean(nnH, 'omitnan'));
 
-times = -1.75:.1:6.849; 
+%times = -1.75:.1:6.849; 
+times = 1:21; 
 figure
 [h p ci ts] = ttest(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
@@ -308,7 +346,7 @@ seART = stdART/ sqrt(size(nnH, 1));
 shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
 plot (times, hb, 'Linewidth', 4)
 %set(gca, 'FontSize', 40, 'xlim', [-.5 1])
-set(gca, 'FontSize', 40, 'xlim', [-.5 4])
+%set(gca, 'FontSize', 40, 'xlim', [-.5 4])
 %exportgraphics(gcf, 'myP.png', 'Resolution', 300); 
 
 
@@ -450,7 +488,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1_200p.mat'; 
+f2sav = 'RNN_hipp_M123_[1-56]_3-54_1_0_1_0_.1_5_1_300p.mat'; 
 
     
 f2t = strsplit(f2sav, '_');
@@ -500,7 +538,7 @@ end
 %%  get tOBS
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
-f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_hipp_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -555,7 +593,8 @@ for layi = 1:length(tOBS)
 
     for clusti = 1:length(mcsR)
         
-        allAb = mcsP(abs(mcsP) > abs(mcsR));
+        %allAb = mcsP(abs(mcsP) > abs(mcsR));
+        allAb = mcsP(mcsP > mcsR);
         p(layi, :) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
 
     end

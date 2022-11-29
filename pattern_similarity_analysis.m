@@ -2,28 +2,28 @@
 %% 
 
 clearvars
-region              = 'vvs';
+region              = 'hipp';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
 
-frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+%frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+%fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
 
-%frequncies2test = [{3:54}]';
-%fnames = {'3-150Hz'}'; fnames = fnames';
+frequncies2test = [{3:54}]';
+fnames = {'3-150Hz'}'; fnames = fnames';
 
 
-win_width           = 5; 
+win_width           = 50; 
 mf                  = 1; 
-meanInTime          = 0; 
-avMeth              = 'none';  % average across image repetitions or not
+meanInTime          = 1; 
+avMeth              = 'pow';  % average across image repetitions or not
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
 TG                  = 1; %temporal generalization
-contr2save          = {'SISC_EEC' 'DISC_EEC' };
+contr2save          = {'DISC_EE' 'DIDC_EE' };
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
