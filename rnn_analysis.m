@@ -37,87 +37,59 @@ etime(datevec(t2), datevec(t1))
 
 
 %% IN LOOP 
-clear
+clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-
-
+    
 listF2sav = {
-               'RNN_pfc_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_pfc_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_vvs_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_E123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_M123_[1-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_M123_[1-56]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'RNN_hipp_M123_[1-56]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'Alex_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+               'Alex_pfc_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+               'Alex_hipp_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_hipp_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+               'Alex_vvs_M123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
                'Alex_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
-               'Alex_hipp_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+               'Alex_pfc_M123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
+               'Alex_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+               'Alex_hipp_M123_[1-8]_3-54_1_0_0_0_.1_5_1.mat'; 
                'Alex_hipp_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
                'Alex_hipp_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat'; 
                'Alex_hipp_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat'; 
                'Alex_hipp_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
                'Alex_hipp_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
-
-                
-
-             };
-    
+               
+             };   
 
 for listi = 1:length(listF2sav)
-    disp(['File > ' num2str(listi)]);
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
     clearvars -except listF2sav listi 
         
-    f2sav       = listF2sav{listi}
+    f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
     paths = load_paths_WM(cfg.brainROI);
     filelistSess = getFiles(paths.traces);
@@ -153,7 +125,7 @@ end
 %%  plot all layers ALEX
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear 
-f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -220,10 +192,7 @@ end
 %%  plot all layers RNN
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-
-
-
+f2sav = 'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -239,7 +208,7 @@ load([paths.results.DNNs f2sav]);
 
 
 tiledlayout(8,8, 'TileSpacing', 'tight', 'Padding', 'compact');
-if strcmp(cfg.period, 'M')
+if strcmp(cfg.period(1), 'M')
     set(gcf, 'Position', [100 100 1200 1000])
 else
     set(gcf, 'Position', [100 100 700 1200])
@@ -261,8 +230,8 @@ for layi = 1:size(nnFit{1}, 1)
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
     
-    if strcmp(cfg.period, 'M')
-        times = 1:40; 
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
     else
         times = 1:15; 
     end
@@ -271,15 +240,15 @@ for layi = 1:size(nnFit{1}, 1)
     contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
-    if strcmp(cfg.period, 'M')
+    if strcmp(cfg.period(1), 'M')
         if layi == 49
             set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
-            set(gca, 'xtick', [16 20.5 60], 'xticklabels', {'-.5' '0' '4'});
+            set(gca, 'xtick', [3  37], 'xticklabels', {'0' '3.5'});
         else
             set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         end
-        set(gca, 'xlim', [16 60], 'clim', [-5 5], 'FontSize', 10);
-        plot([20.5 20.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        set(gca, 'xlim', [1 37], 'clim', [-5 5], 'FontSize', 10);
+        plot([3 3],get(gca,'ylim'), 'k:','lineWidth', 2);
     else
         if layi == 49
             set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
@@ -288,7 +257,7 @@ for layi = 1:size(nnFit{1}, 1)
             set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         end
         set(gca, 'FontSize', 8, 'clim', [-5 5]);
-        plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        plot([3 3],get(gca,'ylim'), 'k:','lineWidth', 2);
         
     end
     
@@ -297,27 +266,25 @@ end
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
-%% load file to plot BANDS
-
+%% load file to plot BANDS (one Layer - time Point)
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_pfc_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-
-paths = load_paths_WM(region);
+f2sav = 'RNN_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+paths = load_paths_WM(cfg.brainROI);
 load([paths.results.DNNs f2sav]);
 
-if strcmp(region , 'pfc')
-    sub2exc = [1];
-elseif strcmp(region , 'vvs')
+if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
-elseif strcmp(region , 'hipp')
-    sub2exc = [2];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2]
 end
 
 for subji = 1:length(nnFit)
     
-   nnH(subji, : ,:) = nnFit{subji, 1}(1,:,:);
+   nnH(subji, : ,:) = nnFit{subji, 1}(56,:,:);
    %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
    %nnH(subji, : ,:,:) = nnFit{subji};
         
@@ -333,7 +300,7 @@ clustinfo = bwconncomp(h);
 d2p = squeeze(mean(nnH, 'omitnan'));
 
 %times = -1.75:.1:6.849; 
-times = 1:21; 
+
 figure
 [h p ci ts] = ttest(nnH);
 h = squeeze(h); t = squeeze(ts.tstat);
@@ -343,13 +310,113 @@ mART = squeeze(mean(nnH));
 stdART = squeeze(std(nnH)); 
 seART = stdART/ sqrt(size(nnH, 1));
 
-shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
-plot (times, hb, 'Linewidth', 4)
-%set(gca, 'FontSize', 40, 'xlim', [-.5 1])
-%set(gca, 'FontSize', 40, 'xlim', [-.5 4])
-%exportgraphics(gcf, 'myP.png', 'Resolution', 300); 
+if strcmp(cfg.period(1), 'M')
+    times = 1:46;
+    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
+    shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
+    plot (times, hb, 'Linewidth', 4)
+    %set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
+    set(gca, 'xtick', [3 8 37], 'xticklabels', {'0' '0.5' '3.5'}, 'xlim', [1 37])
+    set(gca, 'FontSize', 18, 'ylim', [-.03 .035]);
+    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',1);
+    plot([8 8],get(gca,'ylim'), 'k:','lineWidth',1);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',1);
+elseif strcmp(cfg.period(1), 'E')
+    times = 1:21; 
+    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
+    shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
+    plot (times, hb, 'Linewidth', 4)
+    set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'xlim', [1 15])
+    set(gca, 'FontSize', 12);
+    plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth',2);
+    
+end
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 
+
+
+
+%% load file to plot BANDS (ALL LAYERS RNN and Alex)
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear 
+f2sav = 'RNN_hipp_E123_[1-56]_3-54_1_0_0_0_.1_5_1.mat'; 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2]
+end
+
+paths = load_paths_WM(cfg.brainROI);
+load([paths.results.DNNs f2sav]);
+
+
+tiledlayout(8,8, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    
+    clear nnH
+    for subji = 1:length(nnFit)
+       nnH(subji, : ,:) = nnFit{subji, 1}(layi,:,:);       
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat);
+    clustinfo = bwconncomp(h);
+    %tObs = sum(t(clustinfo.PixelIdxList{2}))
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    
+    %times = -1.75:.1:6.849; 
+     
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat);
+    hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
+    
+    mART = squeeze(mean(nnH)); 
+    stdART = squeeze(std(nnH)); 
+    seART = stdART/ sqrt(size(nnH, 1));
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:46;
+        %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
+        shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
+        plot (times, hb, 'Linewidth', 4)
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
+        set(gca, 'FontSize', 12, 'ylim', [-.03 .035]);
+        plot([3 3],get(gca,'ylim'), 'k:','lineWidth',1);
+        plot(get(gca,'xlim'), [0 0],'k:','lineWidth',1);
+
+    elseif strcmp(cfg.period(1), 'E')
+        times = 1:21;
+        %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
+        shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
+        plot (times, hb, 'Linewidth', 4)
+        %set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'xlim', [1 15])
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 12]); 
+        set(gca, 'FontSize', 12, 'ylim', [-.015 .1]);
+        plot([3 3],get(gca,'ylim'), 'k:','lineWidth',1);
+        plot(get(gca,'xlim'), [0 0],'k:','lineWidth',1);
+        
+    end
+    
+
+end
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 
 %% 
@@ -365,11 +432,11 @@ end
 
 
 %% PERMUTATIONS
-
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear
 nPerm = 200;
 
-f2sav = 'Alex_hipp_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_E123_[56]_39-54_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -396,7 +463,11 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         if strcmp(cfg.period(1), 'M')
             neuralRDMs = neuralRDMs(:,:,:,6:15); %time is cut in createNeuralRMDs (this is here to restrict more for the permutations)
         else
-            neuralRDMs = neuralRDMs(:,:,:,6:15);
+            if ndims(neuralRDMs) == 4
+                neuralRDMs = neuralRDMs(:,:,:,3:12);
+            else
+                neuralRDMs = neuralRDMs(:,:,3:12);
+            end
         end
         for permi = 1:nPerm
             sC = size(networkRDMs, 2);
@@ -1820,6 +1891,90 @@ end
 allSeqs = [seq2VVS; seq2PFC; seq2HIPP]
 
 all_seqs = unique (allSeqs, 'row')
+
+
+
+
+%% Trial level analysis
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+clear 
+f2sav = 'RNN_pfc_E123_[56]_3-54_0_0_0_1_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+paths = load_paths_WM(cfg.brainROI);
+load([paths.results.DNNs f2sav]);
+nnFit_PFC = nnFit([2 3  5  9 10 11 12 14 15 16]);; 
+
+f2sav = 'RNN_vvs_E123_[56]_3-54_0_0_0_1_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+paths = load_paths_WM(cfg.brainROI);
+load([paths.results.DNNs f2sav]);
+nnFit_VVS = nnFit([7 9 13 18 19 20 21 23 27 28]); ; 
+
+
+
+for subji = 1:length(nnFit_VVS)
+    %nexttile
+    trlsVVS = nnFit_VVS{subji};
+    mVVS = mean(trlsVVS(:, 6:15), 2); 
+    trlsPFC = nnFit_PFC{subji};
+    mPFC = mean(trlsPFC(:, 6:15), 2); 
+
+    rhoAll(subji, :) = corr(mVVS, mPFC, 'type', 's');
+    
+    
+end
+
+[h p ci ts] = ttest(rhoAll); 
+
+disp(['p = ' num2str(p) '   t = ' num2str(ts.tstat)])
+
+
+ %exportgraphics(gcf, [paths.results.DNNs 'myCorr.png'], 'Resolution', 300); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
