@@ -2,14 +2,14 @@
 %%
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
-              %'DISC_M2A' 'DIDC_M2A';
+              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_M2M2' 'DIDC_M2M2';
              };
 
 c = unique (contrasts);
@@ -32,9 +32,9 @@ end
 
 %% plot simple
 
-subj2exc = [18 22]; 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+subj2exc = [1]; 
+cond1 = 'DISC_M2M2';
+cond2 = 'DIDC_M2M2';
 lim1 = [3:17]; lim2 = [3:47];
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
@@ -103,7 +103,7 @@ contourf(1:450, 1:150, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %co
 contour(1:450, 1:150, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 plot([45 45], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
 plot([95 95], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
-plot(get(gca, 'xlim'), [50 50], 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [45 45], 'k:', 'LineWidth', 2);
 set(gca,'xtick',[], 'ytick', [], 'clim', [-3 7]); %colorbar
 
 exportgraphics(gcf, 'myP.png', 'Resolution', 150);
@@ -158,7 +158,7 @@ disp (['p = ' num2str(p)]);
 cond1 = 'DISC_EE';
 cond2 = 'DIDC_EE';
 
-subj2exc = [18 22]; 
+subj2exc = [2]; 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %exclude subjects
@@ -207,9 +207,34 @@ plot(hb, 'linewidth' ,2);
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
 
+%% shaded error version 
+
+mc1 = mean(cond1); 
+mc2 = mean(cond2); 
+
+[h p ci ts] = ttest(cond1-cond2); 
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0; 
+
+diff2U = cond1-cond2; 
+mDiff = mean(diff2U); 
+stdDiff = std(diff2U); 
+seDiff = std(diff2U)/sqrt(size(diff2U, 1))
+times = -.75:.01:.75
+
+figure()
+shadedErrorBar(times, mDiff, seDiff, 'b', 1); hold on; 
+plot(times, hb, 'linewidth' ,2);
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+
 
 
 %% plot both
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+load all
+
 mc1PFC = mean(cond1_PFC); 
 mc2PFC = mean(cond2_PFC); 
 cPFC = cond1_PFC-cond2_PFC;
@@ -248,6 +273,62 @@ set(gca, 'FontSize', 18, 'xlim', [-.25, .75])
 
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
+
+
+%% plot 3
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+load all
+
+mc1PFC = mean(cond1_PFC); 
+mc2PFC = mean(cond2_PFC); 
+cPFC = cond1_PFC-cond2_PFC;
+mcPFC = mean(cPFC)
+stdPFC = std(cPFC); 
+sePFC = stdPFC/sqrt(size(cPFC, 1))
+
+mc1VVS = mean(cond1_VVS); 
+mc2VVS = mean(cond2_VVS); 
+cVVS = cond1_VVS - cond2_VVS; 
+mcVVS = mean(cVVS); 
+stdVVS = std(cVVS); 
+seVVS = stdVVS/sqrt(size(cVVS, 1))
+
+mc1hipp = mean(cond1_hipp); 
+mc2hipp = mean(cond2_hipp); 
+chipp = cond1_hipp - cond2_hipp; 
+mchipp = mean(chipp); 
+stdhipp = std(chipp); 
+sehipp = stdhipp/sqrt(size(chipp, 1))
+
+
+
+l2y = -.015; 
+[hPFC p ci ts] = ttest(cPFC); 
+hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y; 
+[hVVS p ci ts] = ttest(cVVS); 
+hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y -.002; 
+[hhipp p ci ts] = ttest(chipp); 
+hbhipp = hVVS; hbhipp(hbhipp==0) = nan; hbhipp(hbhipp==1) = l2y -.002; 
+
+
+times = -.75:.01:.75
+
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+shadedErrorBar(times, mcPFC, sePFC, 'b', 1); hold on; 
+shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
+shadedErrorBar(times, mchipp, sehipp, 'r', 1); hold on; 
+%plot(times, mcPFC, 'linewidth' ,2);hold on; 
+%plot(times, mcVVS, 'linewidth' ,2);hold on; 
+plot(times, hbPFC, 'b', 'linewidth' ,4);
+plot(times, hbVVS, 'r', 'linewidth' ,4);
+plot(times, hbhipp, 'r', 'linewidth' ,4);
+set(gca, 'FontSize', 18, 'xlim', [-.25, .75])
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
 %% 
 
 mc1 = squeeze(mean(cond1)); 
@@ -264,13 +345,13 @@ imagesc(mc1-mc2);
 %%
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
+              'DISC_M2M2' 'DIDC_M2M2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -296,8 +377,8 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+cond1 = 'DISC_M2M2';
+cond2 = 'DIDC_M2M2';
  
 
 
@@ -318,8 +399,8 @@ cfg.square      =       1;
 cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
-cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %4 3 2.5 2 
+cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '4-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -419,6 +500,56 @@ end
 
  
 toc
+
+%% average in period 
+clear m1 m2
+for subji = 1:length(all_cond1)
+    %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
+    %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
+
+end
+
+m1A = squeeze(mean(mean(m1,2,'omitnan'),3,'omitnan'));
+m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
+
+
+%%full maintenance period 
+msD = m1A-m2A;
+[h p ci ts] = ttest(msD);
+t = ts.tstat
+p
+
+
+
+%% plot one bar
+%data.data = [data_LC.data(:,1) data_LC.data(:,2) ];
+%data.data = [diff_ERS_all diff_ERS_all_minus]; 
+data.data = [msD]; 
+
+
+figure(2); set(gcf,'Position', [0 0 500 650]); 
+mean_S = mean(data.data, 1);
+std_S = std(data.data, [], 1);
+hb = plot ([1], data.data); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
+h = bar (mean_S);hold on;
+%h1=errorbar(mean_S, se_S,'c'); hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+%set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, ...
+    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0075] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+%[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+export_fig(2, '_2.png','-transparent', '-r80');
+close all;   
 
 %% permutations
 n_perm = 1000; 
@@ -522,60 +653,7 @@ end
 
 
 
-%% average in period 
-clear m1 m2
-for subji = 1:length(all_cond1)
-    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
-    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
-    %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
-    %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
 
-end
-
-mm1 = squeeze(mean(m1,'omitnan'));
-m1A = squeeze(mean(mean(m1,2,'omitnan'),3,'omitnan'));
-%mm1 = triu(mm1.',1) + tril(mm1);
-mmm1 = squeeze(mean(mm1,'omitnan'));
-mm2 = squeeze(mean(m2,'omitnan'));
-m2A = squeeze(mean(mean(m2,2,'omitnan'),3,'omitnan'));
-%mm2 = triu(mm2.',1) + tril(mm2);
-mmm2 = squeeze(mean(mm2,'omitnan'));
-
-%%full maintenance period 
-msD = m1A-m2A;
-[h p ci ts] = ttest(msD);
-t = ts.tstat
-p
-
-
-
-%% plot one bar
-%data.data = [data_LC.data(:,1) data_LC.data(:,2) ];
-%data.data = [diff_ERS_all diff_ERS_all_minus]; 
-data.data = [msD]; 
-
-
-figure(2); set(gcf,'Position', [0 0 500 650]); 
-mean_S = mean(data.data, 1);
-std_S = std(data.data, [], 1);
-hb = plot ([1], data.data); hold on;
-set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
-h = bar (mean_S);hold on;
-%h1=errorbar(mean_S, se_S,'c'); hold on;
-set(h,'FaceColor', 'none', 'lineWidth', 3);
-%set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
-set(gca,'XTick',[1],'XTickLabel',{'', ''}, ...
-    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0075] );
-plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
-
-%[h p ci t] = ttest (data.data(:,1), data.data(:,2));
-[h p ci t] = ttest (data.data(:,1));
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-set(gca, 'LineWidth', 3);
-
-export_fig(2, '_2.png','-transparent', '-r80');
-close all;   
 
 %% encoding - maintenance similarity (average full maintenance period)
 ms1 = squeeze(mean(m1, 2, 'omitnan'));
