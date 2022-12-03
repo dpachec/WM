@@ -2,7 +2,7 @@
 %% 
 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
@@ -18,11 +18,11 @@ fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames =
 win_width           = 5; 
 mf                  = 1; 
 meanInTime          = 0; 
-avMeth              = 'pow';  % average across image repetitions or not
+avMeth              = 'none';  % average across image repetitions or not
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
-TG                  = 1; %temporal generalization
+TG                  = 0; %temporal generalization
 contr2save          = {'ALL_EE'};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
@@ -31,8 +31,7 @@ contr2save          = {'ALL_EE'};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-%n2s                 = 1000000;
-n2s                 = 10000;
+n2s                 = 20000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 
@@ -321,11 +320,97 @@ end
 sum(s_ids)
  
  
-%%
+%% ALL correlation analysis 
+clear 
+% loop through all folders with band specific results 
+paths = load_paths_WM('pfc');
+main_path_pfc = paths.results.bands; 
+paths = load_paths_WM('vvs');
+main_path_vvs = paths.results.bands;  
+
+%pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
+%vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
+
+fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+
+for bandi = 1:6
+
+    flist = dir([main_path_vvs fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
+    load([main_path_vvs fnames{bandi} '\' f2load])
+    ALL_EE = ALL_EE([7 9 13 18 19 20 21 23 27 28]); 
+    allPFC{bandi,:} = ALL_EE; 
+
+    flist = dir([main_path_pfc fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
+    load([main_path_pfc fnames{bandi} '\' f2load])
+    ALL_EE = ALL_EE([2 3  5  9 10 11 12 14 15 16]);
+    allVVS{bandi,:} = ALL_EE; 
+
+end
 
 
  
- 
- 
- 
+
+%% 
+clear c1VVS allPSPFC allPSVVS clear allRho
+
+timeL = 6:15; 
+
+for bandi = 1:6
+
+    c1VVS_band = allVVS{bandi}; 
+    c1PFC_band = allPFC{bandi}; 
+
+    for subji = 1:10
+    
+        c1VVS_subj = c1VVS_band{subji}; 
+        c1PFC_subj = c1PFC_band{subji}; 
+        
+        clear cVVSF cPFCF
+        for triali = 1:size(c1VVS_subj, 1)
+            
+            cVVS_tr = squeeze(c1VVS_subj(triali, :, :));
+            cPFC_tr = squeeze(c1PFC_subj(triali, :, :));
+
+            % % % only diagonal
+            cVVS_tr_diag = diag(cVVS_tr(timeL, timeL)); % restricted to the period of significant dynamicity
+            cPFC_tr_diag = diag(cPFC_tr(timeL, timeL)); % restricted to the period of significant dynamicity
+           
+            cVVSF(triali, :) = mean(cVVS_tr_diag); 
+            cPFCF(triali, :) = mean(cPFC_tr_diag); 
+    
+        end
+    
+        allRho(bandi, subji,:) = corr(cVVSF, cPFCF, 'type', 's'); 
+        
+
+    end
+
+    
+
+end
+
+
+
+
+
+%% 
+
+[h p ci ts] = ttest(allRho')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %%
