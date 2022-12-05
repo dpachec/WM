@@ -2,7 +2,7 @@
 %% 
 
 clearvars
-region              = 'vvs';
+region              = 'pfc';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
@@ -31,7 +31,7 @@ contr2save          = {'ALL_EE'};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-n2s                 = 20000;
+n2s                 = 30000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 
@@ -338,12 +338,12 @@ for bandi = 1:6
     flist = dir([main_path_vvs fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
     load([main_path_vvs fnames{bandi} '\' f2load])
     ALL_EE = ALL_EE([7 9 13 18 19 20 21 23 27 28]); 
-    allPFC{bandi,:} = ALL_EE; 
+    allPFC{bandi,:} = ALL_EE; % 6 bands and 10 subjects
 
     flist = dir([main_path_pfc fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
     load([main_path_pfc fnames{bandi} '\' f2load])
     ALL_EE = ALL_EE([2 3  5  9 10 11 12 14 15 16]);
-    allVVS{bandi,:} = ALL_EE; 
+    allVVS{bandi,:} = ALL_EE;  % 6 bands and 10 subjects
 
 end
 
@@ -352,7 +352,7 @@ end
 
 %% 
 clear c1VVS allPSPFC allPSVVS clear allRho
-
+onlyDiag = 0; % is the pattern a 2D matrix or just matching time points
 timeL = 6:15; 
 
 for bandi = 1:6
@@ -371,9 +371,14 @@ for bandi = 1:6
             cVVS_tr = squeeze(c1VVS_subj(triali, :, :));
             cPFC_tr = squeeze(c1PFC_subj(triali, :, :));
 
-            % % % only diagonal
-            cVVS_tr_diag = diag(cVVS_tr(timeL, timeL)); % restricted to the period of significant dynamicity
-            cPFC_tr_diag = diag(cPFC_tr(timeL, timeL)); % restricted to the period of significant dynamicity
+            % % % only diagonal (if matrix)
+            if ~onlyDiag
+                cVVS_tr_diag = diag(cVVS_tr(timeL, timeL)); % restricted to the period of significant dynamicity
+                cPFC_tr_diag = diag(cPFC_tr(timeL, timeL)); % restricted to the period of significant dynamicity
+            else %diagonal was extracted before
+                cVVS_tr_diag = cVVS_tr(timeL); % restricted to the period of significant dynamicity
+                cPFC_tr_diag = cPFC_tr(timeL); % restricted to the period of significant dynamicity
+            end
            
             cVVSF(triali, :) = mean(cVVS_tr_diag); 
             cPFCF(triali, :) = mean(cPFC_tr_diag); 
