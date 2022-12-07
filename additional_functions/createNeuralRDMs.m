@@ -5,7 +5,6 @@ win_width = cfg.win_width;
 mf = cfg.mf; 
 fR = cfg.fR; 
 avTFV = cfg.avTFV;
-period = cfg.period; 
 
 if fR
     for freqi = 1:length(freqs2test)

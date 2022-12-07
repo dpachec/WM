@@ -2,14 +2,14 @@
 %%
 clearvars
 
-region = 'pfc'; 
+region = 'vvs'; 
 paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              %'DISC_EM2' 'DIDC_EM2';
-              'DISC_M2M2' 'DIDC_M2M2';
+              'DISC_EM2' 'DIDC_EM2';
+              %'DISC_M2M2' 'DIDC_M2M2';
              };
 
 c = unique (contrasts);
@@ -32,9 +32,9 @@ end
 
 %% plot simple
 
-subj2exc = [1]; 
-cond1 = 'DISC_M2M2';
-cond2 = 'DIDC_M2M2';
+subj2exc = [18 22]; 
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
 lim1 = [3:17]; lim2 = [3:47];
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
@@ -54,30 +54,30 @@ c2 = cat(3, cond2{:}); c2 = permute(c2, [3 1 2]);c2 = c2 (: , lim1, lim2);
 [h p ci ts] = ttest(c1, c2); 
 h = squeeze(h); 
 t = squeeze(ts.tstat); 
-
-%remove non-sig clusters
-clustinfo = bwconncomp(h);
-% for pixi = 1:length(clustinfo.PixelIdxList)
-%    h(clustinfo.PixelIdxList{pixi}) = 0;   
-% end
-% h(clustinfo.PixelIdxList{4}) = 1; % VVS
-% h(clustinfo.PixelIdxList{10}) = 1; % VVS
-% nothing in PFC
+% 
+% %remove non-sig clusters
+% clustinfo = bwconncomp(h);
+%  for pixi = 1:length(clustinfo.PixelIdxList)
+%     h(clustinfo.PixelIdxList{pixi}) = 0;   
+%  end
+%  h(clustinfo.PixelIdxList{4}) = 1; % VVS
+%  h(clustinfo.PixelIdxList{10}) = 1; % VVS
+% % nothing in PFC
 
 c1 = squeeze(mean(c1(:, 6:15, :), 2));
 c2 = squeeze(mean(c2(:, 6:15, :), 2));
 d = c1-c2; 
 [h2 p2 ci2 ts2] = ttest(d); 
 
-%remove non-sig clusters
- clustinfo = bwconncomp(h2);
+% %remove non-sig clusters
+% clustinfo = bwconncomp(h2);
 % for pixi = 1:length(clustinfo.PixelIdxList)
-%    h2(clustinfo.PixelIdxList{pixi}) = 0;   
+% h2(clustinfo.PixelIdxList{pixi}) = 0;   
 % end
-% h2(clustinfo.PixelIdxList{2}) = 1;
- h2(h2==0) = nan; h2(h2 == 1) = 0; 
+% h2(clustinfo.PixelIdxList{2}) = 1; % vvs
+% h2(h2==0) = nan; h2(h2 == 1) = 0; 
 % t2 = ts2.tstat ;
-%h2Obs = sum(t2(clustinfo.PixelIdxList{2})); 
+% h2Obs = sum(t2(clustinfo.PixelIdxList{2})); 
 
 md = mean(d); 
 stdd = std(d); 
@@ -342,6 +342,9 @@ imagesc(mc1-mc2);
 
 
 
+
+
+
 %%
 clearvars
 
@@ -351,7 +354,7 @@ paths = load_paths_WM(region);
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              'DISC_M2M2' 'DIDC_M2M2';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -377,15 +380,15 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_M2M2';
-cond2 = 'DIDC_M2M2';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
  
 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [2];% vvs;%[1] pfc %[2] in hipp
+subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
 %subj2exc        =       [2];
 runperm         =       0;
 plotClust       =       1; 
@@ -400,7 +403,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '4-4'; %4 3 2.5 2 
+cfg.cut2        =       '1-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -1498,3 +1501,131 @@ set (gca, 'xlim', [6 15], 'ylim', [6 15]);
 title('stats')
 
 
+%% plot all frequnecies maintenance
+
+clear, clc
+paths = load_paths_WM('vvs');
+main_path = paths.results.bands; 
+
+fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+
+for bandi = 1:6
+
+    flist = dir([main_path fnames{bandi}]); 
+    load([main_path fnames{bandi} '\DISC_EM2.mat'])
+    load([main_path fnames{bandi} '\DIDC_EM2.mat'])
+    allVVS{bandi,1} = DISC_EM2; 
+    allVVS{bandi,2} = DIDC_EM2; 
+
+end
+
+
+
+
+%%
+
+subj2exc = [18 22]; 
+lim1 = [3:17]; lim2 = [3:47];
+
+clear allH2s
+for bandi = 1:6
+
+    all_cond1_A = allVVS{bandi, 1};all_cond2_A = allVVS{bandi, 2};
+
+    %exclude subjects
+    if subj2exc > 0
+        all_cond1_A(subj2exc) = []; %all_cond1 = all_cond1(~cellfun('isempty',all_cond1));
+        all_cond2_A(subj2exc) = []; %all_cond2 = all_cond2(~cellfun('isempty',all_cond2));
+    end
+    cond1 = cellfun(@(x) squeeze(mean(x)), all_cond1_A, 'un', 0);
+    c1 = cat(3, cond1{:}); c1 = permute(c1, [3 1 2]);c1 = c1 (: , lim1, lim2); 
+    
+    cond2 = cellfun(@(x) squeeze(mean(x)), all_cond2_A, 'un', 0);
+    c2 = cat(3, cond2{:}); c2 = permute(c2, [3 1 2]);c2 = c2 (: , lim1, lim2); 
+    
+    
+    c1 = squeeze(mean(c1(:, 6:15, :), 2));
+    c2 = squeeze(mean(c2(:, 6:15, :), 2));
+    d = c1-c2; 
+    [h2 p2 ci2 ts2] = ttest(d); 
+    ts2 = ts2.tstat; 
+
+    md = mean(d); 
+    stdd = std(d); 
+    sed = stdd/sqrt(size(c1, 1)); 
+    
+    
+    allT2s(bandi, :) = ts2; 
+    allH2s(bandi, :) = h2; 
+    allDs(bandi, :) = md;
+
+% % % %     %colormap(brewermap([],'YlOrRd')); 
+% % % %     times = 1:45;
+% % % %     %set(gcf, 'Position', [100 100 500 300])
+% % % %     %shadedErrorBar(times, md,sed, 'k', 1); hold on 
+% % % %     plot(times, md, 'linewidth', 2); hold on; 
+% % % %     set(gca, 'xlim', [.5 45.5], 'ylim', [-.002 .005], 'xtick',[], 'ytick', []) % PFC
+% % % %     plot([4.95 4.95], get(gca, 'ylim'), 'k:', 'LineWidth', 1);
+% % % %     plot([9.95 9.95], get(gca, 'ylim'), 'k:', 'LineWidth', 1);
+% % % %     plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 1);
+% % % %     %plot(times, h2, 'Color', [.9 .7 .1], 'LineWidth', 10)
+    
+
+
+    
+
+
+end
+
+
+%% 
+
+allH2s(1,:) = []; 
+allT2s(1,:) = []; 
+
+colormap(brewermap([],'YlOrRd')); 
+
+%imagesc(allT2s(2:end,:)); hold on; 
+%imagesc(allH2s(2:end,:))
+
+
+clustinfo = bwconncomp(allH2s);
+allH2s(clustinfo.PixelIdxList{1}) = 0; 
+allH2s(clustinfo.PixelIdxList{2}) = 0; 
+allH2s(clustinfo.PixelIdxList{4}) = 0; 
+allH2s(clustinfo.PixelIdxList{5}) = 0; 
+allH2s(clustinfo.PixelIdxList{6}) = 0; 
+
+
+%times = 1:450;
+times = -.5:.01:3.99;
+freqs = 1:50; 
+contourf(times, freqs, myresizem(allT2s, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, myresizem(allH2s, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+set (gca, 'clim', [-5 5])
+
+% d2p = allDs'; 
+% 
+% plot(d2p(:, 1:6))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%

@@ -97,6 +97,10 @@ if ~isempty(intersect(c2c, 'EE'))
                   idx = 12 + cueRet;
                   idRet = evej(idx);
                   oneIdEnc = idEnc{1}(1); oneIdRet = idRet{1}(1);
+                  if exist('countALL_EM2')
+                    new_all_em2{countALL_EM2} = [i, j];
+                    countALL_EM2 = countALL_EM2+1;
+                  end
                   if strcmp(idEnc,idRet) 
                      %disp (['SISC_EM2> ' oneListIds{i} '//' oneListIds{j}]);  
                      if exist('countSISC_EM2')

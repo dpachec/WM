@@ -7,7 +7,7 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
     nFreqs = size(neuralRDMs, 3); 
     nTimes = size(neuralRDMs, 4); 
 
-    if fitMode == 0
+    if fitMode == 0 % trials or no trials
         all_r_Times = zeros(nLays, nFreqs, nTimes);
 
         for layi = 1:nLays
