@@ -24,8 +24,8 @@ function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network
         %all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
         seqEnd = 24; 
     elseif strcmp(net2load, 'BLnext12')
-        all_act = load('Features_BLnext-12samples.mat');
-        %all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
+        %all_act = load('Features_BLnext-12samples.mat');
+        all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
         
         seqEnd = 36; 
     end
