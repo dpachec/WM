@@ -240,7 +240,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (one Layer - time Point)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav =   'RNN_pfc_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+f2sav =   'Alex_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -312,8 +312,8 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear 
-f2sav = 'Alex_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1'; 
+clear, clc 
+f2sav =   'Alex_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -401,6 +401,107 @@ for layi = 1:size(nnFit{1}, 1)
 end
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+
+
+
+%% load file to plot BANDS (ALL LAYERS RNN and Alex) -- IN one LINE
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear, clc 
+f2sav =   'Alex_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2]
+end
+
+paths = load_paths_WM(cfg.brainROI);
+load([paths.results.DNNs f2sav]);
+
+
+
+for layi = 1:size(nnFit{1}, 1)
+        
+    clear nnH
+    for subji = 1:length(nnFit)
+       nnH(subji, : ,:) = nnFit{subji, 1}(layi,:,:);       
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat);
+    clustinfo = bwconncomp(h);
+    
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+    %tObs = sum(t(clustinfo.PixelIdxList{2}))
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    
+    %times = -1.75:.1:6.849; 
+     
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat);
+    hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
+    
+    mART(layi, :) = squeeze(mean(nnH)); 
+    stdART = squeeze(std(nnH)); 
+    seART = stdART/ sqrt(size(nnH, 1));
+    
+
+end
+
+
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 500/1.5 300/1.7])
+    myCmap = colormap(brewermap(8,'RdBu'));
+    times = 1:46;
+    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
+    plot(times, mART, 'Linewidth', 3); hold on; 
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
+    set(gca, 'FontSize', 12, 'ylim', [-.015 .025]);
+    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+
+elseif strcmp(cfg.period(1), 'E')
+    
+    figure()
+    set(gcf, 'Position', [100 100 100 300])
+    myCmap = colormap(brewermap(8,'RdBu'));
+    %myCmap = colormap(jet(8));
+    times = 1:21;
+    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
+    %shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
+    plot(times, mART, 'Linewidth', 3); hold on; 
+    %plot (times, hb, 'Linewidth', 4)
+    %scatter(times, hb, 200,'.','Linewidth', 4)
+    %set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'xlim', [1 15])
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 12]); 
+    set(gca, 'FontSize', 12, 'ylim', [-.015 .1]);
+    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+
+end
+
+
+set(gca, 'ColorOrder', myCmap)
+
+
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+
+
 
 
 %% 
@@ -555,12 +656,12 @@ end
 
 
 %% compute clusters in each permutation BANDS (one layer only)
-%clear
+clear, clc
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'Alex_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat'; 
+f2sav = 'Alex_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
-cd ([paths.results.DNNs 'permutations\first_second\'])
+cd ([paths.results.DNNs 'permutations\encoding\'])
 load(f2sav);
 
 if strcmp(cfg.brainROI, 'pfc')
@@ -679,8 +780,8 @@ for layi = 1:size(allTObs, 1)
         if mcsR ~= 0
             mcsP = squeeze(max_clust_sum_perm(:,layi));
         
-            %allAb = mcsP(abs(mcsP) > abs(mcsR));
-            allAb = mcsP(mcsP > mcsR)
+            allAb = mcsP(abs(mcsP) > abs(mcsR));
+            %allAb = mcsP(mcsP > mcsR)
             p(layi, pixi,:) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
         else
             p(layi, pixi,:) = nan; 
@@ -923,7 +1024,7 @@ loadNet_WM;
 %% STIMULUS REPRESENTATION IN DNNs
 % % % 
 clear, clc
-f2sav = 'Alex_pfc_E123_[1-8]_3-54_0_0_1_1_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 sessi = 1; 
 subj_ch_fr = 1; 
@@ -933,11 +1034,14 @@ paths = load_paths_WM(cfg.brainROI);
 %% Plot all layers Alexnet
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
+myCmap = brewermap([], '*Spectral') 
+colormap(myCmap)
+
 for layi = 1:8
    subplot (1, 8, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    imagesc(d2p); axis square; 
-   set(gca,'cLim', [0 1])
+   set(gca,'cLim', [0 .9])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 end
  ha=get(gcf,'children');
@@ -954,7 +1058,74 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
+%% Representational consistency all layers / time points Alexnet
 
+
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 8, []); act3 = act2(:,all(~isnan(act2)));  
+
+
+allMS = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS = tril(allMS, -1); allMS(allMS==0) = nan; 
+
+
+% % % plot matrix
+figure()
+myCmap = brewermap([], '*Spectral') 
+%imagesc(allMS); axis square; colorbar
+s = pcolor(allMS);; axis square; colorbar
+set(s, 'edgecolor', 'none'); 
+set(gca, 'ydir', 'reverse');
+set(gca, 'FontSize', 15, 'clim', [0 1], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, 'xticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'}, ...
+                'yticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'})
+
+colormap(myCmap)
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer Alexnet
+
+clc
+clearvars -except act_CH act_FR ACT
+act_CH = ACT;
+%create cateogy model
+M = zeros (60); 
+M(1:10, 1:10) = 1; 
+M(11:20, 11:20) = 1; 
+M(21:30, 21:30) = 1; 
+M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; 
+M(51:60, 51:60) = 1; 
+
+        
+for layi = 1:size(act_CH, 1)
+    d2p = squeeze(act_CH(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    %[rdmMDS] = cmdscale(d2p);
+    %nDims = size(rdmMDS,2);
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    %CCI(layi) = (mAcross - mWithin) ;
+    
+end
+
+
+% % % mds
+clear c1 c2 c3 cols
+c1 = (1:7)/7'; % sorted by time point
+c2 = repmat(zeros(1), 7, 1)';
+c3 = repmat(ones(1), 7, 1)';
+cols = [c1 ; c2 ; c3]';
+
+
+figure()
+plot (CCI, 'Linewidth', 3)
+set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
 %% RNN all RDMS
@@ -1028,8 +1199,9 @@ exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 %% compute CCI for each layer / timepoint
 
-
-clearvars -except act_CH act_FR
+clc
+clearvars -except act_CH act_FR ACT
+act_CH = ACT;
 %create cateogy model
 M = zeros (60); 
 M(1:10, 1:10) = 1; 

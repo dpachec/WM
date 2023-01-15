@@ -104,8 +104,8 @@ if strcmp(cfg.res, '100_perm')
     end
 
     if strcmp(cfg.cut2, '1-4')
-        reinst_plot_cfg.mlimE = 6:13; %1:85;
-        reinst_plot_cfg.mlimR = 6:45; %1:85
+        reinst_plot_cfg.mlimE = 8:17; %1:85;
+        reinst_plot_cfg.mlimR = 8:42; %1:85
         reinst_plot_cfg.binsE = 40; 
         reinst_plot_cfg.binsR = 8; 
         reinst_plot_cfg.labels_to_plotE = 0:.5:1; 

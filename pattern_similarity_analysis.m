@@ -2,28 +2,28 @@
 %% 
 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.out_contrasts);
 
 
-frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
-fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
 
-%frequncies2test = [{15:28}]';
-%fnames = {'15-28Hz'}'; fnames = fnames';
+%frequncies2test = [{3:8} {13:29} {30:38} ]';
+%fnames = { '3-8Hz' '13-29Hz' '30-75Hz' }'; fnames = fnames';
 
 
 win_width           = 5; 
 mf                  = 1; 
-meanInTime          = 0; 
-avMeth              = 'pow';  % average across image repetitions or not
+meanInTime          = 1; 
+avMeth              = 'none';  % average across image repetitions or not
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
-TG                  = 0; %temporal generalization
-contr2save          = {'ALL_EM2'};
+TG                  = 1; %temporal generalization
+contr2save          = { 'DISC_EM2' 'DIDC_EM2'};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
@@ -31,7 +31,7 @@ contr2save          = {'ALL_EM2'};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-n2s                 = 30000;
+n2s                 = 20000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 
@@ -136,7 +136,7 @@ sublist = dir('*contr.mat');
 sublist = {sublist.name};
 disp (['measurements -> ' num2str(length(sublist))]);
  
-for subji=1:length(sublist)
+for subji=1:1%length(sublist)
     disp(['File > ' num2str(subji)]);
     load(sublist{subji});
     s_all{subji} = cfg_contrasts; 
@@ -146,8 +146,8 @@ s_all = s_all';
 toc
  
 %% plot by trials
-bline               = [3 7];
-acrossTrials       = 1;
+bline               = [100 200];
+acrossTrials       = 0;
 zScType = 'allTrials'; 
  
 for subji = 1:length(sublist)
@@ -177,15 +177,55 @@ for subji = 1:length(sublist)
            
            cstri = cstri + 1;
            filename = [num2str(subji) '_tr_' num2str(triali) '_' num2str(pagi)];
-           export_fig(pagi, filename,'-r200');    
+           %export_fig(pagi, filename,'-r200');    
            close all;  
        end
     end
    
 end
  
- 
- 
+
+%%
+
+x = randn(1, 20)
+figure(); set(gcf, 'Position', [50 100 575 25])
+myCmap = colormap(brewermap([],'*Spectral'));
+colormap(myCmap)
+
+imagesc(x)
+set(gca, 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [], 'clim', [-1.6 1.6])
+export_fig(gca, 'hola.png','-r300');  
+
+
+%% 
+
+
+x = randn(1, 5)
+figure(); set(gcf, 'Position', [50 100 150 25])
+myCmap = colormap(brewermap([],'*Spectral'));
+colormap(myCmap)
+
+imagesc(x)
+set(gca, 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [], 'clim', [-1.6 1.6])
+export_fig(gca, 'hola.png','-r300');  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 
 %% plot by channels
@@ -193,15 +233,15 @@ bline               = [3 7];
 acrossTrials       = 1;
 zScType = 'allTrials'; 
  
-for subji = 18:18 %1:length(sublist)
+for subji = 1:1 %1:length(sublist)
    cfg_contrasts = s_all{subji};    
    cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline)
    oneListPow = cfg_contrasts.oneListPow;
-   for chani = 1:size(oneListPow, 2)
+   for chani = 1:1%size(oneListPow, 2)
        trialN = size(oneListPow, 1);
        pag2plot = ceil(trialN/100);
        cstri = 0;
-       for pagi = 1:pag2plot
+       for pagi = 1:1%pag2plot
            figure(pagi);set(gcf,'Position', [0 0 2000 1500]); 
            csubi = 1;
            startTri = (cstri*100) +1
@@ -212,9 +252,14 @@ for subji = 18:18 %1:length(sublist)
            
            for triali = startTri:endTri
                 subplot (10, 10, csubi)
-                imagesc(squeeze(oneListPow(triali,chani,:,:))); 
-                title(num2str(triali))
-                set(gca,'YDir','normal')
+                myCmap = colormap(brewermap([],'*Spectral'));
+                colormap(myCmap)
+                d2p = squeeze(oneListPow(triali,chani,1:30,:)); 
+                %imagesc(); 
+                contourf(d2p, 40, 'linecolor', 'none')
+                %title(num2str(triali))
+                set(gca,'YDir','normal', 'clim', [-1.5 5], 'xlim', [200 400], 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [])
+                %colorbar
                 csubi = csubi + 1; 
            end
            
@@ -482,201 +527,6 @@ end
 %% 
 
 [h p ci ts] = ttest(allRho')
-
-
-%% correlate representational geometries in both regions for all frequencies
-clear, clc
-%Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-paths_PFC = load_paths_WM('pfc');
-paths_VVS = load_paths_WM('vvs');
-filelistSessPFC = getFiles(paths_PFC.traces);
-filelistSessVVS = getFiles(paths_VVS.traces);
-
-filelistSessPFC = filelistSessPFC([2 3  5  9 10 11 12 14 15 16]);
-filelistSessVVS = filelistSessVVS([7 9 13 18 19 20 21 23 27 28]); 
-
-cfg.period      = 'M123';
-cfg.timeRes     = 0.1; 
-cfg.freqs       = [3:54]; 
-cfg.win_width   = 5; 
-cfg.mf          = 1; 
-cfg.fR          = 1; 
-cfg.avTFV       = 0; 
-
-for sessi= 1:length(filelistSessVVS) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(sessi)]);
-    load([paths_PFC.traces filelistSessPFC{sessi}]);   
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    %cfg_contrasts               = average_repetitions(cfg_contrasts);
-    neuralRDMsPFC               = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    
-    load([paths_VVS.traces filelistSessVVS{sessi}]);   
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    %cfg_contrasts               = average_repetitions(cfg_contrasts);
-    neuralRDMsVVS                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-
-    nFreqs = length(cfg.freqs); 
-    nTimes = size(neuralRDMsVVS, 4); 
-    all_r_Times = zeros(nFreqs, nTimes);
-    parfor freqi = 1:nFreqs
-        for timei = 1:nTimes
-            rdmVVS = squeeze(neuralRDMsVVS(:, :, freqi, timei));
-            rdmVVS = vectorizeRDM(rdmVVS);
-            rdmPFC = squeeze(neuralRDMsPFC(:, :, freqi, timei));
-            rdmPFC = vectorizeRDM(rdmPFC);
-            allTEst = corr(rdmVVS', rdmPFC', 'type', 's');
-            all_r_Times(freqi,timei) = allTEst;  
-        end
-    end
-    
-    allRSESS{sessi} = all_r_Times; 
-end
-
-save('allRSeSS', 'allRSESS')
-
-
-%% 
-
-
-allRS = cat(3, allRSESS{:}); allRS = permute(allRS, [3, 1, 2]);
-
-[h p ci ts] = ttest(allRS); 
-h = squeeze(h); t = squeeze(ts.tstat); 
-
-figure; 
-%times = 1:210; 
-times = 1:460; 
-freqs = 1:520
-myCmap = colormap(brewermap([],'YlOrRd'));
-colormap(myCmap)
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-
-
-
-
-
-%% correlate representational geometries in both regions for all frequencies TRIAL LEVEL
-clear, clc
-%Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-paths_PFC = load_paths_WM('pfc');
-paths_VVS = load_paths_WM('vvs');
-filelistSessPFC = getFiles(paths_PFC.traces);
-filelistSessVVS = getFiles(paths_VVS.traces);
-
-filelistSessPFC = filelistSessPFC([2 3  5  9 10 11 12 14 15 16]);
-filelistSessVVS = filelistSessVVS([7 9 13 18 19 20 21 23 27 28]); 
-
-cfg.period      = 'M123';
-cfg.timeRes     = 0.1; 
-cfg.freqs       = [3:54]; 
-cfg.win_width   = 5; 
-cfg.mf          = 1; 
-cfg.fR          = 1; 
-cfg.avTFV       = 0; 
-
-for sessi= 1:length(filelistSessVVS) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(sessi)]);
-    load([paths_PFC.traces filelistSessPFC{sessi}]);   
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    %cfg_contrasts               = average_repetitions(cfg_contrasts);
-    neuralRDMsPFC               = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    
-    load([paths_VVS.traces filelistSessVVS{sessi}]);   
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    %cfg_contrasts               = average_repetitions(cfg_contrasts);
-    neuralRDMsVVS                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-
-    nFreqs = length(cfg.freqs); 
-    nTimes = size(neuralRDMsVVS, 4); 
-    all_r_Times = zeros(nFreqs, nTimes);
-    nTrials = size(neuralRDMsVVS, 1);
-    all_r_Times = zeros(nTrials, nFreqs, nTimes);
-
-
-    for triali = 1:size(neuralRDMsVVS, 1)
-        for freqi = 1:nFreqs
-            parfor timei = 1:nTimes
-                rdmVVS = squeeze(neuralRDMsVVS(:, triali, freqi, timei));
-                rdmVVS(triali) = []; 
-                rdmPFC = squeeze(neuralRDMsPFC(:, triali, freqi, timei));
-                rdmPFC(triali) = []; 
-                allTEst = corr(rdmVVS, rdmPFC, 'type', 's');
-                all_r_Times(triali, freqi,timei) = allTEst;  
-            end
-        end
-    end
-        
-    allRSESS{sessi} = all_r_Times; 
-end
-
-save('allRSeSS', 'allRSESS')
-
-
-
-
-%% correlate results with PFC fit
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-%cd D:\_WM\analysis\pattern_similarity\across_regions
-%load allRSeSS_M123_noAvRepet_TFV_TRIALS
-
-clearvars -except allRSESS
-f2sav = 'RNN_pfc_M123_[56]_3-54_0_0_1_1_.1_5_1.mat'; 
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI);
-load([paths.results.DNNs f2sav]);
-nnFit_PFC = nnFit([2 3  5  9 10 11 12 14 15 16]);; 
-
-for subji = 1:length(nnFit_PFC)
-    %nexttile
-    trlsPFC = nnFit_PFC{subji};
-    %mPFC = squeeze(mean(mean(trlsPFC(1, :, 15:29, 8:13), 3), 4))'; 
-
-
-    for freqi = 1:52
-        for timei = 1:46
-            allRSH = allRSESS{subji};
-            tBinTr = allRSH(:, freqi, timei);
-            psBinTr = squeeze(trlsPFC(1, :, freqi, timei))'; 
-            
-            %rhoAll(subji, freqi, timei) = corr(tBinTr, mPFC, 'type', 's');
-            rhoAll(subji, freqi, timei) = corr(tBinTr, psBinTr, 'type', 's');
-        end
-    end
-    
-    
-    
-end
-
-%[h p ci ts] = ttest(rhoAll); 
-
-%disp(['p = ' num2str(p) '   t = ' num2str(ts.tstat)])
-%exportgraphics(gcf, [paths.results.DNNs 'myCorr.png'], 'Resolution', 300); 
-
-
-%%
-
-[h p ci ts] = ttest(rhoAll); 
-h = squeeze(h); t = squeeze(ts.tstat);
-
-figure; imagesc(h)
-
-
-
-%% plot mean just 2 check 
-
-d2p = squeeze(cell2mat(cellfun(@mean, nnFit_PFC, 'un', 0)))
-md2p = squeeze(mean(d2p)); 
-
-imagesc(md2p)
 
 
 

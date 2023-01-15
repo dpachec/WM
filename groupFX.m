@@ -388,12 +388,12 @@ cond2 = 'DIDC_EM2';
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
  
 %global parameters
-subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
-%subj2exc        =       [2];
-runperm         =       0;
+%subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
+subj2exc        =       [1];
+runperm         =       1;
 plotClust       =       1; 
 dupSym          =       0; 
-n_perm          =       1000;
+n_perm          =       10;
 saveperm        =       1; 
 cfg             =       [];
 cfg.clim        =       [-.01 .0115];
@@ -410,7 +410,7 @@ cfg.runperm     =       runperm;
 test2use        =       'ttest'; %'wilcox'; %'ttest';
 cfg.remClust    =       1; %remove clusters from plot (only if run permutation is true)
 cfg.plot1clust  =       0; %to plot just one cluster selected in the following line
-cfg.clust2plot  =       6;
+cfg.clust2plot  =       4;
 cfg.subj2exc    =       subj2exc;
 cfg.lwd1        =       2; %baseline 
 cfg.lwd2        =       2; %significant outline
@@ -1113,6 +1113,8 @@ max_clust_sum = out_perm.max_clust_sum;
 %obs = max(abs(all_clust_tsum_real(:,1)));
 obs = abs(out_perm.max_clust_sum_real); 
 
+obs = 27.4464968762709
+
 %allAb = max_clust_sum(abs(max_clust_sum) > obs);
 allAb = max_clust_sum(max_clust_sum > obs);
 p =1 - (n_perm - (length (allAb)+1) )  /n_perm;
@@ -1283,7 +1285,12 @@ set(gca, 'LineWidth', 3);
 
 
 
+%% 
 
+data = squeeze(cfg_contrasts.oneListPow(1,1,:,:));
+
+figure
+contourf(data,  40, 'linecolor', 'none')
 
 
 
@@ -1527,7 +1534,7 @@ end
 subj2exc = [18 22]; 
 lim1 = [3:17]; lim2 = [3:47];
 
-clear allH2s
+clear allH2s allT2s allH2s allDs
 for bandi = 1:6
 
     all_cond1_A = allVVS{bandi, 1};all_cond2_A = allVVS{bandi, 2};
@@ -1607,6 +1614,8 @@ set (gca, 'clim', [-5 5])
 % d2p = allDs'; 
 % 
 % plot(d2p(:, 1:6))
+
+
 
 
 

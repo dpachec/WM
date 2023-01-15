@@ -115,7 +115,7 @@ for coni = 1:length(currentContrast)
 
             rsaZ = zeros (trialN, bins, bins);
             %fprintf('\n'); fprintf('trial correlation:          '); 
-            parfor triali = 1:trialN
+            for triali = 1:trialN
                 mX= squeeze(xM(triali,:,:));
                 mY= squeeze(yM(triali,:,:));
                 r = corr (mX', mY','Type', 's', 'Rows', 'pairwise'); 
