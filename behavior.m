@@ -126,6 +126,9 @@ diff12 = corr_123(:,2) - corr_123(:,1);
 
 
 
+%%
+mean(corr_all)
+std(corr_all)
 
 
 %% 2Bar 
@@ -153,7 +156,8 @@ plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);hold on;
 %[p h stats] = signrank(data.data(:,1), data.data(:,2));
 %disp (['W = ' num2str(stats.signedrank) '  ' ' p = ' num2str(p)]);
 
-[h p ci t] = ttest(diff, -0.0833); % for the 123 trials
+[h p ci t] = ttest(diff); % for the 123 trials
+%[h p ci t] = ttest(diff, -0.0833); % for the 123 trials
 %[h p ci t] = ttest(data.data(:,1), 1/6); % for the 123 trials
 %[h p ci t] = ttest(data.data(:,2), 1/4); % for the 123 trials
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
@@ -215,44 +219,39 @@ c = multcompare(stats)
 %% DECISION MAKERS : simulation for the 123 trials
 
 clearvars -except allTrlInfo
-trialinfo = allTrlInfo{2};
+trialinfo = allTrlInfo{9};
 nPerm = 1000;
 
 clear sim_res trRes clear allTRCNI
+
 for permi = 1:nPerm
+    countT = 0; 
     for triali = 1:size(trialinfo, 1)
         idCorr            = trialinfo(triali, 10);
         if idCorr ~= 4
             allItms           = [trialinfo(triali, 4:6) trialinfo(triali, 12:14)];
             allCats           = floor(allItms/100);
-            lures             = unique(allCats);
-            nLures            = length(unique(allCats));
             corrItm           = trialinfo(triali, 3+idCorr);
             corrCat           = floor(corrItm/100);
-            twoCats           = allItms(allCats == floor(corrItm/100)) ;
-            corrCatnotIt      = twoCats(twoCats ~= corrItm);
             rand_it           = allItms(randsample(6, 1));
-            rand_cat          = lures(randsample(nLures, 1));
+            rand_cat          = floor(rand_it/100);
             trResItm(triali,:)   = double(corrItm == rand_it);
             trResCat(triali,:)   = double(corrCat == rand_cat);
-            if ~isempty(corrCatnotIt)
-               trCatnotIt(triali, :) = double(corrCatnotIt == rand_it); 
-            else
-                trCatnotIt(triali, :) = nan;
-            end
+            countT = countT+1; 
         else
             trResItm(triali,:)    = nan;
             trResCat(triali,:)    = nan;
             trCatnotIt(triali, :) = nan;
         end
     end
-    sim_res(permi, :, 1)  = trResItm(~isnan(trResItm)); 
-    sim_res(permi,:, 2)  = trResCat(~isnan(trResCat)); 
-    allTRCNI(permi,:)  = sum(trCatnotIt(~isnan(trCatnotIt))) / length(trCatnotIt(~isnan(trCatnotIt)) ); 
+    allTR_IT(permi,:)  = sum(trResItm(~isnan(trResItm)))/countT; 
+    allTR_CAT(permi,:)  = sum(trResCat(~isnan(trResCat)))/countT; 
 end
 
-mean(allTRCNI)
-1/6
+mean(allTR_IT)
+mean(allTR_CAT)
+
+
 
 %%
 clear anCorr 

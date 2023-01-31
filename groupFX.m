@@ -8,8 +8,8 @@ paths = load_paths_WM(region);
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
               %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
-              %'DISC_M2M2' 'DIDC_M2M2';
+              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_M2M2' 'DIDC_M2M2';
              };
 
 c = unique (contrasts);
@@ -155,10 +155,11 @@ disp (['p = ' num2str(p)]);
 
 %% plot diagonal only
 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
 
-subj2exc = [2]; 
+cond1 = 'DISC_M2M2';
+cond2 = 'DIDC_M2M2';
+
+subj2exc = [1]; 
 
 all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %exclude subjects
@@ -231,7 +232,8 @@ exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
 
 
-%% plot both
+%% analysis high temporal resolution: Fig2E
+
 cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
 load all
 
@@ -252,9 +254,9 @@ seVVS = stdVVS/sqrt(size(cVVS, 1))
 
 l2y = -.015; 
 [hPFC p ci ts] = ttest(cPFC); 
-hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y; 
+hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y+.0015; 
 [hVVS p ci ts] = ttest(cVVS); 
-hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y -.002; 
+hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045; 
 
 
 times = -.75:.01:.75
@@ -262,13 +264,13 @@ times = -.75:.01:.75
 figure()
 %plot(mc1, 'r', 'linewidth' ,2); hold on; 
 %plot(mc2, 'b', 'linewidth' ,2); 
-shadedErrorBar(times, mcPFC, sePFC, 'b', 1); hold on; 
+shadedErrorBar(times, mcPFC, sePFC, 'k', 1); hold on; 
 shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
-%plot(times, mcPFC, 'linewidth' ,2);hold on; 
-%plot(times, mcVVS, 'linewidth' ,2);hold on; 
-plot(times, hbPFC, 'b', 'linewidth' ,4);
-plot(times, hbVVS, 'r', 'linewidth' ,4);
-set(gca, 'FontSize', 18, 'xlim', [-.25, .75])
+plot(times, hbPFC, 'k', 'linewidth' ,10);
+plot(times, hbVVS, 'r', 'linewidth' ,10);
+set(gca, 'FontSize', 20, 'xlim', [-.5, .75], 'ylim', [l2y 0.06])
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
 
 
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
@@ -353,8 +355,8 @@ paths = load_paths_WM(region);
 
 contrasts = {
               %'SISC_EEC' 'DISC_EEC';
-              %'DISC_EE' 'DIDC_EE';
-              'DISC_EM2' 'DIDC_EM2';
+              'DISC_M2M2' 'DIDC_M2M2';
+              %'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -380,8 +382,8 @@ end
 tic; clear all_cond1 all_cond2 all_cond1_A all_cond2_A;
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+cond1 = 'DISC_M2M2';
+cond2 = 'DIDC_M2M2';
  
 
 
@@ -390,10 +392,10 @@ all_cond1_A = eval(cond1);all_cond2_A = eval(cond2);
 %global parameters
 %subj2exc        =       [18 22];% vvs;%[1] pfc %[2] in hipp
 subj2exc        =       [1];
-runperm         =       1;
+runperm         =       0;
 plotClust       =       1; 
-dupSym          =       0; 
-n_perm          =       10;
+dupSym          =       1; 
+n_perm          =       1000;
 saveperm        =       1; 
 cfg             =       [];
 cfg.clim        =       [-.01 .0115];
@@ -403,7 +405,7 @@ cfg.saveimg     =       1;
 cfg.enc_ret     =       'e';
 cfg.lim         =       'final'; %'no'  -   %'edge' - % 'final' -- 'jackk'
 cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %4 3 2.5 2 
+cfg.cut2        =       '4-4'; %4 3 2.5 2 
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.runperm     =       runperm;
@@ -494,8 +496,8 @@ end
 
         %first find 
         obs = max(out_real.all_clust_tsum_real(:,1));
-        allAb = max_clust_sum(abs(max_clust_sum) > obs);
-        %allAb = max_clust_sum((max_clust_sum) > obs);
+        %allAb = max_clust_sum(abs(max_clust_sum) > obs);
+        allAb = max_clust_sum((max_clust_sum) > obs);
         p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/ n_perm);
         disp (['p = ' num2str(p)]);
         %x = find(max_clust_sum_ranked(:,2) == index)
@@ -509,8 +511,10 @@ clear m1 m2
 for subji = 1:length(all_cond1)
     %m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:15,6:45)));
     %m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:15,6:45)));
-    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40,6:40)));
-    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40,6:40)));
+
+    lim2use = 30:40
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,6:40, lim2use)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,6:40, lim2use))); %for the 100_norm cut out
 
 end
 
@@ -524,6 +528,27 @@ msD = m1A-m2A;
 t = ts.tstat
 p
 
+
+%% average in period (only one time dimension)
+clear m1 m2
+for subji = 1:length(all_cond1)
+    m1(subji, :,:) = squeeze(mean(all_cond1{subji}(:,1:40,1:40)));
+    m2(subji, :,:) = squeeze(mean(all_cond2{subji}(:,1:40,1:40)));
+
+
+end
+
+m1A = squeeze(mean(m1,2,'omitnan'));
+m2A = squeeze(mean(m2,2,'omitnan'));
+
+
+%%full maintenance period 
+msD = m1A-m2A;
+[h p ci ts] = ttest(msD);
+t = ts.tstat
+p
+
+plot(mean(msD))
 
 
 %% plot one bar
@@ -542,7 +567,7 @@ h = bar (mean_S);hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
 %set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
 set(gca,'XTick',[1],'XTickLabel',{'', ''}, ...
-    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.0025 .0075] );
+    'FontSize', 30, 'linew',2, 'xlim', [0 2], 'ylim', [-.045 .045] );
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 
 %[h p ci t] = ttest (data.data(:,1), data.data(:,2));
@@ -563,8 +588,7 @@ max_clust_sum = out_perm.max_clust_sum;
 %first find 
 obs = max(all_clust_tsum_real(:,1));
 
-allAb = max_clust_sum(abs(max_clust_sum) > obs);
-%allAb = max_clust_sum((max_clust_sum) > obs);
+allAb = max_clust_sum((max_clust_sum) > obs);
 p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/ n_perm);
 disp (['p = ' num2str(p)]);
 %x = find(max_clust_sum_ranked(:,2) == index)

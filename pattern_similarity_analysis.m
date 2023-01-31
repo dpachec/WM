@@ -185,7 +185,7 @@ for subji = 1:length(sublist)
 end
  
 
-%%
+%% generate random vectors for plots
 
 x = randn(1, 20)
 figure(); set(gcf, 'Position', [50 100 575 25])
@@ -200,7 +200,7 @@ export_fig(gca, 'hola.png','-r300');
 %% 
 
 
-x = randn(1, 5)
+x = randn(1, 75)
 figure(); set(gcf, 'Position', [50 100 150 25])
 myCmap = colormap(brewermap([],'*Spectral'));
 colormap(myCmap)

@@ -143,7 +143,7 @@ limR = [0 d2uR];
 if cfg.square
     set(axesHandles, 'clim', cfg.clim, 'ytick', cfg.placeTY*10, 'yticklabel', fliplr(labels_to_plotE),...
     'xtick', cfg.placeTX*10, 'xticklabel', labels_to_plotR, 'FontSize', 12, 'xlim', limE*10, 'ylim', limR*10); 
-    %set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 else
     set(axesHandles, 'clim', cfg.clim, 'ytick', cfg.placeTY, 'yticklabel', labels_to_plotE,...
     'xtick', cfg.placeTX, 'xticklabel', labels_to_plotR, 'FontSize', 12, 'xlim', limE, 'ylim', limR); 

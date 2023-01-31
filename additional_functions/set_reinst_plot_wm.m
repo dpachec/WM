@@ -69,13 +69,13 @@ if strcmp(cfg.res, '100_norm')
         reinst_plot_cfg.mlimR = 3:47 %1:45; %1:85
         x = 45; %45 %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = x; reinst_plot_cfg.binsR = x; 
-        reinst_plot_cfg.labels_to_plotE = -.5:.5:4; 
-        reinst_plot_cfg.labels_to_plotR = -.5:.5:4; 
+        reinst_plot_cfg.labels_to_plotE = -.5:.5:3.5; 
+        reinst_plot_cfg.labels_to_plotR = -.5:.5:3.5; 
         reinst_plot_cfg.limFE = 40.5; %cue onset line
         reinst_plot_cfg.limFR = 4.5;
         reinst_plot_cfg.l2excE = [1 3 5 7 9  ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
         reinst_plot_cfg.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
-        reinst_plot_cfg.placeTX = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5]; 
+        reinst_plot_cfg.placeTX = [0.5 4.5 9.5 14.5 19.5 24.5 29.5 34.5 39.5 44.5]; 
         reinst_plot_cfg.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];
         reinst_plot_cfg.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
         reinst_plot_cfg.plotD           =       1;
@@ -104,8 +104,8 @@ if strcmp(cfg.res, '100_perm')
     end
 
     if strcmp(cfg.cut2, '1-4')
-        reinst_plot_cfg.mlimE = 8:17; %1:85;
-        reinst_plot_cfg.mlimR = 8:42; %1:85
+        reinst_plot_cfg.mlimE = 8:15; %1:85;
+        reinst_plot_cfg.mlimR = 8:47; %1:85
         reinst_plot_cfg.binsE = 40; 
         reinst_plot_cfg.binsR = 8; 
         reinst_plot_cfg.labels_to_plotE = 0:.5:1; 
@@ -121,8 +121,9 @@ if strcmp(cfg.res, '100_perm')
     end
 
     if strcmp(cfg.cut2, '4-4')
-        reinst_plot_cfg.mlimE = 6:45; %1:85;
-        reinst_plot_cfg.mlimR = 6:45; %1:85
+        reinst_plot_cfg.mlimE = 8:42; %official
+        reinst_plot_cfg.mlimR = 8:42; %official
+
         x = 40; %note that x is different from the original size of the matrix 
         reinst_plot_cfg.binsE = x; reinst_plot_cfg.binsR = x; 
         reinst_plot_cfg.labels_to_plotE = 0:.5:4; 
