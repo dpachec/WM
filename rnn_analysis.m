@@ -163,7 +163,7 @@ end
 %%  plot all layers RNN frequency resolved
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'RNN_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -381,7 +381,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-f2sav =   'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+f2sav =   'RNN_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -626,10 +626,10 @@ end
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
-nPerm = 1000;
+nPerm = 100;
 
 listF2sav = {
-                'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                %'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
                 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
              };
@@ -706,12 +706,13 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_100p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 
-cd ([paths.results.DNNs 'permutations\full_period\'])
+%cd ([paths.results.DNNs 'permutations\full_period\'])
+cd ([paths.results.DNNs ])
 load(f2sav);
 
 if strcmp(cfg.brainROI, 'pfc')
@@ -794,7 +795,7 @@ end
 
 %% compute clusters in each permutation BANDS for all layers
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'RNN_pfc_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1_1000p.mat'; 
+f2sav = 'RNN_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1_1000p.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -876,8 +877,8 @@ end
 %% compute p for one layer only
 clear p mcsR mcsP
 
-mcsR =    17.3545; 
-mcsP = squeeze(max_clust_sum_perm);
+mcsR =    34.2530300056106; 
+mcsP = squeeze(max_clust_sum_perm(:, 5));
 
 for clusti = 1:length(mcsR)
     

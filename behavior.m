@@ -253,58 +253,39 @@ mean(allTR_CAT)
 
 
 
-%%
-clear anCorr 
-for permi = 1:nPerm
-    anCorrItm(permi,1) = sum(sim_res(permi, :, 1)) / 30;
-    anCorrCat(permi,1) = sum(sim_res(permi, :, 2)) / 30;
-    
-end
-
-mCorrItm = mean(anCorrItm)
-mCorrCat = mean(anCorrCat)
-
-
-%% chace of getting category but not item right
-
-
-
-
-
-
-
-
-
 %% DECISION MAKERS : simulation for the all trials
 
 clearvars -except allTrlInfo
-trialinfo = allTrlInfo{1};
+trialinfo = allTrlInfo{20};
 nPerm = 1000;
 
 clear sim_res trResItm trResCat
 for permi = 1:nPerm
+    countT = 0; 
     for triali = 1:size(trialinfo, 1)
         idCorr                = trialinfo(triali, 10);
         if idCorr == 4
             allItms             = [trialinfo(triali, 4:6) trialinfo(triali, 12:14)];
             allCats             = floor(allItms/100);
-            lures               = unique(allCats);
-            nLures              = length(unique(allCats));
             corr_seq_it         = allItms(1:3);
             corr_seq_cat        = floor(corr_seq_it/100);
             rand_seq_it         = allItms(randsample(6, 3));
-            rand_seq_cat        = lures(randsample(nLures, 3));
-            trResItm(triali,:)  = double(corr_seq_it == rand_seq_it);
-            trResCat(triali,:)  = double(corr_seq_cat == rand_seq_cat);
-            
+            rand_seq_cat        = floor(rand_seq_it/100);
+            trResItm(triali,:)  = sum(double(corr_seq_it == rand_seq_it));
+            trResCat(triali,:)  = sum(double(corr_seq_cat == rand_seq_cat));
+            countT = countT+1; 
         else
             trResItm(triali,:)  = nan;
             trResCat(triali,:)  = nan;
         end
     end
-    sim_res(permi,:,:,1)  = trResItm(sum(~isnan(trResItm),2) == 3,:); 
-    sim_res(permi,:,:,2)  = trResCat(sum(~isnan(trResItm),2) == 3,:); 
+    allTR_IT(permi,:)  = sum(trResItm == 3)/countT; 
+    allTR_CAT(permi,:)  = sum(trResCat == 3)/countT; 
 end
+
+
+mean(allTR_IT)
+mean(allTR_CAT)
 
 %%
 clear anCorr 
