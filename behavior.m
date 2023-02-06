@@ -219,7 +219,7 @@ c = multcompare(stats)
 %% DECISION MAKERS : simulation for the 123 trials
 
 clearvars -except allTrlInfo
-trialinfo = allTrlInfo{9};
+trialinfo = allTrlInfo{4};
 nPerm = 1000;
 
 clear sim_res trRes clear allTRCNI
@@ -244,19 +244,64 @@ for permi = 1:nPerm
             trCatnotIt(triali, :) = nan;
         end
     end
-    allTR_IT(permi,:)  = sum(trResItm(~isnan(trResItm)))/countT; 
-    allTR_CAT(permi,:)  = sum(trResCat(~isnan(trResCat)))/countT; 
+    allTR_IT(permi,:)  = sum(trResItm, 'omitnan')/countT; 
+    allTR_CAT(permi,:)  = sum(trResCat, 'omitnan')/countT; 
 end
 
 mean(allTR_IT)
 mean(allTR_CAT)
 
 
+%% DECISION MAKERS : simulation for the 123 trials for ALL SSESSIONS
+
+clearvars -except allTrlInfo
+nPerm = 1000;
+
+for sessi = 1:length(allTrlInfo)
+
+    trialinfo = allTrlInfo{sessi};
+    
+    for permi = 1:nPerm
+        countT = 0; 
+        for triali = 1:size(trialinfo, 1)
+            idCorr            = trialinfo(triali, 10);
+            if idCorr ~= 4
+                allItms           = [trialinfo(triali, 4:6) trialinfo(triali, 12:14)];
+                allCats           = floor(allItms/100);
+                corrItm           = trialinfo(triali, 3+idCorr);
+                corrCat           = floor(corrItm/100);
+                rand_it           = allItms(randsample(6, 1));
+                rand_cat          = floor(rand_it/100);
+                trResItm(triali,:)   = double(corrItm == rand_it);
+                trResCat(triali,:)   = double(corrCat == rand_cat);
+                countT = countT+1; 
+            else
+                trResItm(triali,:)    = nan;
+                trResCat(triali,:)    = nan;
+                trCatnotIt(triali, :) = nan;
+            end
+        end
+        allTR_IT(permi,:)  = sum(trResItm, 'omitnan')/countT; 
+        allTR_CAT(permi,:)  = sum(trResCat, 'omitnan')/countT; 
+    end
+    
+    allSIT(sessi, :) = mean(allTR_IT);
+    allSCAT(sessi, :) = mean(allTR_CAT);
+end
+
+
+%% 
+mean (allSIT)
+std(allSIT)
+mean (allSCAT)
+std(allSCAT)
+
+
 
 %% DECISION MAKERS : simulation for the all trials
 
 clearvars -except allTrlInfo
-trialinfo = allTrlInfo{20};
+trialinfo = allTrlInfo{1};
 nPerm = 1000;
 
 clear sim_res trResItm trResCat
@@ -286,6 +331,49 @@ end
 
 mean(allTR_IT)
 mean(allTR_CAT)
+
+
+
+%% DECISION MAKERS : simulation for the all trials for ALL SESSIONS
+
+clearvars -except allTrlInfo
+nPerm = 1000;
+
+for sessi = 1:length(allTrlInfo)
+    trialinfo = allTrlInfo{sessi};
+    for permi = 1:nPerm
+        countT = 0; 
+        for triali = 1:size(trialinfo, 1)
+            idCorr                = trialinfo(triali, 10);
+            if idCorr == 4
+                allItms             = [trialinfo(triali, 4:6) trialinfo(triali, 12:14)];
+                allCats             = floor(allItms/100);
+                corr_seq_it         = allItms(1:3);
+                corr_seq_cat        = floor(corr_seq_it/100);
+                rand_seq_it         = allItms(randsample(6, 3));
+                rand_seq_cat        = floor(rand_seq_it/100);
+                trResItm(triali,:)  = sum(double(corr_seq_it == rand_seq_it));
+                trResCat(triali,:)  = sum(double(corr_seq_cat == rand_seq_cat));
+                countT = countT+1; 
+            else
+                trResItm(triali,:)  = nan;
+                trResCat(triali,:)  = nan;
+            end
+        end
+        allTR_IT(permi,:)  = sum(trResItm == 3)/countT; 
+        allTR_CAT(permi,:)  = sum(trResCat == 3)/countT; 
+    end
+    allSIT(sessi, :) = mean(allTR_IT);
+    allSCAT(sessi, :) = mean(allTR_CAT);
+end
+
+
+%% 
+mean (allSIT)
+std(allSIT)
+mean (allSCAT)
+std(allSCAT)
+
 
 %%
 clear anCorr 

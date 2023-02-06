@@ -96,7 +96,7 @@ end
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 clear , clc
 
-f2sav = 'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -189,7 +189,7 @@ for layi = 1:size(nnFit{1}, 1)
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)
-       nnH(subji, : ,:) = nnFit{subji, 1}(layi,:,:);       
+       nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,:));
     end
     
     nnH(sub2exc, :, :) = []; 

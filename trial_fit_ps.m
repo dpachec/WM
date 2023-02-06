@@ -22,9 +22,8 @@ for bandi = 1:length(fnames)
     ALLE_PFC_B{bandi,:}  = ALL_EE([2 3  5  9 10 11 12 14 15 16]);
     ids_PFC_B{bandi,:}  = all_IDs([2 3  5  9 10 11 12 14 15 16]);
     
-
-
 end
+
 
 %% analysis for all frequency bands (precomputed diagonal)
 
@@ -527,6 +526,9 @@ d2p = squeeze(cell2mat(cellfun(@mean, nnFit_PFC, 'un', 0)))
 md2p = squeeze(mean(d2p)); 
 
 imagesc(md2p)
+
+
+%% 
 
 
 
