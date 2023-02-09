@@ -259,6 +259,9 @@ hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y+.0015;
 hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045; 
 
 
+[hBoth p ci ts] = ttest2(cVVS, cPFC); 
+hbBoth = hBoth; hbBoth(hBoth==0) = nan; hbBoth(hbBoth==1) = l2y +.00775; 
+
 times = -.75:.01:.75
 
 figure()
@@ -268,12 +271,88 @@ shadedErrorBar(times, mcPFC, sePFC, 'k', 1); hold on;
 shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
 plot(times, hbPFC, 'k', 'linewidth' ,10);
 plot(times, hbVVS, 'r', 'linewidth' ,10);
+plot(times, hbBoth, 'g', 'linewidth' ,10);
 set(gca, 'FontSize', 20, 'xlim', [-.5, .75], 'ylim', [l2y 0.06])
 plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
 plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
 
 
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+%% unpaired ttest
+clear
+load carbig.mat;
+
+decade = categorical(Model_Year < 80,[true,false],["70s","80s"]);
+MPG70s = MPG(decade == "70s");
+MPG80s = MPG(decade == "80s");
+
+[h,~,~,stats] = ttest2(MPG70s,MPG80s,"Tail","left")
+
+
+%% surrogates comparison between 2 regions: shuffling region labels
+
+clearvars -except cond1_PFC cond1_VVS cond2_PFC cond2_VVS
+
+nPerm = 1000; 
+
+
+for permi =1:1000
+
+
+
+    mc1PFC = mean(cond1_PFC); 
+    mc2PFC = mean(cond2_PFC); 
+    cPFC = cond1_PFC-cond2_PFC;
+    
+    mc1VVS = mean(cond1_VVS); 
+    mc2VVS = mean(cond2_VVS); 
+    cVVS = cond1_VVS - cond2_VVS; 
+
+    junts = [ cVVS; cPFC];
+    rndIndex = [zeros(1, size(cVVS, 1)), ones(1 ,size(cPFC, 1))]';
+    %rndIndex = rndIndex(randperm(length(rndIndex)));
+    junts1 = junts(rndIndex==0, :);
+    junts2 = junts(rndIndex==1, :);
+        
+    [hPerm p ci ts] = ttest2(junts1, junts2); 
+    tPerm = ts.tstat; 
+
+    clustinfo = bwconncomp(hPerm);
+    [numPixPermi(permi) maxi] = max([0 cellfun(@numel,clustinfo.PixelIdxList) ]); % the zero accounts for empty maps
+    if numPixPermi(permi) > 0
+        max_clust_sum(permi,:) = sum (tPerm(clustinfo.PixelIdxList{maxi-1}));
+    else
+        %disp (['no significant cluster in permutation ' num2str(permi)]);
+        max_clust_sum(permi,:) = 0; 
+    end
+
+    
+
+
+
+
+
+
+end
+
+%% 
+
+figure()
+histogram(max_clust_sum); hold on; 
+scatter(121.939054751820, 0, 2000, '.', 'r' )
+
+
+
+%% permutations
+
+allAb = max_clust_sum(max_clust_sum > 121.939054751820);
+p =1 - (nPerm - (length (allAb)+1) )  /nPerm;
+
+disp (['p = ' num2str(p)]);
+
+
+
 
 
 

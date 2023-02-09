@@ -1,4 +1,19 @@
+%% Subject INFO 
 
+
+gend2u = {'M', 'M', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'F', 'F', 'F', 'M', 'M', 'M', 'M', 'F', 'F', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'F', 'F', 'F', 'F'}'
+sum(strcmp(gend2u, 'F'))
+
+ag2u = [30 26 28 19 37 25 43 32 26 43 25 23 26 17 32 48 38 24 17 22 61 29 22 48 35 29 17 29	25 28]
+
+mean(ag2u)
+std(ag2u)
+
+
+
+
+
+%%
 cLen1 = sum(cellfun(@(x) size(x, 1), chanNames_all_VVS))  ;
 cLen2 = sum(cellfun(@(x) size(x, 1), chanNames_all_PFC));
 

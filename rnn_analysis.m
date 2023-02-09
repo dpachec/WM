@@ -1128,7 +1128,8 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 %% plot MDS one Line Vertical
 cols = brewermap(6, 'Accent') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
 cols = repelem(cols, 10, 1);
-
+%plot(1,1,'.','color',cols(11,:), 'Markersize', 2000) % check the color
+% also nice palette here: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/a64ed616-e9ce-4b1d-8d18-5118cc03f8d2/images/screenshot.png
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 for layi = 1:8
@@ -1150,6 +1151,7 @@ end
  set(ha(6),'position',[.09 * 2 0 n n ])
  set(ha(7),'position',[.09 0 n n])
  set(ha(8),'position',[.0 0 n n ])
+ legend
  
  
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
