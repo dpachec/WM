@@ -113,8 +113,12 @@ pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
+nTimes = 9000; 
+win_width = 500; 
+mf = 100; 
+bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 tic
-for subji = 1:10 
+for subji = 2% 1:10 
     subji
     cd(vvs_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{vvs_ids(subji)})
@@ -129,37 +133,40 @@ for subji = 1:10
             count = count+1;
             for chani = 1:size(c_vvs.chanNames,1)
                 for chanj = 1:size(c_pfc.chanNames,1)
-                   t_vvs = squeeze(c_vvs.oneListTraces(chani,2000:3000,triali));
-                   t_pfc = squeeze(c_pfc.oneListTraces(chanj,2000:3000,triali));
-
-                   EEG_vvs.data    = t_vvs;
-                   EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                   EEG_vvs         = pop_eegfiltnew (EEG_vvs, 16,29);
-                   data_vvs        = squeeze(EEG_vvs.data); 
-                   dataHA_vvs      = angle(hilbert(data_vvs));
-
-                   EEG_pfc.data    = t_pfc;
-                   EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                   EEG_pfc         = pop_eegfiltnew (EEG_pfc, 16,29);
-                   data_pfc        = squeeze(EEG_pfc.data); 
-                   dataHA_pfc      = angle(hilbert(data_pfc));
-
-
-                   phase_data(1,:) = dataHA_vvs;
-                   phase_data(2,:) = dataHA_pfc;
-
-                   PLVch{subji,:}(count, chani, chanj ) = abs(mean(exp(1i*(diff(phase_data,1)))));
+                    parfor freqi = 1:54 %parfor is optimal here 
+                        for timei = 1:bins 
+                            timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
+                            t_vvs = squeeze(c_vvs.oneListTraces(chani,timeBins,triali));
+                            t_pfc = squeeze(c_pfc.oneListTraces(chanj,timeBins,triali));
+        
+                            EEG_vvs.data    = t_vvs;
+                            EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
+                            EEG_vvs         = pop_eegfiltnew (EEG_vvs, freqi,freqi);
+                            data_vvs        = squeeze(EEG_vvs.data); 
+                            dataHA_vvs      = angle(hilbert(data_vvs));
+        
+                            EEG_pfc.data    = t_pfc;
+                            EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
+                            EEG_pfc         = pop_eegfiltnew (EEG_pfc, freqi,freqi);
+                            data_pfc        = squeeze(EEG_pfc.data); 
+                            dataHA_pfc      = angle(hilbert(data_pfc));
+        
+                            diffPha = dataHA_vvs - dataHA_pfc;
+                                    
+                            myPLV(count, chani, chanj, freqi, timei ) = abs(mean(exp(1i*(diffPha))));
+                        end
+                    end
                 end
             end
         end
     end
 
-    
+    PLVch{subji,:} = myPLV; 
 end
 
 
 cd (currentF)
-save('PLVch', 'PLVch');
+%save('PLVch', 'PLVch');
 
 
 
