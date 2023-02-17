@@ -122,7 +122,7 @@ for subji = 1:10
     cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
-    %restrict time 
+    %restrict time  
     
     
     for triali = 1:size(c_vvs.oneListTraces,3)
