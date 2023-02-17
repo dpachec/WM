@@ -41,9 +41,9 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'RNN_vvs_M123_[8-8-56]_3-8_1_0_0_1_.1_5_1'
-                'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_1_.1_5_1'
-                'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_1_.1_5_1'; 
+                'RNN_vvs_M123_[8-8-56]_3-8_0_0_0_1_.1_5_1.mat'
+                'RNN_vvs_M123_[8-8-56]_9-12_0_0_0_1_.1_5_1.mat'
+                'RNN_pfc_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat'; 
                 
                 
              };   
@@ -76,9 +76,8 @@ for listi = 1:length(listF2sav)
         
     end
     
-    mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav], 'nnFit');
-
+    %save([paths.results.DNNs f2sav], 'nnFit');
+    save([paths.trial_level f2sav], 'nnFit');
 
 end
 
@@ -374,7 +373,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-f2sav =   'RNN_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -469,7 +468,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex) -- IN one PLOT ONLY 
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-f2sav =   'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+f2sav =   'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
