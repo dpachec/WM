@@ -100,6 +100,91 @@ set(gca, 'LineWidth', 3);
 
 
 
+%% FREQUENCY reSOLVED for cluster period
+
+clearvars 
+
+currentF = pwd;
+vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\vvs';
+pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
+
+
+pfc_ids = [2 3  5  9 10 11 12 14 15 16];
+vvs_ids = [7 9 13 18 19 20 21 23 27 28];
+
+
+tic
+for subji = 1:10 
+    subji
+    cd(vvs_link);sublist = dir('*contr.mat');sublist = {sublist.name};
+    load (sublist{vvs_ids(subji)})
+    c_vvs = cfg_contrasts;
+    cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
+    load (sublist{pfc_ids(subji)})
+    c_pfc = cfg_contrasts;
+    %restrict time 
+    
+    
+    for triali = 1:size(c_vvs.oneListTraces,3)
+        id2u = strsplit(c_vvs.oneListIds_c{triali});
+            for chani = 1:size(c_vvs.chanNames,1)
+                for chanj = 1:size(c_pfc.chanNames,1)
+                    parfor freqi = 1:54 
+                            t_vvs = squeeze(c_vvs.oneListTraces(chani,2401:3200,triali));
+                            t_pfc = squeeze(c_pfc.oneListTraces(chanj,2401:3200,triali));
+        
+                            EEG_vvs.data    = t_vvs;
+                            EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
+                            EEG_vvs         = pop_eegfiltnew (EEG_vvs, freqi,freqi);
+                            data_vvs        = squeeze(EEG_vvs.data); 
+                            dataHA_vvs      = angle(hilbert(data_vvs));
+        
+                            EEG_pfc.data    = t_pfc;
+                            EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
+                            EEG_pfc         = pop_eegfiltnew (EEG_pfc, freqi,freqi);
+                            data_pfc        = squeeze(EEG_pfc.data); 
+                            dataHA_pfc      = angle(hilbert(data_pfc));
+        
+                            diffPha = dataHA_vvs - dataHA_pfc;
+                                    
+                            if strcmp(id2u{1},'7') & strcmp(id2u{2},'4') %Multi_item
+                                MIPLV(triali, chani, chanj, freqi, :) = abs(mean(exp(1i*(diffPha))));
+                            elseif strcmp(id2u{1},'7') & ~strcmp(id2u{2},'4') %Single item
+                                SIPLV(triali, chani, chanj, freqi, :) = abs(mean(exp(1i*(diffPha))));
+                            end
+                        
+                    end
+                end
+            end
+        end
+    
+
+    PLV_MSI{subji,1} = MIPLV; 
+    PLV_MSI{subji,2} = SIPLV; 
+end
+
+
+cd (currentF)
+save('PLV_MSI', 'PLV_MSI');
+
+
+
+toc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% TIME FREQUENCY reSOLVED
 
@@ -113,12 +198,12 @@ pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
-nTimes = 9000; 
+nTimes = 5000; 
 win_width = 500; 
 mf = 100; 
 bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 tic
-for subji = 2% 1:10 
+for subji = 1:10 
     subji
     cd(vvs_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{vvs_ids(subji)})
@@ -126,15 +211,19 @@ for subji = 2% 1:10
     cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
+    %restrict time 
+    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 1001:6000,:);
+    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 1001:6000,:);
+
     count = 0;
     for triali = 1:size(c_vvs.oneListTraces,3)
         id2u = strsplit(c_vvs.oneListIds_c{triali});
         if strcmp(id2u{1},'7') & strcmp(id2u{2},'4') 
-            count = count+1;
+            count = count+1
             for chani = 1:size(c_vvs.chanNames,1)
                 for chanj = 1:size(c_pfc.chanNames,1)
-                    parfor freqi = 1:54 %parfor is optimal here 
-                        for timei = 1:bins 
+                    for freqi = 1:54 
+                        for timei = 1:bins %parfor is optimal here 
                             timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
                             t_vvs = squeeze(c_vvs.oneListTraces(chani,timeBins,triali));
                             t_pfc = squeeze(c_pfc.oneListTraces(chanj,timeBins,triali));
