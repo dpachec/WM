@@ -190,7 +190,7 @@ pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
-nTimes = 5000; 
+nTimes = 4000; 
 win_width = 500; 
 mf = 100; 
 bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
@@ -204,62 +204,78 @@ for subji = 1:10
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
     %restrict time 
-    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 1001:6000,:);
-    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 1001:6000,:);
+    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 2001:6000,:);
+    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 2001:6000,:);
     
-    
-    for triali = 1:size(c_vvs.oneListTraces,3)
-        id2u = strsplit(c_vvs.oneListIds_c{triali});
-        countMI = 0; 
-        countSI = 0; 
-        for chani = 1:size(c_vvs.chanNames,1)
-            for chanj = 1:size(c_pfc.chanNames,1)
+    clear PLV2U
+    for chani = 1:size(c_vvs.chanNames,1)
+        for chanj = 1:size(c_pfc.chanNames,1)
+            parfor triali = 1:size(c_vvs.oneListTraces,3)
+                id2u = strsplit(c_vvs.oneListIds_c{triali});
                 t_vvs = squeeze(c_vvs.oneListTraces(chani,:,triali));
                 t_pfc = squeeze(c_pfc.oneListTraces(chanj,:,triali));
                 EEG_vvs.data    = t_vvs;
                 EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                EEG_vvs         = pop_eegfiltnew (EEG_vvs, 16,29);
+                EEG_vvs         = pop_eegfiltnew (EEG_vvs, 30,54);
                 data_vvs        = squeeze(EEG_vvs.data); 
                 dataHA_vvs      = angle(hilbert(data_vvs));
                 EEG_pfc.data    = t_pfc;
                 EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                EEG_pfc         = pop_eegfiltnew (EEG_pfc, 16,29);
+                EEG_pfc         = pop_eegfiltnew (EEG_pfc, 30,54);
                 data_pfc        = squeeze(EEG_pfc.data); 
                 dataHA_pfc      = angle(hilbert(data_pfc));
                 diffPha = dataHA_vvs - dataHA_pfc;
-
                 for timei = 1:bins 
-                        timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
-                        diffPhaBIN = diffPha(timeBins);                                    
-                        if strcmp(id2u{1},'7') & strcmp(id2u{2},'4') %Multi_item
-                            MIPLV(countMI, chani, chanj, timei, :) = abs(mean(exp(1i*(diffPha))));
-                            countMI = countMI+1;
-                        elseif strcmp(id2u{1},'7') & ~strcmp(id2u{2},'4') %Single item
-                            SIPLV(countSI, chani, chanj, timei, :) = abs(mean(exp(1i*(diffPha))));
-                            countSI = countSI+1;
-                        end
-                    
+                    timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
+                    diffPhaBIN = diffPha(timeBins);                                    
+                    PLV2U(triali, chani, chanj, timei, :) = abs(mean(exp(1i*(diffPhaBIN))));
                 end
             end
         end
     end
-    
-
-    PLV_MSI{subji,1} = MIPLV; 
-    PLV_MSI{subji,2} = SIPLV; 
+    PLV_ALL{subji,1} = PLV2U; %pfc or vvs 
+    PLV_ALL{subji,2} = c_vvs.oneListIds_c; %pfc or vvs 
 end
 
 
 cd (currentF)
-save('PLV_MSI', 'PLV_MSI');
+save('PLV_ALL', 'PLV_ALL');
 
 
 
 toc
 
 
+%% process PLV_ALL
+clear SI_TR MI_TR
 
+for subji = 1:10
 
+    allPLV = PLV_ALL{subji, 1};
+    allIDs = PLV_ALL{subji, 2};
+    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0)
+    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
+    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+
+    
+    SI_TR{subji,1} = allPLV(ids1 == 7 & ids2 == 4,:,:,:); 
+    MI_TR{subji,1} = allPLV(ids1 == 7 & ids2 ~= 4,:,:,:); 
+
+end
+
+%% plot 
+
+d2pSI = cellfun(@(x) squeeze(mean(mean(mean(x)))), SI_TR, 'un', 0)
+d2pMI = cellfun(@(x) squeeze(mean(mean(mean(x)))), MI_TR, 'un', 0)
+c1 = cell2mat(d2pSI')'; 
+c2 = cell2mat(d2pMI')'; 
+md2pSI = mean(c1)
+md2pMI = mean(c2)
+
+plot(md2pSI, 'r'); hold on; 
+plot(md2pMI, 'b')
+
+[h p ci ts] = ttest(c1, c2)
 
 
 

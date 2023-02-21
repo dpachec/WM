@@ -915,7 +915,7 @@ end
 
 clear
 %...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials;1:Trials)__timeRes__win-width__mf_FST
-f2sav = 'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1_O.mat'; 
+f2sav = 'BLnext12_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -958,7 +958,7 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1_O.mat'; 
+f2sav = 'BLnext12_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 
 
