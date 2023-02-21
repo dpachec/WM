@@ -100,13 +100,15 @@ set(gca, 'LineWidth', 3);
 
 
 
-%% TIME resolved in the 16-29Hz band
+%% TIME resolved in a particular band
 
 clearvars 
 
+f2u = [1 8]
+
 currentF = pwd;
-vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\vvs';
-pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
+vvs_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_trials/vvs';
+pfc_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_trials/pfc';
 
 
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
@@ -138,12 +140,12 @@ for subji = 1:10
                 t_pfc = squeeze(c_pfc.oneListTraces(chanj,:,triali));
                 EEG_vvs.data    = t_vvs;
                 EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                EEG_vvs         = pop_eegfiltnew (EEG_vvs, 30,54);
+                EEG_vvs         = pop_eegfiltnew (EEG_vvs, f2u(1),f2u(2));
                 data_vvs        = squeeze(EEG_vvs.data); 
                 dataHA_vvs      = angle(hilbert(data_vvs));
                 EEG_pfc.data    = t_pfc;
                 EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                EEG_pfc         = pop_eegfiltnew (EEG_pfc, 30,54);
+                EEG_pfc         = pop_eegfiltnew (EEG_pfc, f2u(1),f2u(2));
                 data_pfc        = squeeze(EEG_pfc.data); 
                 dataHA_pfc      = angle(hilbert(data_pfc));
                 diffPha = dataHA_vvs - dataHA_pfc;
