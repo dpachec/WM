@@ -1,11 +1,14 @@
 %% PLV inter area (PFV-VVS)
-%% 
+%% particular time period and band
 
 clearvars 
 
+f2u = [3 8];
+tP = 2001:3000;
+
 currentF = pwd;
-vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\vvs';
-pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
+vvs_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_trials/vvs';
+pfc_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_trials/pfc';
 
 
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
@@ -20,61 +23,72 @@ for subji = 1:10
     cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
-    count = 0;
-    for triali = 1:size(c_vvs.oneListTraces,3)
-        id2u = strsplit(c_vvs.oneListIds_c{triali});
-        if strcmp(id2u{1},'7') & strcmp(id2u{2},'4') 
-            count = count+1;
-            for chani = 1:size(c_vvs.chanNames,1)
-                for chanj = 1:size(c_pfc.chanNames,1)
-                   t_vvs = squeeze(c_vvs.oneListTraces(chani,2000:3000,triali));
-                   t_pfc = squeeze(c_pfc.oneListTraces(chanj,2000:3000,triali));
-
-                   EEG_vvs.data    = t_vvs;
-                   EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                   EEG_vvs         = pop_eegfiltnew (EEG_vvs, 16,29);
-                   data_vvs        = squeeze(EEG_vvs.data); 
-                   dataHA_vvs      = angle(hilbert(data_vvs));
-
-                   EEG_pfc.data    = t_pfc;
-                   EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                   EEG_pfc         = pop_eegfiltnew (EEG_pfc, 16,29);
-                   data_pfc        = squeeze(EEG_pfc.data); 
-                   dataHA_pfc      = angle(hilbert(data_pfc));
-
-
-                   phase_data(1,:) = dataHA_vvs;
-                   phase_data(2,:) = dataHA_pfc;
-
-                   PLVch{subji,:}(count, chani, chanj ) = abs(mean(exp(1i*(diff(phase_data,1)))));
-                end
+    %restrict time 
+    
+    clear PLV2U
+    for chani = 1:size(c_vvs.chanNames,1)
+        for chanj = 1:size(c_pfc.chanNames,1)
+            parfor triali = 1:size(c_vvs.oneListTraces,3)
+                id2u = strsplit(c_vvs.oneListIds_c{triali});
+                t_vvs = squeeze(c_vvs.oneListTraces(chani,tP,triali));
+                t_pfc = squeeze(c_pfc.oneListTraces(chanj,tP,triali));
+                EEG_vvs.data    = t_vvs;
+                EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
+                EEG_vvs         = pop_eegfiltnew (EEG_vvs, f2u(1),f2u(2));
+                data_vvs        = squeeze(EEG_vvs.data); 
+                dataHA_vvs      = angle(hilbert(data_vvs));
+                EEG_pfc.data    = t_pfc;
+                EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
+                EEG_pfc         = pop_eegfiltnew (EEG_pfc, f2u(1),f2u(2));
+                data_pfc        = squeeze(EEG_pfc.data); 
+                dataHA_pfc      = angle(hilbert(data_pfc));
+                diffPha = dataHA_vvs - dataHA_pfc;
+                PLV2U(triali, chani, chanj, :) = abs(mean(exp(1i*(diffPha))));
             end
         end
     end
-
-    
+    PLV_ALL{subji,1} = PLV2U; %pfc or vvs 
+    PLV_ALL{subji,2} = c_vvs.oneListIds_c; %pfc or vvs 
 end
 
 
 cd (currentF)
-save('PLVch', 'PLVch');
+save('PLV_ALL', 'PLV_ALL');
 
 
 
 toc
 
-%% compute mean
-clearvars -except PLVch
+%% process PLV_ALL
+clear SI_TR MI_TR
+
 for subji = 1:10
-    plv2u = PLVch{subji};
-    for triali = 1:size(plv2u, 1)
-        plvTR(triali,:) = mean(plv2u(triali, :, :), 'all');
-    end 
-    plvSUBJ(subji, :) = mean(plvTR);
-end 
+
+    allPLV = PLV_ALL{subji, 1};
+    allIDs = PLV_ALL{subji, 2};
+    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0)
+    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
+    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+
+    
+    SI_TR{subji,1} = allPLV(ids1 == 7 & ids2 == 4,:,:,:); 
+    MI_TR{subji,1} = allPLV(ids1 == 7 & ids2 ~= 4,:,:,:); 
+
+end
+
+%% plot 
+
+d2pSI = cellfun(@(x) squeeze(mean(mean(mean(x)))), SI_TR, 'un', 0)
+d2pMI = cellfun(@(x) squeeze(mean(mean(mean(x)))), MI_TR, 'un', 0)
+c1 = cell2mat(d2pSI')'; 
+c2 = cell2mat(d2pMI')'; 
+md2pSI = mean(c1)
+md2pMI = mean(c2)
+
+[h p ci ts] = ttest(c1, c2)
 
 %% 2Bar 
-data.data = [plvSUBJ_MI plvSUBJ_SI]; 
+data.data = [c1 c2]; 
 
 
 figure(2); set(gcf,'Position', [0 0 500 650]); 
@@ -104,7 +118,7 @@ set(gca, 'LineWidth', 3);
 
 clearvars 
 
-f2u = [1 8]
+f2u = [3 8]
 
 currentF = pwd;
 vvs_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_trials/vvs';
@@ -114,7 +128,7 @@ pfc_link = '/Users/danielpacheco/Documents/iEEG_data_analysis/WM/traces/all_tria
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
-nTimes = 4000; 
+nTimes = 5000; 
 win_width = 500; 
 mf = 100; 
 bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
@@ -128,8 +142,8 @@ for subji = 1:10
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
     %restrict time 
-    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 2001:6000,:);
-    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 2001:6000,:);
+    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 1001:6000,:);
+    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 1001:6000,:);
     
     clear PLV2U
     for chani = 1:size(c_vvs.chanNames,1)
@@ -178,13 +192,11 @@ vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\vvs';
 pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
 
 
+tP = 2401:3200; 
+
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
-nTimes = 4000; 
-win_width = 500; 
-mf = 100; 
-bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 tic
 for subji = 1:10 
     subji
@@ -195,16 +207,15 @@ for subji = 1:10
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
     %restrict time 
-    c_vvs.oneListTraces = c_vvs.oneListTraces(:, 2401:3200,:);
-    c_pfc.oneListTraces = c_pfc.oneListTraces(:, 2401:3200,:);
     
     clear PLV2U
     for chani = 1:size(c_vvs.chanNames,1)
         for chanj = 1:size(c_pfc.chanNames,1)
             for triali = 1:size(c_vvs.oneListTraces,3)
+                triali
                 id2u = strsplit(c_vvs.oneListIds_c{triali});
-                t_vvs = squeeze(c_vvs.oneListTraces(chani,:,triali));
-                t_pfc = squeeze(c_pfc.oneListTraces(chanj,:,triali));
+                t_vvs = squeeze(c_vvs.oneListTraces(chani,tP,triali));
+                t_pfc = squeeze(c_pfc.oneListTraces(chanj,tP,triali));
                 for freqi = 1:54
                     EEG_vvs.data    = t_vvs;
                     EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
