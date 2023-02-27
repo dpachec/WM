@@ -242,8 +242,29 @@ cd (currentF)
 save('PLV_ALL', 'PLV_ALL');
 
 
-
 toc
+
+
+%% convert to logit
+clear PLV_ALL_LG
+for subji = 1:10
+    PLV2U = PLV_ALL{subji, 1};
+    for triali = 1:size(PLV2U, 1)
+        for chani = 1:size(PLV2U, 2)
+            for chanj = 1:size(PLV2U, 3)
+
+                x = PLV2U(triali, chani, chanj, :);
+                xLG = logit(x);
+                PLV2U_LG(triali, chani, chanj, :) = xLG;
+
+            end
+        end
+
+    end
+    PLV_ALL_LG{subji,1} = PLV2U_LG;
+    PLV_ALL_LG{subji,2} = PLV_ALL{subji, 2};
+end
+
 
 
 %% process PLV_ALL

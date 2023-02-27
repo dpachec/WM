@@ -23,8 +23,8 @@ s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 3);
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 
-tt1 = 8:13; % taken from pfc band data (13-29Hz)
-tt2 = 28:34;
+tt1 = 3:8; % taken from pfc band data (13-29Hz)
+tt2 = 21:35;
 
 
 
@@ -100,6 +100,10 @@ set(gca, 'FontSize', 22) %, 'clim', [-4 4]
 
 
 
+
+
+
+
 %% check imagesc
 
 M = [ 1 2 3 ; 4 5 6; 7 8 9];
@@ -110,7 +114,26 @@ contourf(myresizem(M, 20), 40, 'linecolor', 'none'); axis equal, hold on; colorb
 
 
 
+
+
 %% frequency resolved
+
+%% VVS PFC
+clear 
+
+paths = load_paths_WM('vvs'); 
+%ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
+load ([paths.trial_level 'RNN_pfc_M123_[8-8-56]_3-54_0_0_0_1_.1_5_1.mat']); 
+pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
+load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_3-54_0_0_0_1_.1_5_1.mat']); 
+vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
+load ([paths.electrodes_path 'pfc_elec']); 
+pfc = pfc_fits; 
+vvs = vvs_fits; 
+
+
+
+%% frequnecy resolved
 pfc_fits = pfc; 
 vvs_fits = vvs; 
 

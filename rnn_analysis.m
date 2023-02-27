@@ -41,9 +41,8 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'RNN_vvs_M123_[8-8-56]_3-8_0_0_0_1_.1_5_1.mat'
-                'RNN_vvs_M123_[8-8-56]_9-12_0_0_0_1_.1_5_1.mat'
-                'RNN_pfc_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat'; 
+                'RNN_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1.mat'
+                'RNN_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1.mat'
                 
                 
              };   
@@ -76,8 +75,8 @@ for listi = 1:length(listF2sav)
         
     end
     
-    %save([paths.results.DNNs f2sav], 'nnFit');
-    save([paths.trial_level f2sav], 'nnFit');
+    save([paths.results.DNNs f2sav], 'nnFit');
+    %save([paths.trial_level f2sav], 'nnFit');
 
 end
 
@@ -300,7 +299,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (one Layer - time Point)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav =   'RNN_vvs_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -309,14 +308,16 @@ load([paths.results.DNNs f2sav]);
 if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1];
+    %sub2exc = [1];
+    %sub2exc = [1 7 13 16]; %at least 3 electrodres
+    %sub2exc = [1 3 4 7 10 13 16]; %at least 4 electrodres
 elseif strcmp(cfg.brainROI, 'hipp')
     sub2exc = [2]
 end
 
 for subji = 1:length(nnFit)
     % 8    16    24    32    40    48    56
-   nnH(subji, : ,:) = nnFit{subji, 1}(40,:);
+   nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
    %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
    %nnH(subji, : ,:,:) = nnFit{subji};
         
@@ -373,7 +374,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -618,11 +619,11 @@ end
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
-nPerm = 100;
+nPerm = 1000;
 
 listF2sav = {
                 %'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-                'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1'; 
 
              };
     
@@ -686,7 +687,7 @@ for listi = 1:length(listF2sav)
     end
     
     mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav(1:end-4) '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
     
 
 end
@@ -749,7 +750,7 @@ cd (paths.github)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
 clear, clc 
-f2sav =   'RNN_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1.mat'; 
+f2sav =    'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1'; 
 
 cfg = getParams(f2sav); if strcmp(cfg.brainROI, 'vvs') sub2exc = [18 22]; elseif strcmp(cfg.brainROI, 'pfc')sub2exc = [1]; end
 paths = load_paths_WM(cfg.brainROI);
@@ -787,7 +788,7 @@ end
 
 %% compute clusters in each permutation BANDS for all layers
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'RNN_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1_1000p.mat'; 
+f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -958,7 +959,7 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext12_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'BLnext12_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 
 
