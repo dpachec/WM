@@ -122,10 +122,10 @@ contourf(myresizem(M, 20), 40, 'linecolor', 'none'); axis equal, hold on; colorb
 clear 
 
 paths = load_paths_WM('vvs'); 
-%ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-load ([paths.trial_level 'RNN_pfc_M123_[8-8-56]_3-54_0_0_0_1_.1_5_1.mat']); 
+%Network_ROI_period_layers_freqs_avRep_avTimeFV_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
+load ([paths.trial_level 'RNN_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1.mat']); 
 pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_3-54_0_0_0_1_.1_5_1.mat']); 
+load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1.mat']); 
 vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
 load ([paths.electrodes_path 'pfc_elec']); 
 pfc = pfc_fits; 
