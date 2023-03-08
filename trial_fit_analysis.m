@@ -6,7 +6,7 @@ paths = load_paths_WM('vvs');
 %ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 load ([paths.trial_level 'RNN_pfc_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
 pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_9-12_0_0_0_1_.1_5_1.mat']); 
+load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
 vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
 load ([paths.electrodes_path 'pfc_elec']); 
 pfc = pfc_fits; 
@@ -23,8 +23,8 @@ s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 3);
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 
-tt1 = 3:8; % taken from pfc band data (13-29Hz)
-tt2 = 21:35;
+tt1 = 7:14; % taken from pfc band data (13-29Hz)
+tt2 = 7:14;
 
 
 
@@ -138,15 +138,15 @@ pfc_fits = pfc;
 vvs_fits = vvs; 
 
 tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 2); 
+s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 1); 
 %sub2exc = []; 
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 
-ff1 = 18:28; 
-tt1 = 21:26; 
-ff2 = 30:38;
-tt2 = 41:60; 
+ff1 = 14:27; 
+tt1 = 7:14; 
+ff2 = 14:27;
+tt2 = 7:14; 
 
 
 nLays = 7;
@@ -210,11 +210,11 @@ contourf(myresizem(t, 20), 40, 'linecolor', 'none'); hold on; colorbar; axis equ
 contour(myresizem(h, 20), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'xtick', [10 30 50 70 90 110 130], 'xticklabels', {[1:7]})
 set(gca, 'ytick', [10 30 50 70 90 110 130], 'yticklabels', {[1:7]})
-set(gca, 'FontSize', 22, 'clim', [-4 4])
+%set(gca, 'FontSize', 22, 'clim', [-4 4])
 %set(gca, 'xlim',  [0.5 nLays+0.5], 'ylim', [.5  nLays+0.5]) %, 'clim', [0 180]
 
 
-exportgraphics(gcf, 'trial_based.png', 'Resolution', 300)
+%exportgraphics(gcf, 'trial_based.png', 'Resolution', 300)
 
 
 

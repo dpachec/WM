@@ -5,14 +5,14 @@ clearvars
 
 
 f2u = [3 8];
-tP = 2001:2800;
+tP = 2401:3200;
+%tP = 1201:2000;
 
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 paths = load_paths_WM('vvs'); vvs_link = paths.traces;
 paths = load_paths_WM('pfc'); pfc_link = paths.traces;
 
-tic
 for subji = 1:10 
     subji
     cd(vvs_link);sublist = dir('*contr.mat');sublist = {sublist.name};
@@ -51,14 +51,24 @@ save([paths.results.PLV 'time_PLV_ALL_' num2str(f2u(1)) '-' num2str(f2u(2)) '_' 
 
 
 
-toc
+%% process PLV_ALL (across time) 
 
-%% process PLV_ALL (across time)
+clear 
+paths = load_paths_WM('vvs')
+load ([paths.results.PLV 'time_PLV_ALL_3-8_1201-2000'])
+PLV_ALL_Baseline = PLV_ALL;
+load ([paths.results.PLV 'time_PLV_ALL_3-8_2401-3200'])
+
 clear SI_TR MI_TR
 
 for subji = 1:10
 
     allPLV = PLV_ALL{subji, 1};
+     allPLVB = PLV_ALL_Baseline{subji, 1}; 
+     mT = mean(allPLVB);
+     stdT = std(allPLVB);
+     allPLV = bsxfun(@rdivide, allPLV - mT, stdT); 
+
     allIDs = PLV_ALL{subji, 2};
     ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0);
     ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
@@ -95,13 +105,99 @@ h = bar (mean_S);hold on;
 %h1=errorbar(mean_S, se_S,'c'); hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
 %set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
-set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [.32 .45] );
+%set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [.32 .45] );
+set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [-.05 .25] );
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 
 [h p ci t] = ttest (data.data(:,1), data.data(:,2));
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 set(gca, 'LineWidth', 3);
+
+
+%% collect all with baseline and plot together
+
+clear 
+
+b2u = {'3-8' '9-12' '13-29' '30-75' '75-150'};
+
+for bandi = 1:5
+
+    paths = load_paths_WM('vvs');
+    load ([paths.results.PLV 'time_PLV_ALL_' b2u{bandi} '_1201-2000'])
+    PLV_ALL_Baseline = PLV_ALL;
+    load ([paths.results.PLV 'time_PLV_ALL_' b2u{bandi} '_2001-2800'])
+    
+    clear SI_TR MI_TR
+    
+    for subji = 1:10
+    
+        allPLV = PLV_ALL{subji, 1};
+        allPLVB = PLV_ALL_Baseline{subji, 1}; 
+        mT = mean(allPLVB);
+        stdT = std(allPLVB);
+        allPLV = bsxfun(@rdivide, allPLV - mT, stdT); 
+    
+        allIDs = PLV_ALL{subji, 2};
+        ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0);
+        ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
+        ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+    
+        
+        SI_TR{subji,1} = allPLV(ids1 == 7 & ids2 ~= 4,:,:,:); 
+        MI_TR{subji,1} = allPLV(ids1 == 7 & ids2 == 4,:,:,:); 
+    
+
+    end
+
+    d2pSI = cellfun(@(x) squeeze(mean(mean(mean(x)))), SI_TR, 'un', 0);
+    d2pMI = cellfun(@(x) squeeze(mean(mean(mean(x)))), MI_TR, 'un', 0);
+    c1(:, bandi) = cell2mat(d2pSI')'; 
+    c2(:, bandi) = cell2mat(d2pMI')'; 
+
+
+end
+
+
+
+%% 
+mC1 = squeeze(mean(c1));
+stdC1 = std(c1, [], 1); 
+seC1 = stdC1 / sqrt(10);
+
+mC2 = squeeze(mean(c2));
+stdC2 = std(c2, [], 1); 
+seC2 = stdC2 / sqrt(10);
+
+shadedErrorBar(1:5, mC1, seC1, 'r', 1); hold on; 
+shadedErrorBar(1:5, mC2, seC2, 'b', 1); hold on; 
+
+[h p ci ts] = ttest(c1, c2)
+
+%% 6Bar 
+data.data = [c1(:,1) c2(:,1) c1(:,2) c2(:,2) c1(:,3) c2(:,3) c1(:,4) c2(:,4) c1(:,5) c2(:,5)]; 
+%data.data = [c1  c2]; 
+
+
+figure(2); set(gcf,'Position', [0 0 500 650]); 
+mean_S = mean(data.data,1);
+hb = plot ([1:10], data.data', 'linestyle','none'); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+%set(h, 'Color','k','linestyle','none', 'lineWidth', 2);
+%set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [.32 .45] );
+set(gca,'XTick',[1:10 ],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 11], 'ylim', [-.2 .35] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+
+
 
 
 %% Across trials
@@ -207,6 +303,10 @@ toc
 
 %% Process across trials 
 
+clear 
+paths = load_paths_WM('vvs')
+load ([paths.results.PLV 'trials_PLV_ALL_3_8'])
+
 SI_TR = PLV_ALL(:, 1);
 MI_TR = PLV_ALL(:, 2);
 
@@ -214,8 +314,17 @@ d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
 c1 = cell2mat(d2pSI')'; 
 c2 = cell2mat(d2pMI')'; 
-%c1 = logit(c1)
-%c2 = logit(c2)
+
+
+% % % normalize to the baseline
+% mC1 = mean(c1(:, 1000:2000), 2);
+% stdC1 = std(c1(:, 1000:2000), [], 2);
+% c1 = bsxfun(@rdivide, c1 - mC1, stdC1); 
+% mC2 = mean(c2(:, 1000:2000), 2);
+% stdC2 = std(c2(:, 1000:2000), [], 2);
+% c2 = bsxfun(@rdivide, c2 - mC2, stdC2); 
+
+
 md2pSI = mean(c1)
 md2pMI = mean(c2)
 
@@ -228,18 +337,20 @@ d2MI = cell2mat(d2pMI')';
 mSI = squeeze(mean(d2SI));
 mMI = squeeze(mean(d2MI));
 
+
 hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
 figure;
 plot(mSI, 'r', 'LineWidth', 2); hold on
 plot(mMI, 'b', 'LineWidth', 2)
 plot(hb, 'LineWidth', 4)
+legend({'SI' 'MI'})
 
 %% check for the time period of network fit
 
 c1R = mean(c1(:, 2400:3200), 2)
 c2R = mean(c2(:, 2400:3200), 2)
-[h p ci ts] = ttest(c1R, c2R)
-
+[h p ci ts] = ttest(c1R, c2R);
+disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 %% 2Bar 
 data.data = [c1R c2R]; 
@@ -253,7 +364,7 @@ h = bar (mean_S);hold on;
 %h1=errorbar(mean_S, se_S,'c'); hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
 %set(h1, 'Color','k','linestyle','none', 'lineWidth', 2);
-set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [.07 .24] );
+%set(gca,'XTick',[1 2],'XTickLabel',{'', ''},'FontSize', 30, 'linew',2, 'xlim', [0 3], 'ylim', [.07 .24] );
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 
 [h p ci t] = ttest (data.data(:,1), data.data(:,2));
@@ -264,8 +375,6 @@ set(gca, 'LineWidth', 3);
 %% Across time frequency resolved 
 clearvars 
 
-
-f2u = [3 8];
 tP = 2001:2800;
 
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
@@ -285,15 +394,15 @@ for subji = 1:10
     cd(paths.github)
 
     clear PLV2U
-    for freqi = [3:29 30:5:150]
+    for freqi = 1:1:150
         t_vvs = squeeze(c_vvs.oneListTraces(:,tP,:));
         EEG = []; EEG.data = t_vvs; EEG.trials = size(t_vvs, 3); EEG.srate=1000; EEG.nbchan=size(t_vvs, 1); EEG.pnts=size(t_vvs,2);EEG.event=[];
-        EEG         = pop_eegfiltnew (EEG, freqi,freqi);
+        EEG         = pop_eegfiltnew (EEG, freqi,freqi+2);
         data_vvs        = squeeze(EEG.data); 
         dataHA_vvs      = angle(hilbert(data_vvs));
         t_pfc = squeeze(c_pfc.oneListTraces(:,tP,:));
         EEG = []; EEG.data = t_pfc; EEG.trials = size(t_pfc, 3); EEG.srate=1000; EEG.nbchan=size(t_pfc, 1); EEG.pnts=size(t_pfc,2);EEG.event=[];
-        EEG         = pop_eegfiltnew (EEG, freqi,freqi);
+        EEG         = pop_eegfiltnew (EEG, freqi,freqi+2);
         data_pfc        = squeeze(EEG.data); 
         for chani = 1:size(c_vvs.chanNames,1)
             for chanj = 1:size(c_pfc.chanNames,1)
@@ -313,6 +422,73 @@ save([paths.results.PLV 'time_PLV_ALL_FR_' num2str(tP(1)) '-' num2str(tP(end))],
 
 
 toc
+
+
+%% process across time Freq Resolved
+
+clear 
+paths = load_paths_WM('vvs')
+%load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800'])
+load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800_1-29-30-54'])
+
+
+
+%%
+clear SI_TR MI_TR
+
+for subji = 1:10
+
+    allPLV = PLV_ALL{subji, 1};
+    allIDs = PLV_ALL{subji, 2};
+    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0);
+    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
+    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+
+    
+    SI_TR{subji,1} = allPLV(ids1 == 7 & ids2 ~= 4,:,:,:); 
+    MI_TR{subji,1} = allPLV(ids1 == 7 & ids2 == 4,:,:,:); 
+
+end
+
+%% plot 
+
+d2pSI = cellfun(@(x) squeeze(mean(mean(mean(x, 1), 3), 4)), SI_TR, 'un', 0)
+d2pMI = cellfun(@(x) squeeze(mean(mean(mean(x, 1), 3), 4)), MI_TR, 'un', 0)
+c1 = cell2mat(d2pSI); 
+c2 = cell2mat(d2pMI); 
+%c1 = logit(c1)
+%c2 = logit(c2)
+md2pSI = mean(c1)
+md2pMI = mean(c2)
+
+[h p ci ts] = ttest(c1, c2)
+ 
+md2pSI(md2pSI==0) = []; 
+md2pMI(md2pMI==0) = []; 
+h(isnan(h)) = []; 
+
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
+figure;
+plot(md2pSI, 'r', 'LineWidth', 2); hold on
+plot(md2pMI, 'b', 'LineWidth', 2)
+plot(hb, 'LineWidth', 4)
+
+legend({'SI' 'MI'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

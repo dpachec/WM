@@ -178,20 +178,20 @@ clearvars
 %frequncies2test = [{3:54} {3:8} {9:12} {13:29} {30:38} {39:54} ]';
 %fnames = {'3-54Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
-frequncies2test = [{9:12} ]';
-fnames = {'9-12Hz' }'; fnames = fnames';
+frequncies2test = [ {3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = {'3-8Hz' '9-12Hz' '13-29Hz' '30-38Hz' '39-54Hz' }'; fnames = fnames';
 
 %frequncies2test = [{3:54}]';
 %fnames = {'3-54Hz'}'; fnames = fnames';
 
 win_width           = 5; 
 mf                  = 1; 
-meanInTime          = 1; 
+meanInTime          = 0; 
 meanInFreq          = 0; 
 takeElec            = 0; 
 takeFreq            = 0;
 TG                  = 1; %temporal generalization
-contr2save          = {'DISC_EE' 'DIDC_EE'}; %{};
+contr2save          = {'DISC_M2A' 'DIDC_M2A'}; %{};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
 %                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
