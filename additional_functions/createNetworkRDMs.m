@@ -7,7 +7,8 @@ if strcmp(cfg.brainROI, 'pfc')  subj_ch_fr = 7; end %%PFC
 if strcmp(cfg.brainROI, 'hipp') subj_ch_fr = 8; end %%HIPP
 
 if strcmp (cfg.net2load , 'RNN')
-    [ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+    %[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+    [ACT] = load_rnn_eco(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 else
