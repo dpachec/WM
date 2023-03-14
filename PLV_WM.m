@@ -223,7 +223,7 @@ for subji = 1:10
     c_pfc = cfg_contrasts;
     cd(paths.github)
     
-    clear PLV2U_SI PLV2U_MI
+    clear PLV_SI PLV_MI PLI_SI PLI_MI PLV_SI_M2 PLV_MI_M2 PLI_SI_M2 PLI_MI_M2 WPLI_SI WPLI_MI
     for chani = 1:size(c_vvs.chanNames,1)
         parfor chanj = 1:size(c_pfc.chanNames,1)
             id2u = cellfun(@(x) strsplit(x, ' '), c_vvs.oneListIds_c, 'un', 0);
@@ -255,17 +255,24 @@ for subji = 1:10
             EEG.trials  = size(t_vvsSI, 2); EEG.srate   = 1000; EEG.nbchan  = 1; 
             EEG.pnts = size(t_vvsSI,1);EEG.event   = [];
             EEG         = pop_eegfiltnew (EEG, f2u(1),f2u(2));
-            data_vvs        = squeeze(EEG.data); 
-            dataHA_vvs      = angle(hilbert(data_vvs));
+            data_vvs        = hilbert(squeeze(EEG.data)); 
+            dataHA_vvs      = angle(data_vvs);
             EEG = []; 
             EEG.data    = t_pfcSI;
             EEG.trials  = size(t_pfcSI, 2); EEG.srate   = 1000; EEG.nbchan  = 1; 
             EEG.pnts = size(t_pfcSI,1);EEG.event   = [];
             EEG         = pop_eegfiltnew (EEG, f2u(1),f2u(2));
-            data_pfc        = squeeze(EEG.data); 
-            dataHA_pfc      = angle(hilbert(data_pfc));
+            data_pfc        = hilbert(squeeze(EEG.data)); 
+            dataHA_pfc      = angle(data_pfc);
             diffPha = dataHA_vvs - dataHA_pfc;
-            PLV2U_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2));
+            PLV_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
+            PLI_SI(chani, chanj, :) = abs(mean(sign(imag(exp(1i*diffPha))),2)); %PLI
+            cdd = data_vvs .* conj(data_pfc);% cross-spectral density
+            cdi = imag(cdd);
+            PLV_SI_M2(chani, chanj, :) = abs(mean(exp(1i*angle(cdd)),2)); % note: equivalent to PLV_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
+            PLI_SI_M2(chani, chanj, :) = abs(mean(sign(imag(cdd)),2));            
+            WPLI_SI(chani, chanj, :) = abs( mean( abs(cdi).*sign(cdi) ,2) )./mean(abs(cdi),2);% weighted phase-lag index (eq. 8 in Vink et al. NeuroImage 2011)
+
 
             % % % % MULTI ITEM TRIALS
             EEG = []; 
@@ -273,26 +280,42 @@ for subji = 1:10
             EEG.trials  = size(t_vvsMI, 2); EEG.srate   = 1000; EEG.nbchan  = 1; 
             EEG.pnts = size(t_vvsMI,1);EEG.event   = [];
             EEG         = pop_eegfiltnew (EEG, f2u(1),f2u(2));
-            data_vvs        = squeeze(EEG.data); 
-            dataHA_vvs      = angle(hilbert(data_vvs));
+            data_vvs        = hilbert(squeeze(EEG.data)); 
+            dataHA_vvs      = angle(data_vvs);
             EEG = []; 
             EEG.data    = t_pfcMI;
             EEG.trials  = size(t_pfcMI, 2); EEG.srate   = 1000; EEG.nbchan  = 1; 
             EEG.pnts = size(t_pfcMI,1);EEG.event   = [];
             EEG         = pop_eegfiltnew (EEG, f2u(1),f2u(2));
-            data_pfc        = squeeze(EEG.data); 
-            dataHA_pfc      = angle(hilbert(data_pfc));
+            data_pfc        = hilbert(squeeze(EEG.data)); 
+            dataHA_pfc      = angle(data_pfc);
             diffPha = dataHA_vvs - dataHA_pfc;
-            PLV2U_MI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2));
+            PLV_MI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
+            PLI_MI(chani, chanj, :) = abs(mean(sign(imag(exp(1i*diffPha)))),2); %PLI
+            cdd = data_vvs .* conj(data_pfc);% cross-spectral density
+            cdi = imag(cdd);
+            PLV_MI_M2(chani, chanj, :) = abs(mean(exp(1i*angle(cdd)),2)); % note: equivalent to PLV_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
+            PLI_MI_M2(chani, chanj, :)  = abs(mean(sign(imag(cdd)),2));            
+            WPLI_MI(chani, chanj, :) = abs( mean( abs(cdi).*sign(cdi) ,2) )./mean(abs(cdi),2);% weighted phase-lag index (eq. 8 in Vink et al. NeuroImage 2011)
+
+            
 
         end
     end
-    PLV_ALL{subji,1} = PLV2U_SI; %pfc or vvs 
-    PLV_ALL{subji,2} = PLV2U_MI; %pfc or vvs 
+    CON_ALL{subji,1} = PLV_SI; %pfc or vvs 
+    CON_ALL{subji,2} = PLV_MI; %pfc or vvs 
+    CON_ALL{subji,3} = PLI_SI; %pfc or vvs 
+    CON_ALL{subji,4} = PLI_MI; %pfc or vvs 
+    CON_ALL{subji,5} = PLV_SI_M2; %pfc or vvs 
+    CON_ALL{subji,6} = PLV_MI_M2; %pfc or vvs 
+    CON_ALL{subji,7} = PLI_SI_M2; %pfc or vvs 
+    CON_ALL{subji,8} = PLI_MI_M2; %pfc or vvs 
+    CON_ALL{subji,9} = WPLI_SI; %pfc or vvs 
+    CON_ALL{subji,10} = WPLI_MI; %pfc or vvs 
 end
 
 
-save([paths.results.PLV 'trials_PLV_ALL'], 'PLV_ALL');
+save([paths.results.PLV 'trials_CON_ALL'], 'CON_ALL');
 
 
 
@@ -305,10 +328,10 @@ toc
 
 clear 
 paths = load_paths_WM('vvs')
-load ([paths.results.PLV 'trials_PLV_ALL_3_8'])
+load ([paths.results.PLV 'trials_CON_ALL'])
 
-SI_TR = PLV_ALL(:, 1);
-MI_TR = PLV_ALL(:, 2);
+SI_TR = CON_ALL(:, 9);
+MI_TR = CON_ALL(:, 10);
 
 d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
@@ -371,6 +394,9 @@ plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 set(gca, 'LineWidth', 3);
+
+
+
 
 %% Across time frequency resolved 
 clearvars 
@@ -622,79 +648,32 @@ save('PLV_ALL', 'PLV_ALL');
 toc
 
 
-%% convert to logit
-clear PLV_ALL_LG
-for subji = 1:10
-    PLV2U = PLV_ALL{subji, 1};
-    for triali = 1:size(PLV2U, 1)
-        for chani = 1:size(PLV2U, 2)
-            for chanj = 1:size(PLV2U, 3)
-
-                x = PLV2U(triali, chani, chanj, :);
-                xLG = logit(x);
-                PLV2U_LG(triali, chani, chanj, :) = xLG;
-
-            end
-        end
-
-    end
-    PLV_ALL_LG{subji,1} = PLV2U_LG;
-    PLV_ALL_LG{subji,2} = PLV_ALL{subji, 2};
-end
-
-
-
-%% process PLV_ALL
-clear SI_TR MI_TR
-
-for subji = 1:10
-
-    allPLV = PLV_ALL{subji, 1};
-    allIDs = PLV_ALL{subji, 2};
-    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0)
-    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
-    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
-
-    
-    SI_TR{subji,1} = allPLV(ids1 == 7 & ids2 == 4,:,:,:); 
-    MI_TR{subji,1} = allPLV(ids1 == 7 & ids2 ~= 4,:,:,:); 
-
-end
-
-%% plot 
-
-d2pSI = cellfun(@(x) squeeze(mean(mean(mean(x)))), SI_TR, 'un', 0)
-d2pMI = cellfun(@(x) squeeze(mean(mean(mean(x)))), MI_TR, 'un', 0)
-c1 = cell2mat(d2pSI')'; 
-c2 = cell2mat(d2pMI')'; 
-md2pSI = mean(c1)
-md2pMI = mean(c2)
-
-plot(md2pSI, 'r'); hold on; 
-plot(md2pMI, 'b')
-
-[h p ci ts] = ttest(c1, c2)
-
-
-
-
-
-%% TIME FREQUENCY reSOLVED
+%% GRANGER OVER TIME
 
 clearvars 
 
 currentF = pwd;
-vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\vvs';
-pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\allTrials\pfc';
-
+paths = load_paths_WM('vvs'); vvs_link = paths.traces;
+paths = load_paths_WM('pfc'); pfc_link = paths.traces;
 
 pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
+
+
+order   =  15; % in ms
+order_points   = round(order);
 
 nTimes = 5000; 
 win_width = 500; 
 mf = 100; 
 bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
+timewin_points = bins;
+
+
+% initialize
+[x2y,y2x] = deal(zeros(1,bins)); % the function deal assigns inputs to all outputs
+bic = zeros(bins,15); % Bayes info criteria (hard-coded to order=15)
+
 tic
 for subji = 1:10 
     subji
@@ -704,311 +683,53 @@ for subji = 1:10
     cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
     load (sublist{pfc_ids(subji)})
     c_pfc = cfg_contrasts;
+        
     %restrict time 
     c_vvs.oneListTraces = c_vvs.oneListTraces(:, 1001:6000,:);
     c_pfc.oneListTraces = c_pfc.oneListTraces(:, 1001:6000,:);
 
-    count = 0;
-    for triali = 1:size(c_vvs.oneListTraces,3)
-        id2u = strsplit(c_vvs.oneListIds_c{triali});
-        if strcmp(id2u{1},'7') & strcmp(id2u{2},'4') 
-            count = count+1
-            for chani = 1:size(c_vvs.chanNames,1)
-                for chanj = 1:size(c_pfc.chanNames,1)
-                    for freqi = 1:54 
-                        for timei = 1:bins %parfor is optimal here 
-                            timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
-                            t_vvs = squeeze(c_vvs.oneListTraces(chani,timeBins,triali));
-                            t_pfc = squeeze(c_pfc.oneListTraces(chanj,timeBins,triali));
-        
-                            EEG_vvs.data    = t_vvs;
-                            EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                            EEG_vvs         = pop_eegfiltnew (EEG_vvs, freqi,freqi);
-                            data_vvs        = squeeze(EEG_vvs.data); 
-                            dataHA_vvs      = angle(hilbert(data_vvs));
-        
-                            EEG_pfc.data    = t_pfc;
-                            EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                            EEG_pfc         = pop_eegfiltnew (EEG_pfc, freqi,freqi);
-                            data_pfc        = squeeze(EEG_pfc.data); 
-                            dataHA_pfc      = angle(hilbert(data_pfc));
-        
-                            diffPha = dataHA_vvs - dataHA_pfc;
-                                    
-                            myPLV(count, chani, chanj, freqi, timei ) = abs(mean(exp(1i*(diffPha))));
-                        end
-                    end
+    clear PLV2U
+    for timei = 1:bins 
+        timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
+        for chani = 1:size(c_vvs.chanNames,1)
+            for chanj = 1:size(c_pfc.chanNames,1)
+    
+                clear tempdata
+                tempdata(1,:,:) = c_vvs.oneListTraces(chani, timeBins,:);
+                tempdata(2,:,:) = c_pfc.oneListTraces(chanj, timeBins,:);
+    
+                nTrials = size(tempdata,3);
+                
+                for triali = 1:nTrials
+                    tempdata(1,:,triali) = zscore(detrend(squeeze(tempdata(1,:,triali))));
+                    tempdata(2,:,triali) = zscore(detrend(squeeze(tempdata(2,:,triali))));
                 end
+                tempdata = reshape(tempdata,2,length(timeBins)*nTrials);
+
+                % fit AR models (model estimation from bsmart toolbox)
+                [Ax,Ex] = armorf(tempdata(1,:),nTrials,timewin_points,order_points);
+                [Ay,Ey] = armorf(tempdata(2,:),nTrials,timewin_points,order_points);
+                [Axy,E] = armorf(tempdata     ,nTrials,timewin_points,order_points);
+                
+                % time-domain causal estimate
+                y2x(chani, chanj, timei)=log(Ex/E(1,1));
+                x2y(chani, chanj, timei)=log(Ey/E(2,2));
+                
             end
         end
     end
-
-    PLVch{subji,:} = myPLV; 
+    GC{subji,1} = y2x; 
+    GC{subji,2} = x2y; 
+    GC{subji,3} = c_vvs.oneListIds_c; 
 end
 
 
 cd (currentF)
-%save('PLVch', 'PLVch');
+save('GC', 'GC');
 
 
 
 toc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% 
-
-
-clear
-load pfc_elec
-load RNN_pfc_M&C_noAv_54_Real_T_1-49_C_aFV
-load PLVch_1-8Hz_2500-5500
-
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-pfc = all_r_Times_Trials(pfc_ids)';
-tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp(pfc_ids,1) > 1); 
-pfc(s2e_pfc) = [];
-PLVch(s2e_pfc) = [];
-x = cellfun(@size, pfc, 'un', 0)
-
-clear allR
-for subji = 1:length(pfc)
-   
-    plvT = squeeze(mean(mean(PLVch{subji},3),2));
-    plvT(plvT==0) = [];
-    tmp = squeeze(pfc{subji}(7,:,30:52,13:25)); %last layer in beta and time period of interest
-    tmp = squeeze(mean(mean(tmp,3),2));
-    ch2(subji,:) = mean(tmp);
-    %tmp = reshape (tmp, size(tmp, 1), []);
-    
-    
-    allR(subji,:) = corr(plvT, tmp, 'type','s');
-         
-    
-end
-
-[h p ci ts] = ttest(allR);
-disp(['t >>  ' num2str(ts.tstat)]);
-
-
-
-%% 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% build 2 compare each frequency
-clearvars 
-currentF = pwd;
-vvs_link = 'D:\_WM\analysis\out_contrasts\raw_traces\vvs\allTrials';
-pfc_link = 'D:\_WM\analysis\out_contrasts\raw_traces\pfc\allTrials';
-
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-vvs_ids = [7 9 13 18 19 20 21 23 27 28];
-
-freqs2use = [3:29 30:5:150];
-
-tic
-for subji = 1:10 
-    subji
-    cd(vvs_link);sublist = dir('*contr.mat');sublist = {sublist.name};
-    load (sublist{vvs_ids(subji)})
-    c_vvs = cfg_contrasts;
-    cd(pfc_link);sublist = dir('*contr.mat');sublist = {sublist.name};
-    load (sublist{pfc_ids(subji)})
-    c_pfc = cfg_contrasts;
-    count = 1;
-    for triali = 1:size(c_vvs.oneListTraces,3)
-        id2u = strsplit(c_vvs.oneListIds_c{triali});
-        if strcmp(id2u{1},'7') & ~strcmp(id2u{2},'4') 
-            for freqi = 1:length(freqs2use)
-                f = freqs2use(freqi);
-                for chani = 1:size(c_vvs.chanNames,1)
-                    for chanj = 1:size(c_pfc.chanNames,1)
-                       t_vvs = squeeze(c_vvs.oneListTraces(chani,2500:5500,triali));
-                       t_pfc = squeeze(c_pfc.oneListTraces(chanj,2500:5500,triali));
-
-                       EEG_vvs.data    = t_vvs;
-                       EEG_vvs.trials  = 1; EEG_vvs.srate   = 1000; EEG_vvs.nbchan  = 1; EEG_vvs.pnts = size(t_vvs,2);EEG_vvs.event   = [];
-                       EEG_vvs         = pop_eegfiltnew (EEG_vvs, f,f);
-                       data_vvs        = squeeze(EEG_vvs.data); 
-                       phase_data(1,:)      = angle(hilbert(data_vvs));
-
-                       EEG_pfc.data    = t_pfc;
-                       EEG_pfc.trials  = 1; EEG_pfc.srate   = 1000; EEG_pfc.nbchan  = 1; EEG_pfc.pnts = size(t_vvs,2);EEG_pfc.event   = [];
-                       EEG_pfc         = pop_eegfiltnew (EEG_pfc, f,f);
-                       data_pfc        = squeeze(EEG_pfc.data); 
-                       phase_data(2,:) = angle(hilbert(data_pfc));
-
-                       PLVch{subji}(freqi, count, chani, chanj ) = abs(mean(exp(1i*(diff(phase_data,1)))));
-                    end
-                end
-            end
-            count = count+1;
-        end
-    end
-
-    
-end
-
-
-cd (currentF)
-save('PLVch_allF_2500-5500', 'PLVch');
-
-
-
-toc
-
-
-
-%% plot for each freq
-load pfc_elec
-load RNN_pfc_M&C_noAv_54_Real_T_1-49_C_aFV
-load PLVch_allF_2500-5500
-
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-pfc = all_r_Times_Trials(pfc_ids)';
-tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp(pfc_ids,1) > 1); 
-pfc(s2e_pfc) = [];
-PLVch(s2e_pfc) = [];
-
-
-clear allR
-for subji = 1:length(pfc)
-   
-    for freqi = 1:52
-        conT = squeeze(mean(mean(PLVch{subji}(freqi,:,:,:),4),3))';
-        tmp = squeeze(pfc{(subji)}(1,:,11:27,7:12)); %last layer in beta and time period of interest
-        tmp = squeeze(mean(mean(tmp,3),2));
-        %ch2(subji,:) = mean(tmp);
-        %tmp = reshape (tmp, size(tmp, 1), []);
-        allR(subji,freqi) = corr(conT, tmp, 'type','s');
-    end 
-    
-end
-
-[h p ci ts] = ttest(allR)
- 
-plot(h)
-
-
-%% plot for each freq 2
-load pfc_elec
-load RNN_pfc_M&C_noAv_54_Real_T_1-49_C_aFV
-load PLVch_allF_2500-5500
-%load PLVch_allF
-
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-pfc = all_r_Times_Trials(pfc_ids)';
-tmp = cell2mat(cellfun(@size, chanNames_all, 'un', 0));
-s2e_pfc = ~(tmp(pfc_ids,1) > 2); 
-s2e_pfc(4) = 1;
-pfc(s2e_pfc) = [];
-PLVch(s2e_pfc) = [];
-
-
-
-clear allR
-for subji = 1:length(pfc)
-   for freqi = 1:52
-    for freqi2 = 1:52
-        conT = squeeze(mean(mean(PLVch{subji}(freqi,:,:,:),4),3))';
-        %tmp = squeeze(pfc{(subji)}(1,:,freqi2:freqi2,7:12)); %last layer in beta and time period of interest
-        
-        %nornmalized to baseline
-        tmp = squeeze(pfc{(subji)}(1,:,freqi2:freqi2,7:12)); %last layer in beta and time period of interest
-        %tmpb = mean(squeeze(pfc{(subji)}(1,:,freqi2:freqi2,1:5)),2); %last layer in beta and time period of interest
-        %tmp = tmp-tmpb;
-        
-        tmp = squeeze(mean(mean(tmp,3),2));
-        %ch2(subji,:) = mean(tmp);
-        %tmp = reshape (tmp, size(tmp, 1), []);
-        allR(subji,freqi, freqi2) = corr(conT, tmp, 'type','s');
-    end 
-   end
-end
-
-[h p ci ts] = ttest(allR)
- 
-
-figure()
-contourf(myresizem(squeeze(ts.tstat), 10), 40, 'linecolor', 'none'); axis equal, hold on; colorbar
-contour(myresizem(squeeze(h), 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-
-
-
-%% 
-d2p = squeeze(PLVch{1}(22,:,:));
-figure();
-imagesc(d2p); colorbar
-
-
-
-%% load trialIDs
-
-d2p = squeeze(all_r_Times(16,56,:,:));
-imagesc(d2p)
-
-
-
-%% all_r-times rho values show expected increases
-
-
-d2p = squeeze(mean(all_r_Times(pfc_ids,56,:,:),'omitnan'));
-figure()
-imagesc(d2p); colorbar
-
-
-d2p2 = all_r_Times_Trials(pfc_ids)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
