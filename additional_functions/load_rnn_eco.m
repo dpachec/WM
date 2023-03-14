@@ -2,7 +2,7 @@ function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loa
 
 
 currentFolder = pwd; 
-cd (paths.activations)
+cd ([paths.activations '\ecoSet\'])
 
 if sessi < subj_ch_fr
     sublist = dir('*FR.mat');
@@ -16,7 +16,6 @@ else
     load(sublist{1});
     fs2= squeeze(a(cfg.lays2load, :, :)); 
     ACT = fs2;   
-
 
 end
 

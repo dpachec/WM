@@ -2,7 +2,7 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_pfc_M123_[56]_3-54_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_0_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -41,7 +41,8 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'RNN_vvs_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat'
+                %'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+                'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
                 
              };   
 
