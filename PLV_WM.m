@@ -330,8 +330,8 @@ clear
 paths = load_paths_WM('vvs')
 load ([paths.results.PLV 'trials_CON_ALL'])
 
-SI_TR = CON_ALL(:, 9);
-MI_TR = CON_ALL(:, 10);
+SI_TR = CON_ALL(:, 1);
+MI_TR = CON_ALL(:, 2);
 
 d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
@@ -360,13 +360,15 @@ d2MI = cell2mat(d2pMI')';
 mSI = squeeze(mean(d2SI));
 mMI = squeeze(mean(d2MI));
 
-
+times = -2:0.001:6.9999;
 hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
 figure;
-plot(mSI, 'r', 'LineWidth', 2); hold on
-plot(mMI, 'b', 'LineWidth', 2)
-plot(hb, 'LineWidth', 4)
+plot(times, mSI, 'r', 'LineWidth', 2); hold on
+plot(times, mMI, 'b', 'LineWidth', 2)
+plot(times, hb, 'LineWidth', 8)
 legend({'SI' 'MI'})
+
+set(gca, 'FontSize', 14, 'xlim', [-1 3.5])
 
 %% check for the time period of network fit
 
@@ -454,8 +456,8 @@ toc
 
 clear 
 paths = load_paths_WM('vvs')
-%load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800'])
-load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800_1-29-30-54'])
+load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800'])
+%load ([paths.results.PLV 'time_PLV_ALL_FR_2001-2800_1-29-30-54'])
 
 
 
@@ -734,6 +736,70 @@ toc
 
 
 
+%% Process GRANGER
+
+clear 
+paths = load_paths_WM('vvs')
+load ([paths.results.PLV 'GC'])
+GC_P2V = GC(:, 1);
+
+clear SI_GC MI_GC
+for subji = 1:10
+
+    allIDs = GC{subji, 3};
+    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0);
+    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
+    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+    
+    
+    SI_GC{subji,1} = GC_P2V{subji}(ids1 == 7 & ids2 ~= 4,:,:,:); 
+    MI_GC{subji,1} = GC_P2V{subji}(ids1 == 7 & ids2 == 4,:,:,:); 
+    
+    
+    d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
+    d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
+    c1 = cell2mat(d2pSI')'; 
+    c2 = cell2mat(d2pMI')'; 
+    
+    
+    % % % normalize to the baseline
+    % mC1 = mean(c1(:, 1000:2000), 2);
+    % stdC1 = std(c1(:, 1000:2000), [], 2);
+    % c1 = bsxfun(@rdivide, c1 - mC1, stdC1); 
+    % mC2 = mean(c2(:, 1000:2000), 2);
+    % stdC2 = std(c2(:, 1000:2000), [], 2);
+    % c2 = bsxfun(@rdivide, c2 - mC2, stdC2); 
+
+end
+
+md2pSI = mean(c1)
+md2pMI = mean(c2)
+
+[h p ci ts] = ttest(c1, c2)
+
+%% Plot
+d2SI = cell2mat(d2pSI')';
+d2MI = cell2mat(d2pMI')';
+
+mSI = squeeze(mean(d2SI));
+mMI = squeeze(mean(d2MI));
+
+times = -2:0.001:6.9999;
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
+figure;
+plot(times, mSI, 'r', 'LineWidth', 2); hold on
+plot(times, mMI, 'b', 'LineWidth', 2)
+plot(times, hb, 'LineWidth', 8)
+legend({'SI' 'MI'})
+
+set(gca, 'FontSize', 14, 'xlim', [-1 3.5])
+
+%% check for the time period of network fit
+
+c1R = mean(c1(:, 2400:3100), 2)
+c2R = mean(c2(:, 2400:3100), 2)
+[h p ci ts] = ttest(c1R, c2R);
+disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 
 

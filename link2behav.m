@@ -11,7 +11,7 @@ load([paths.results.trial_level f2sav]);
 
 %%
 
-foI = 14:27
+foI = 14:26
 toI = 7:12
 
 for subji = 1:length(nnFit)
@@ -33,12 +33,10 @@ for subji = 1:length(nnFit)
 
     for layi = 1:size(nnFit{1}, 1)
        
-   
         fit_CIL(subji, layi, :) = mean(atanh(nnFit{subji, 1}(layi,id_CorrIL,foI,toI)), 'all');
         fit_CCL(subji, layi, :) = mean(atanh(nnFit{subji, 1}(layi,id_CorrCL,foI,toI)), 'all');
         fit_Inc(subji, layi, :) = mean(atanh(nnFit{subji, 1}(layi,id_Incorrect,foI,toI)), 'all');
         fit_CINC(subji, layi, :) = mean(atanh(nnFit{subji, 1}(layi,id_CorrCNI,foI,toI)), 'all');
-
         
     end
 
@@ -46,11 +44,10 @@ end
 
 
 % % %  stats 
-
-
-[h p ci ts] = ttest(fit_CCL, fit_Inc); 
+[h p ci ts] = ttest(fit_Inc, fit_CINC); 
 t = squeeze(ts.tstat); 
-disp(num2str(h))
+disp(['p = ' num2str(p)])
+disp(['t = ' num2str(ts.tstat)])
 
 
 

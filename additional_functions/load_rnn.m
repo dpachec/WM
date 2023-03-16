@@ -2,7 +2,7 @@ function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loa
 
 
 currentFolder = pwd; 
-[paths.activations '\spearman\']
+cd ([paths.activations '\imageNet\spearman\'])
 
 if sessi < subj_ch_fr
     cd FR

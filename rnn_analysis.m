@@ -298,7 +298,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (one Layer - time Point)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear 
-f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -307,7 +307,7 @@ load([paths.results.DNNs f2sav]);
 if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
-    %sub2exc = [1];
+    sub2exc = [1];
     %sub2exc = [1 7 13 16]; %at least 3 electrodres
     %sub2exc = [1 3 4 7 10 13 16]; %at least 4 electrodres
 elseif strcmp(cfg.brainROI, 'hipp')
@@ -316,7 +316,7 @@ end
 
 for subji = 1:length(nnFit)
     % 8    16    24    32    40    48    56
-   nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
+   nnH(subji, : ,:) = nnFit{subji, 1}(4,:);
    %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
    %nnH(subji, : ,:,:) = nnFit{subji};
         
@@ -373,7 +373,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-f2sav = 'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1.mat'; 
+f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -698,7 +698,7 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_100p.mat';
+f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -735,7 +735,8 @@ for permi = 1:nPerm
         end
         
         %sort all clusters 
-        [max2u id] = max(abs(allSTs));
+        %[max2u id] = max(abs(allSTs));
+        [max2u id] = max(allSTs);
         
         max_clust_sum_perm(permi,layi,:) = allSTs(id); 
     end
@@ -1272,8 +1273,47 @@ cfg = getParams(f2sav);
 sessi = 1; 
 subj_ch_fr = 1; 
 paths = load_paths_WM(cfg.brainROI);
-[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+%[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+[ACT] = load_rnn_eco(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
+%% correlate imagenet and ecoset activations 
+
+for layi = 1:56
+
+    rdmECO = squeeze(ACT_ECO(layi, :, :)); 
+    rdmECO = vectorizeRDM(rdmECO);
+    rdmIMA = squeeze(ACT_IMA(layi, :, :)); 
+    rdmIMA = vectorizeRDM(rdmIMA);
+    allRs(layi, :) = corr(rdmECO', rdmIMA', 'type', 's');
+
+end 
+
+%% 
+figure()
+plot(allRs, 'LineWidth', 3)
+xlabel('Layer/Time')
+ylabel('Rho')
+set(gca, 'FontSize', 14)
+
+%%
+
+figure(); 
+clear c1 c2 c3 cols
+c1 = (1:7)/7'; % sorted by time point
+c2 = repmat(zeros(1), 7, 1)';
+c3 = repmat(ones(1), 7, 1)';
+cols = [c1 ; c2 ; c3]';
+lw = 3;
+plot (allRs(1:8), 'Linewidth', lw, 'Color', cols(1, :)); hold on; 
+plot (allRs(9:16), 'Linewidth', lw, 'Color', cols(2, :)); hold on; 
+plot (allRs(17:24), 'Linewidth', lw, 'Color', cols(3, :)); hold on; 
+plot (allRs(25:32), 'Linewidth', lw, 'Color', cols(4, :)); hold on; 
+plot (allRs(33:40), 'Linewidth', lw, 'Color', cols(5, :)); hold on; 
+plot (allRs(41:48), 'Linewidth', lw, 'Color', cols(6, :)); hold on; 
+plot (allRs(49:56), 'Linewidth', lw, 'Color', cols(7, :)); hold on; 
+set(gca, 'FontSize', 16, 'xlim', [1 8])
+xlabel('Time')
+ylabel('Rho')
 
 %% RNN all RDMS
 
@@ -1313,7 +1353,7 @@ for rowi = 1:7
     end
 end
 
-%exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
 %% RNN all MDS
