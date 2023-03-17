@@ -202,6 +202,9 @@ set(gca, 'LineWidth', 3);
 
 %% Across trials
 
+%% CONNECTIVITY Across trials
+% % % % PLV PLI and COHERENCE
+
 clearvars 
 
 f2u = [3 8];
@@ -223,7 +226,7 @@ for subji = 1:10
     c_pfc = cfg_contrasts;
     cd(paths.github)
     
-    clear PLV_SI PLV_MI PLI_SI PLI_MI PLV_SI_M2 PLV_MI_M2 PLI_SI_M2 PLI_MI_M2 WPLI_SI WPLI_MI
+    clear PLV_SI PLV_MI PLI_SI PLI_MI PLV_SI_M2 PLV_MI_M2 PLI_SI_M2 PLI_MI_M2 WPLI_SI WPLI_MI COH_SI COH_MI
     for chani = 1:size(c_vvs.chanNames,1)
         parfor chanj = 1:size(c_pfc.chanNames,1)
             id2u = cellfun(@(x) strsplit(x, ' '), c_vvs.oneListIds_c, 'un', 0);
@@ -270,8 +273,13 @@ for subji = 1:10
             cdd = data_vvs .* conj(data_pfc);% cross-spectral density
             cdi = imag(cdd);
             PLV_SI_M2(chani, chanj, :) = abs(mean(exp(1i*angle(cdd)),2)); % note: equivalent to PLV_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
-            PLI_SI_M2(chani, chanj, :) = abs(mean(sign(imag(cdd)),2));            
+            PLI_SI_M2(chani, chanj, :) = abs(mean(sign(imag(cdd)),2));
             WPLI_SI(chani, chanj, :) = abs( mean( abs(cdi).*sign(cdi) ,2) )./mean(abs(cdi),2);% weighted phase-lag index (eq. 8 in Vink et al. NeuroImage 2011)
+            % % compute coherence
+            spec1 = mean(data_vvs.*conj(data_vvs),2);
+            spec2 = mean(data_pfc.*conj(data_pfc),2);
+            specX = abs(mean(data_vvs.*conj(data_pfc),2)).^2;
+            COH_SI(chani, chanj, :) = specX./ (spec1.*spec2);
 
 
             % % % % MULTI ITEM TRIALS
@@ -291,13 +299,17 @@ for subji = 1:10
             dataHA_pfc      = angle(data_pfc);
             diffPha = dataHA_vvs - dataHA_pfc;
             PLV_MI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
-            PLI_MI(chani, chanj, :) = abs(mean(sign(imag(exp(1i*diffPha)))),2); %PLI
+            PLI_MI(chani, chanj, :) = abs(mean(sign(imag(exp(1i*diffPha))),2)); %PLI
             cdd = data_vvs .* conj(data_pfc);% cross-spectral density
             cdi = imag(cdd);
             PLV_MI_M2(chani, chanj, :) = abs(mean(exp(1i*angle(cdd)),2)); % note: equivalent to PLV_SI(chani, chanj, :) = abs(mean(exp(1i*(diffPha)), 2)); %PLV
             PLI_MI_M2(chani, chanj, :)  = abs(mean(sign(imag(cdd)),2));            
             WPLI_MI(chani, chanj, :) = abs( mean( abs(cdi).*sign(cdi) ,2) )./mean(abs(cdi),2);% weighted phase-lag index (eq. 8 in Vink et al. NeuroImage 2011)
-
+            % % compute coherence
+            spec1 = mean(data_vvs.*conj(data_vvs),2);
+            spec2 = mean(data_pfc.*conj(data_pfc),2);
+            specX = abs(mean(data_vvs.*conj(data_pfc),2)).^2;
+            COH_MI(chani, chanj, :) = specX./ (spec1.*spec2);
             
 
         end
@@ -312,6 +324,8 @@ for subji = 1:10
     CON_ALL{subji,8} = PLI_MI_M2; %pfc or vvs 
     CON_ALL{subji,9} = WPLI_SI; %pfc or vvs 
     CON_ALL{subji,10} = WPLI_MI; %pfc or vvs 
+    CON_ALL{subji,11} = COH_SI; %pfc or vvs 
+    CON_ALL{subji,12} = COH_MI; %pfc or vvs 
 end
 
 
@@ -324,14 +338,15 @@ toc
 
 
 
+
 %% Process across trials 
 
 clear 
 paths = load_paths_WM('vvs')
 load ([paths.results.PLV 'trials_CON_ALL'])
 
-SI_TR = CON_ALL(:, 1);
-MI_TR = CON_ALL(:, 2);
+SI_TR = CON_ALL(:, 11);
+MI_TR = CON_ALL(:, 12);
 
 d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
@@ -662,14 +677,14 @@ pfc_ids = [2 3  5  9 10 11 12 14 15 16];
 vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
 
-order   =  15; % in ms
-order_points   = round(order);
+order   =  50; % in ms
+order_points   = order;
 
 nTimes = 5000; 
 win_width = 500; 
 mf = 100; 
 bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
-timewin_points = bins;
+timewin_points = win_width;
 
 
 % initialize
@@ -690,11 +705,11 @@ for subji = 1:10
     c_vvs.oneListTraces = c_vvs.oneListTraces(:, 1001:6000,:);
     c_pfc.oneListTraces = c_pfc.oneListTraces(:, 1001:6000,:);
 
-    clear PLV2U
+    clear y2x x2y
     for timei = 1:bins 
         timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
-        for chani = 1:size(c_vvs.chanNames,1)
-            for chanj = 1:size(c_pfc.chanNames,1)
+        for chani = 1:1%size(c_vvs.chanNames,1)
+            for chanj = 1:1%size(c_pfc.chanNames,1)
     
                 clear tempdata
                 tempdata(1,:,:) = c_vvs.oneListTraces(chani, timeBins,:);
@@ -714,14 +729,14 @@ for subji = 1:10
                 [Axy,E] = armorf(tempdata     ,nTrials,timewin_points,order_points);
                 
                 % time-domain causal estimate
-                y2x(chani, chanj, timei)=log(Ex/E(1,1));
                 x2y(chani, chanj, timei)=log(Ey/E(2,2));
+                y2x(chani, chanj, timei)=log(Ex/E(1,1));
                 
             end
         end
     end
-    GC{subji,1} = y2x; 
-    GC{subji,2} = x2y; 
+    GC{subji,1} = x2y; 
+    GC{subji,2} = y2x; 
     GC{subji,3} = c_vvs.oneListIds_c; 
 end
 
@@ -738,61 +753,34 @@ toc
 
 %% Process GRANGER
 
-clear 
-paths = load_paths_WM('vvs')
-load ([paths.results.PLV 'GC'])
-GC_P2V = GC(:, 1);
+%clear 
+%paths = load_paths_WM('vvs')
+%load ([paths.results.PLV 'GC'])
+GC_V2P = GC(:, 1);
+GC_P2V = GC(:, 2);
 
-clear SI_GC MI_GC
-for subji = 1:10
 
-    allIDs = GC{subji, 3};
-    ids0 = cellfun(@(x) strsplit(x), allIDs, 'un', 0);
-    ids1 = cell2mat(cellfun(@(x) double(string(x(1))), ids0, 'un', 0));
-    ids2 = cell2mat(cellfun(@(x) double(string(x(2))), ids0, 'un', 0));
+d2pP2V = cell2mat(cellfun(@(x) squeeze(mean(mean(x))), GC_P2V, 'un', 0)');
+d2pV2P = cell2mat(cellfun(@(x) squeeze(mean(mean(x))), GC_V2P, 'un', 0)');
     
-    
-    SI_GC{subji,1} = GC_P2V{subji}(ids1 == 7 & ids2 ~= 4,:,:,:); 
-    MI_GC{subji,1} = GC_P2V{subji}(ids1 == 7 & ids2 == 4,:,:,:); 
-    
-    
-    d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
-    d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
-    c1 = cell2mat(d2pSI')'; 
-    c2 = cell2mat(d2pMI')'; 
-    
-    
-    % % % normalize to the baseline
-    % mC1 = mean(c1(:, 1000:2000), 2);
-    % stdC1 = std(c1(:, 1000:2000), [], 2);
-    % c1 = bsxfun(@rdivide, c1 - mC1, stdC1); 
-    % mC2 = mean(c2(:, 1000:2000), 2);
-    % stdC2 = std(c2(:, 1000:2000), [], 2);
-    % c2 = bsxfun(@rdivide, c2 - mC2, stdC2); 
+%%
+GC_V2P = GC(:, 1);
+GC_P2V = GC(:, 2);
 
-end
 
-md2pSI = mean(c1)
-md2pMI = mean(c2)
+d2pP2V = cell2mat(cellfun(@(x) squeeze(x), GC_P2V, 'un', 0)');
+d2pV2P = cell2mat(cellfun(@(x) squeeze(x), GC_V2P, 'un', 0)');
+d2pP2V = mean(d2pP2V, 2);
+d2pV2P = mean(d2pV2P, 2);
 
-[h p ci ts] = ttest(c1, c2)
 
 %% Plot
-d2SI = cell2mat(d2pSI')';
-d2MI = cell2mat(d2pMI')';
 
-mSI = squeeze(mean(d2SI));
-mMI = squeeze(mean(d2MI));
-
-times = -2:0.001:6.9999;
-hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
 figure;
-plot(times, mSI, 'r', 'LineWidth', 2); hold on
-plot(times, mMI, 'b', 'LineWidth', 2)
-plot(times, hb, 'LineWidth', 8)
-legend({'SI' 'MI'})
+plot(d2pP2V, 'r', 'LineWidth', 2); hold on
+plot(d2pV2P, 'b', 'LineWidth', 2); hold on
 
-set(gca, 'FontSize', 14, 'xlim', [-1 3.5])
+set(gca, 'FontSize', 14)
 
 %% check for the time period of network fit
 
@@ -800,24 +788,6 @@ c1R = mean(c1(:, 2400:3100), 2)
 c2R = mean(c2(:, 2400:3100), 2)
 [h p ci ts] = ttest(c1R, c2R);
 disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
