@@ -97,9 +97,9 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
 
     oneListPow = dataLH;
         
-     if strcmp(period(1), 'E')
+     if strcmp(period(1), 'E') & timeRes == 0.1
         oneListPow = oneListPow(:,:,:,16:40);
-     elseif strcmp(period(1), 'M')
+     elseif strcmp(period(1), 'M') & timeRes == 0.1
         oneListPow = oneListPow(:,:,:,16:65);
     end
 

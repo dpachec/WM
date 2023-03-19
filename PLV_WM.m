@@ -200,7 +200,6 @@ set(gca, 'LineWidth', 3);
 
 
 
-%% Across trials
 
 %% CONNECTIVITY Across trials
 % % % % PLV PLI and COHERENCE
@@ -226,7 +225,8 @@ for subji = 1:10
     c_pfc = cfg_contrasts;
     cd(paths.github)
     
-    clear PLV_SI PLV_MI PLI_SI PLI_MI PLV_SI_M2 PLV_MI_M2 PLI_SI_M2 PLI_MI_M2 WPLI_SI WPLI_MI COH_SI COH_MI
+    clear PLV_SI PLV_MI PLI_SI PLI_MI PLV_SI_M2 PLV_MI_M2 PLI_SI_M2 PLI_MI_M2 WPLI_SI WPLI_MI COH_SI COH_MI ANG_SI ANG_MI
+
     for chani = 1:size(c_vvs.chanNames,1)
         parfor chanj = 1:size(c_pfc.chanNames,1)
             id2u = cellfun(@(x) strsplit(x, ' '), c_vvs.oneListIds_c, 'un', 0);
@@ -280,6 +280,7 @@ for subji = 1:10
             spec2 = mean(data_pfc.*conj(data_pfc),2);
             specX = abs(mean(data_vvs.*conj(data_pfc),2)).^2;
             COH_SI(chani, chanj, :) = specX./ (spec1.*spec2);
+            ANG_SI(chani, chanj, :) = angle(mean(exp(1i*(diffPha)), 2)); %PLV
 
 
             % % % % MULTI ITEM TRIALS
@@ -310,6 +311,7 @@ for subji = 1:10
             spec2 = mean(data_pfc.*conj(data_pfc),2);
             specX = abs(mean(data_vvs.*conj(data_pfc),2)).^2;
             COH_MI(chani, chanj, :) = specX./ (spec1.*spec2);
+            ANG_MI(chani, chanj, :) = angle(mean(exp(1i*(diffPha)), 2)); %PLV
             
 
         end
@@ -326,10 +328,12 @@ for subji = 1:10
     CON_ALL{subji,10} = WPLI_MI; %pfc or vvs 
     CON_ALL{subji,11} = COH_SI; %pfc or vvs 
     CON_ALL{subji,12} = COH_MI; %pfc or vvs 
+    CON_ALL{subji,13} = ANG_SI; %pfc or vvs 
+    CON_ALL{subji,14} = ANG_MI; %pfc or vvs 
 end
 
 
-save([paths.results.PLV 'trials_CON_ALL'], 'CON_ALL');
+save([paths.results.PLV 'trials_CON_ALL_' num2str(f2u(1)) '-' num2str(f2u(2)) 'Hz'], 'CON_ALL');
 
 
 
@@ -343,10 +347,15 @@ toc
 
 clear 
 paths = load_paths_WM('vvs')
-load ([paths.results.PLV 'trials_CON_ALL'])
+load ([paths.results.PLV 'trials_CON_ALL_3-8Hz'])
 
-SI_TR = CON_ALL(:, 11);
-MI_TR = CON_ALL(:, 12);
+
+
+%% 
+
+
+SI_TR = CON_ALL(:, 13);
+MI_TR = CON_ALL(:, 14);
 
 d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
@@ -368,6 +377,25 @@ md2pMI = mean(c2)
 
 [h p ci ts] = ttest(c1, c2)
 
+
+%% 
+for timei = 1:length(c1)
+    [pval(timei) table] = circ_cmtest(c1(:, timei), c2(:,timei));
+end
+
+%% 
+figure()
+plot (pval)
+
+%%
+clear
+cd C:\Users\Neuropsychology\Documents\MATLAB\circstat-matlab-master\examples
+load data
+fprintf('\nMulti-Sample tests\n')
+fprintf('\nTEST 1: ONE FACTOR ANOVA, theta1 vs theta2\n')
+p = circ_wwtest(theta1,theta2);
+
+
 %% Plot
 d2SI = cell2mat(d2pSI')';
 d2MI = cell2mat(d2pMI')';
@@ -384,6 +412,42 @@ plot(times, hb, 'LineWidth', 8)
 legend({'SI' 'MI'})
 
 set(gca, 'FontSize', 14, 'xlim', [-1 3.5])
+
+%% plot difference angles 
+
+
+mDiff = mSI - mMI; 
+figure;
+plot(times, mDiff, 'r', 'LineWidth', 2); hold on
+
+
+%% plot separately for each subject 
+
+
+figure
+for subji = 1:10
+
+    d2pSI = squeeze(mean(mean(SI_TR{subji})))'; 
+    plot(d2pSI); hold on; 
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% check for the time period of network fit
 
@@ -708,8 +772,8 @@ for subji = 1:10
     clear y2x x2y
     for timei = 1:bins 
         timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
-        for chani = 1:1%size(c_vvs.chanNames,1)
-            for chanj = 1:1%size(c_pfc.chanNames,1)
+        for chani = 1:size(c_vvs.chanNames,1)
+            for chanj = 1:size(c_pfc.chanNames,1)
     
                 clear tempdata
                 tempdata(1,:,:) = c_vvs.oneListTraces(chani, timeBins,:);

@@ -18,7 +18,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 
     
     cfg = []; 
-    cfg.timeRes = .1;  
+    cfg.timeRes = .01;  
     cfg.period = 'M'; 
     cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
 
@@ -101,7 +101,7 @@ max_clust_obs = max(abs(allTOBs))
 
 
 figure()
-times = 1:50; 
+times = 1:550; 
 freqs = 1:54; 
 contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; colorbar
 contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
@@ -114,8 +114,8 @@ set(gca, 'clim', [-4 4])
 nPerm = 1000; 
 clear max_clust_sum_perm
 for permi = 1:nPerm
-    c1B = powSI(:,1:54,1:46); 
-    c2B = powMI(:,1:54,1:46); 
+    c1B = powSI(:,1:54,1:550); 
+    c2B = powMI(:,1:54,1:550); 
     c1B(c1B == 0) = nan; 
     c2B(c2B == 0) = nan; 
     for subji = 1:size(c1B, 1)
