@@ -11,8 +11,10 @@ if strcmp (cfg.net2load , 'RNN')
     [ACT] = load_rnn_eco(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+elseif strcmp (cfg.net2load , 'COR')
+    [ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 else
-    disp ('loading BLnext'); 
+    %disp ('loading BLnext'); 
     [ACT] = load_blnext(cfg, sessi, paths, oneListIDs);
 end
 
@@ -38,7 +40,7 @@ end
 
 
 
-if strcmp (cfg.net2load , 'RNN') | strcmp (cfg.net2load , 'Alex')
+if strcmp (cfg.net2load , 'RNN') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'COR')
     networkRDMs = ACT(:, ids4, ids4);
 else
     networkRDMs = ACT; 

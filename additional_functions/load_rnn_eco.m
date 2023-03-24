@@ -4,6 +4,7 @@ function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loa
 currentFolder = pwd; 
 cd ([paths.activations '\ecoSet\'])
 
+
 if sessi < subj_ch_fr
     sublist = dir('*FR.mat');
     sublist = {sublist.name};  sublist = sort(sublist');
