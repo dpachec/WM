@@ -13,7 +13,7 @@ elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 else
     disp ('loading BLnext'); 
-    [ACT ids2rem] = load_blnext(cfg, sessi, paths, oneListIDs);
+    [ACT] = load_blnext(cfg, sessi, paths, oneListIDs);
 end
 
 

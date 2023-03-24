@@ -1,5 +1,5 @@
 %%
-function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not loaded yet
+function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not loaded yet
 
     net2load = cfg.net2load; 
     lays2load = cfg.lays2load; 
@@ -11,18 +11,15 @@ function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network
     
     nLays = 1; % for now
     if strcmp(net2load, 'BLnext2')
-        all_act = load('Features_BLnext-2samples.mat');
-        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-2samples.mat');
+        all_act = load('Features_BLnext-ReLU_Layer_6-2samples_part0.mat');
         seqEnd = 6; 
-    elseif strcmp(net2load, 'BLnext4')
+    elseif strcmp(net2load, 'BLnext3')
 
-        all_act = load('Features_BLnext-4samples.mat');
-        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-4samples.mat');
+        all_act = load('Features_BLnext-ReLU_Layer_6-3samples_part0.mat');
+        seqEnd = 9;
+    elseif strcmp(net2load, 'BLnext4')
+        all_act = load('Features_BLnext-ReLU_Layer_6-4samples_part0.mat');
         seqEnd = 12; 
-    elseif strcmp(net2load, 'BLnext8')
-        all_act = load('Features_BLnext-8samples.mat');
-        %all_act{2} = load('Features_BLnext-ReLU_Layer_6-8samples.mat');
-        seqEnd = 24; 
     elseif strcmp(net2load, 'BLnext12')
         %all_act = load('Features_BLnext-12samples.mat');
         %all_act = load('Features_BLnext-ReLU_Layer_6-12samples.mat');
@@ -59,9 +56,6 @@ function[ACT ids2rem] = load_blnext(cfg, subji, paths, oneListIDs);%load network
         
         for evi = 1:size(acts, 2)
             out=squeeze(acts(:, evi, :));
-            ids2rem = all(out==0,2); % remove sequences not present in Lynns activations 
-            out(ids2rem,:) = [];
-            
             ACT_prev = corr(out', 'type', 's');
             ACT(evi, :, :) = ACT_prev;
         end

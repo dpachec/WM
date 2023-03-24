@@ -1,8 +1,8 @@
 %% first load traces
 %%
 clear
-
-paths = load_paths_WM('pfc');
+region = 'vvs';
+paths = load_paths_WM(region);
 filelistSess = getFiles(paths.traces);
 
 
@@ -29,8 +29,13 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 end
 
 mkdir ([paths.results.power]);
-save([paths.results.power 'pow2S'], 'allPow');
+save([paths.results.power 'pow2S_' region '_' num2str(cfg.timeRes*1000) 'ms'], 'allPow');
 
+
+%% 
+clear
+paths = load_paths_WM('pfc');
+load([paths.results.power 'pow2S_vvs_10ms'], 'allPow');
 
 %% plot example trial 
 
@@ -45,7 +50,7 @@ imagesc(d2p)
 %% compute mean over trials and over electrodes for each subject
 
 clear powSI powMI
-for subji = 1:length(filelistSess)
+for subji = 1:length(allPow)
 
 
     
@@ -64,7 +69,7 @@ end
 %% plot one example subject
 
 
-d2p = squeeze(powSI(6,:,:));
+d2p = squeeze(powSI(4,:,:));
 figure
 imagesc(d2p)
 
@@ -73,16 +78,25 @@ imagesc(d2p)
 
 
 mSI = squeeze(mean(powSI)); 
-mDI = squeeze(mean(powMI)); 
-figure(1)
-imagesc(mSI); colorbar
-set(gca, 'clim', [-0.08 0.08])
-figure(2)
-imagesc(mDI); colorbar
-set(gca, 'clim', [-0.08 0.08])
+mMI = squeeze(mean(powMI)); 
+myCmap = colormap(brewermap([],'*Spectral'));
 
+%times = 1:550; 
+times = -1:0.01:4.49
+freqs = 1:54; 
 
-%% 
+figure;
+contourf(times, freqs, mSI, 100, 'linecolor', 'none'); hold on; colorbar
+set(gca, 'clim', [-0.08 0.08], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
+set(gca, 'FontSize', 14)
+title('Single-item trials')
+colormap(myCmap)
+
+contourf(times, freqs, mMI, 100, 'linecolor', 'none'); hold on; colorbar
+set(gca, 'clim', [-0.08 0.08], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
+set(gca, 'FontSize', 14)
+title('Multi-item trials')
+colormap(myCmap)
 
 
 
@@ -107,6 +121,29 @@ contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; colorbar
 contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
 set(gca, 'clim', [-4 4])
 
+
+%% plot all together
+
+times = -1:0.01:4.49
+freqs = 1:54;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
+nexttile
+contourf(times, freqs, mSI, 40, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Single-item trials')
+nexttile
+contourf(times, freqs, mMI, 40, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Multi-item trials')
+nexttile
+contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+colormap(brewermap([],'*Spectral'))
+set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
 
 
 %% permutations 
@@ -147,6 +184,7 @@ end
 clear p mcsR mcsP
 
 mcsR = max_clust_obs; 
+%mcsR  = 608.294938960190
 mcsP = abs(max_clust_sum_perm);
 
 allAb = mcsP(mcsP > mcsR);
@@ -168,6 +206,7 @@ exportgraphics(gcf, [paths.results.power 'myP.png'], 'Resolution',150)
 
 
 
+%%
 
 
 

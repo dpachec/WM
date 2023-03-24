@@ -916,7 +916,7 @@ end
 
 clear
 %...__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials;1:Trials)__timeRes__win-width__mf_FST
-f2sav = 'BLnext12_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'BLnext2_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -936,10 +936,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         end
     
         neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
         
-        neuralRDMs(ids2rem, :, : ,:) = []; 
-        neuralRDMs(:,ids2rem, : ,:) = []; 
         
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
         nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
@@ -1363,7 +1361,7 @@ cols = repelem(cols, 10, 1);
 figure()
 for layi = 1:56
    subplot (7, 8, layi)
-   d2p = squeeze(act_CH(layi, :,:)); 
+   d2p = squeeze(ACT(layi, :,:)); 
    d2p = 1- d2p;
    [rdmMDS] = cmdscale(d2p);
    scatter(rdmMDS(:,1),rdmMDS(:,2),350, cols, '.'); axis square
@@ -1437,6 +1435,52 @@ plot (CCI(41:48), 'Linewidth', lw, 'Color', cols(6, :)); hold on;
 plot (CCI(49:56), 'Linewidth', lw, 'Color', cols(7, :)); hold on; 
 set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .5])
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%% compute CCI for each layer / timepoint FOR ECO AND IMAGE
+
+clc
+clearvars -except ACT_ECO ACT_IMA
+
+%create cateogy model
+M = zeros (60); 
+M(1:10, 1:10) = 1; 
+M(11:20, 11:20) = 1; 
+M(21:30, 21:30) = 1; 
+M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; 
+M(51:60, 51:60) = 1; 
+
+        
+for layi = 1:size(ACT_ECO, 1)
+    d2p_ECO = squeeze(ACT_ECO(layi, :,:)); 
+    d2p_ECO = 1- d2p_ECO;
+    rdmMDS_ECO = d2p_ECO; 
+    rdmMDS_ECO(find(eye(size(rdmMDS_ECO)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS_ECO(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS_ECO(M == 0), 'all', 'omitnan');
+    CCI_ECO(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    %CCI_ECO(layi) = (mAcross - mWithin) ;
+    
+    d2p_IMA = squeeze(ACT_IMA(layi, :,:)); 
+    d2p_IMA = 1- d2p_IMA;
+    rdmMDS_IMA = d2p_IMA; 
+    rdmMDS_IMA(find(eye(size(rdmMDS_IMA)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS_IMA(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS_IMA(M == 0), 'all', 'omitnan');
+    CCI_IMA(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    %CCI_IMA(layi) = (mAcross - mWithin) ;
+    
+    
+end
+
+%% 
+
+figure()
+%plot (CCI_ECO, 'Linewidth', 2); hold on; 
+%plot (CCI_IMA, 'Linewidth', 2); hold on; 
+plot(CCI_ECO-CCI_IMA, 'Linewidth', 2); hold on; 
+set(gca, 'FontSize', 20)
 
 
 
