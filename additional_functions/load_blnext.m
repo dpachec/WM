@@ -13,18 +13,18 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
     nLays = 1; % for now
     if strcmp(net2load, 'BLnext2')
         if lays2load == 6
-            all_act = load('Features_BLnext-ReLU_Layer_6-2samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_6-2samples_part0.mat');
         end
         if lays2load == 5
-            all_act = load('Features_BLnext-ReLU_Layer_5-2samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_5-2samples_part0.mat');
         end
         if lays2load == 4
-            all_act = load('Features_BLnext-ReLU_Layer_4-2samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_4-2samples_part0.mat');
         end
         if lays2load == 3
-            all_act0 = load('Features_BLnext-ReLU_Layer_3-2samples_part0.mat');
-            all_act1 = load('Features_BLnext-ReLU_Layer_3-2samples_part1.mat');
-            all_act2 = load('Features_BLnext-ReLU_Layer_3-2samples_part2.mat');
+            all_act0 = load('Features_BLnext-Power-ReLU_Layer_3-2samples_part0.mat');
+            all_act1 = load('Features_BLnext-Power-ReLU_Layer_3-2samples_part1.mat');
+            all_act2 = load('Features_BLnext-Power-ReLU_Layer_3-2samples_part2.mat');
             clear all_act
             all_actX = appendStruct(all_act0, all_act1);
             all_act = appendStruct(all_actX, all_act2);
@@ -33,18 +33,18 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
         seqEnd = 6; 
     elseif strcmp(net2load, 'BLnext3')
         if lays2load == 6
-            all_act = load('Features_BLnext-ReLU_Layer_6-3samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_6-3samples_part0.mat');
         end
         if lays2load == 5
-            all_act = load('Features_BLnext-ReLU_Layer_5-3samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_5-3samples_part0.mat');
         end
         if lays2load == 4
-            all_act = load('Features_BLnext-ReLU_Layer_4-3samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_4-3samples_part0.mat');
         end
         if lays2load == 3
-            all_act0 = load('Features_BLnext-ReLU_Layer_3-3samples_part0.mat');
-            all_act1 = load('Features_BLnext-ReLU_Layer_3-3samples_part1.mat');
-            all_act2 = load('Features_BLnext-ReLU_Layer_3-3samples_part2.mat');
+            all_act0 = load('Features_BLnext-Power-ReLU_Layer_3-3samples_part0.mat');
+            all_act1 = load('Features_BLnext-Power-ReLU_Layer_3-3samples_part1.mat');
+            all_act2 = load('Features_BLnext-Power-ReLU_Layer_3-3samples_part2.mat');
             clear all_act
             all_actX = appendStruct(all_act0, all_act1);
             all_act = appendStruct(all_actX, all_act2);
@@ -52,18 +52,18 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
         seqEnd = 9; 
     elseif strcmp(net2load, 'BLnext4')
         if lays2load == 6
-            all_act = load('Features_BLnext-ReLU_Layer_6-4samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_6-4samples_part0.mat');
         end
         if lays2load == 5
-            all_act = load('Features_BLnext-ReLU_Layer_5-4samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_5-4samples_part0.mat');
         end
         if lays2load == 4
-            all_act = load('Features_BLnext-ReLU_Layer_4-4samples_part0.mat');
+            all_act = load('Features_BLnext-Power-ReLU_Layer_4-4samples_part0.mat');
         end
         if lays2load == 3
-            all_act0 = load('Features_BLnext-ReLU_Layer_3-4samples_part0.mat');
-            all_act1 = load('Features_BLnext-ReLU_Layer_3-4samples_part1.mat');
-            all_act2 = load('Features_BLnext-ReLU_Layer_3-4samples_part2.mat');
+            all_act0 = load('Features_BLnext-Power-ReLU_Layer_3-4samples_part0.mat');
+            all_act1 = load('Features_BLnext-Power-ReLU_Layer_3-4samples_part1.mat');
+            all_act2 = load('Features_BLnext-Power-ReLU_Layer_3-4samples_part2.mat');
             clear all_act
             all_actX = appendStruct(all_act0, all_act1);
             all_act = appendStruct(all_actX, all_act2);

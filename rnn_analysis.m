@@ -42,58 +42,30 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'BLnext2_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'COR_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'COR_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'COR_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-
-
-                'BLnext2_pfc_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[3]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[3]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[3]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[3]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[6]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[5]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_0_1_1_0_.1_5_1.mat'; 
-                'COR_pfc_E123_[1-8]_3-54_1_1_1_0_.1_5_1.mat'; 
-                'COR_pfc_M123_[1-8]_3-54_1_1_1_0_.1_5_1.mat'; 
-                'COR_vvs_E123_[1-8]_3-54_1_1_1_0_.1_5_1.mat'; 
-                'COR_vvs_M123_[1-8]_3-54_1_1_1_0_.1_5_1.mat';
-                
-                
-                
+                'BLnext2_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
                 
                 
              };   
@@ -127,7 +99,6 @@ for listi = 1:length(listF2sav)
     end
     
     save([paths.results.DNNs f2sav], 'nnFit');
-    %save([paths.trial_level f2sav], 'nnFit');
 
 end
 
@@ -205,7 +176,8 @@ end
 %%  plot all layers RNN frequency resolved
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -259,7 +231,7 @@ for layi = 1:size(nnFit{1}, 1)
     if strcmp(cfg.period(1), 'M')
         times = 1:size(t, 2); 
     else
-        times = 1:15; 
+        times = 1:21; 
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
@@ -1009,7 +981,8 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'BLnext3_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+
 cfg = getParams(f2sav);
 
 
