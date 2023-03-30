@@ -19,6 +19,34 @@ else
 end
 
 
+if strcmp(cfg.period, 'MALL1')
+    for i = 1:length(oneListIDs)
+        idh = strsplit(oneListIDs{i});
+        ids2(i,:) = idh{13};
+    end
+    ids3 = double(string(ids2(:,[1 3])));
+    idx = find(~mod(ids3, 10)); 
+    ids4 = ids3-10; ids4(idx) = ids3(idx);
+end
+if strcmp(cfg.period, 'MALL2')
+    for i = 1:length(oneListIDs)
+        idh = strsplit(oneListIDs{i});
+        ids2(i,:) = idh{14};
+    end
+    ids3 = double(string(ids2(:,[1 3])));
+    idx = find(~mod(ids3, 10)); 
+    ids4 = ids3-10; ids4(idx) = ids3(idx);
+end
+if strcmp(cfg.period, 'MALL3')
+    for i = 1:length(oneListIDs)
+        idh = strsplit(oneListIDs{i});
+        ids2(i,:) = idh{15};
+    end
+    ids3 = double(string(ids2(:,[1 3])));
+    idx = find(~mod(ids3, 10)); 
+    ids4 = ids3-10; ids4(idx) = ids3(idx);
+end
+
 if strcmp(cfg.period(1), 'M')
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});

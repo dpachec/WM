@@ -4,6 +4,12 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(period, 'MALL')
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(period, 'MALL1') | strcmp(period, 'MALL2') | strcmp(period, 'MALL3') 
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(period, 'M1')
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(period, 'M21')
+        ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '1'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(period, 'E1')
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '1'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(period, 'E2')

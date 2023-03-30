@@ -2,7 +2,9 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'RNN_pfc_MALL1_[8-8-56]_3-54_0_0_1_0_.1_5_1.mat'; 
+
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
 filelistSess = getFiles(paths.traces);
@@ -42,30 +44,37 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'BLnext2_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[3]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[6]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[5]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_1_0_1_0_.1_5_1.mat'; 
+                 
+                'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext2_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext3_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'BLnext4_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
                 
                 
              };   
@@ -175,8 +184,8 @@ end
 
 %%  plot all layers RNN frequency resolved
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear , clc
-%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+%clear , clc
+%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
 f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat';
 
 cfg = getParams(f2sav);
@@ -293,11 +302,12 @@ colormap(myCmap)
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 %% plot final figure only last layer MAINTENANCE
-times = 1:400;
+times = 1:460;
 freqs = 1:520; 
-h = zeros(52, 40); 
-h(clustinfo.PixelIdxList{7}) = 1; 
-%myCmap = colormap(brewermap([],'YlOrRd'));
+h = zeros(52, 46); 
+%h(clustinfo.PixelIdxList{7}) = 1; 
+h(clustinfo.PixelIdxList{8}) = 1; 
+
 myCmap = colormap(brewermap([],'*Spectral'));
 colormap(myCmap)
 %contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
@@ -684,7 +694,7 @@ for listi = 1:length(listF2sav)
     
     
             % % % restrict time for permutation data
-            if strcmp(cfg.period, 'M')
+            if strcmp(cfg.period(1), 'M')
                 if ndims(neuralRDMs) == 4
                     neuralRDMs = neuralRDMs(:,:,:,3:37); %frequency-resolved
                 else
@@ -774,7 +784,7 @@ cd (paths.github)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
 clear, clc 
-f2sav =    'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1'; 
+f2sav =    'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
 
 cfg = getParams(f2sav); if strcmp(cfg.brainROI, 'vvs') sub2exc = [18 22]; elseif strcmp(cfg.brainROI, 'pfc')sub2exc = [1]; end
 paths = load_paths_WM(cfg.brainROI);
@@ -894,8 +904,8 @@ end
 %% compute p for one layer only
 clear p mcsR mcsP
 
-mcsR =    34.2530300056106; 
-mcsP = squeeze(max_clust_sum_perm(:, 5));
+mcsR =    65.4844891668492
+mcsP = squeeze(max_clust_sum_perm(:, 7));
 
 for clusti = 1:length(mcsR)
     
@@ -981,7 +991,7 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext3_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'BLnext2_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 
@@ -1040,6 +1050,11 @@ for layi = 1:size(nnFit{2}, 1)-4
         set(gca, 'xlim', [1 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 8);
         set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 8);
         plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        if strcmp(cfg.period(1:2), 'M1')
+            set(gca, 'xlim', [12 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 8);
+            set(gca, 'xtick', [12 40], 'xticklabels', {'0' '1.5'}, 'FontSize', 8);
+            plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        end
     end
     
     
