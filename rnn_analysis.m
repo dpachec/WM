@@ -732,7 +732,8 @@ etime(datevec(t2), datevec(t1))
 %% compute clusters in each permutation frequency resolved
 clear
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -1131,7 +1132,8 @@ subj_ch_fr = 1;
 paths = load_paths_WM(cfg.brainROI);
 [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
-%% Plot all layers Alexnet one line vertical
+
+%% Plot all layers Alexnet one line horizontal
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 myCmap = brewermap([], 'Spectral') 
@@ -1868,537 +1870,187 @@ set(gca, 'ylim', [0.8 1], 'xlim', [0 8], 'xtick', [1:7], 'xticklabels', {'1-2' '
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
-%% example pytorch DQN
-
-layers = importONNXLayers('test_model.onnx','OutputLayerType', 'classification', 'ImportWeights', true)
-layers = removeLayers(layers,'Transpose_0')
-layers = removeLayers(layers,'Input_input')
-inputlayer = imageInputLayer([84 84 3],'Name','input', 'Normalization', 'none')
-layers = addLayers(layers,inputlayer)
-layers = connectLayers(layers,'input', 'Conv_1')
-analyzeNetwork(layers)
-%%
-net = assembleNetwork(layers);
-
 %% 
-analyzeNetwork(net)
+% % CORNET 
+% % % 
+clear, clc
+f2sav = 'COR_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
+cfg = getParams(f2sav);
+sessi = 1; 
+subj_ch_fr = 1; 
+paths = load_paths_WM(cfg.brainROI);
+[ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
-%%
-im = rand(84, 84, 3);
+%% Plot all layers CORNET one line horizontal
 
-act1 = activations(net,im,'Conv_1');
+figure(); set(gcf, 'Position', [100 100 1500 500]);
+myCmap = brewermap([], '*Spectral') 
+colormap(myCmap)
 
+for layi = 1:8
+   subplot (1, 8, layi)
+   d2p = squeeze(ACT(layi, :,:)); 
+   imagesc(d2p); axis square; 
+   set(gca,'cLim', [-.6 .6])
+   set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+end
+ ha=get(gcf,'children');
+ n = .25; 
+ set(ha(1),'position',[.09 *7  0 n n ])
+ set(ha(2),'position',[.09 *6  0 n n ])
+ set(ha(3),'position',[.09 * 5 0 n n ])
+ set(ha(4),'position',[.09 * 4 0 n n])
+ set(ha(5),'position',[.09 * 3 0 n n ])
+ set(ha(6),'position',[.09 * 2 0 n n ])
+ set(ha(7),'position',[.09 0 n n])
+ set(ha(8),'position',[.0 0 n n ])
+ colorbar;
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
-%% START HERE WITH THE ALL TRIALS ANALYSIS
-% 1) bands
-clearvars -except act_CH act_FR 
-f2sav       = 'Alex_pfc_CueAll_noAv_54_Real_nT_1-49'
-f           = 3:54; %in case B
-load_parameters_WMFRA;
-loadNet_WM;
+%% plot MDS one Line Vertical
+cols = brewermap(6, 'Accent') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
+cols = repelem(cols, 10, 1);
+%plot(1,1,'.','color',cols(11,:), 'Markersize', 2000) % check the color
+% also nice palette here: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/a64ed616-e9ce-4b1d-8d18-5118cc03f8d2/images/screenshot.png
 
-all_r_Times    = zeros(nSubj, nLays, nFreqs, nTimes);
-
-tic
-for subji=1:nSubj
-    disp (['Subj: ' num2str(subji)])
-    load(sublist{subji});
-    cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(:, :, :, resTime); 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'blo', [3 7]);
-    if strcmp(avMeth,'pow')
-       cfg_contrasts = average_repetitions(cfg_contrasts);
-    end
-    
-    f2t = strsplit(f2sav, '_'); 
-    if strcmp(f2t{5}, '54') | strcmp(f2t{5}, '150') 
-        for freqi = 1:length(freqs2test)
-            f  = freqs2test(freqi);
-            rdm_prev(freqi) = create_rdms(cfg_contrasts, f, it, 5, 1);
-        end
-    elseif strcmp(f2t{5}, 'B') 
-        rdm_prev = create_rdms(cfg_contrasts, f, it, 5, 1);
-        if subji == 1 % change name only once
-            f2sav = [f2sav num2str(f(1)) '-' num2str(f(end)) 'Hz'];
-        end
-    end
-    
-    [allS ids act_FR2 act_CH2] = getIDsAndnRDMs(rdm_prev, act_CH, act_FR); 
-   
-    
-    for layi = 1:nLays
-        if subji < subj_ch_fr
-            M =  squeeze(act_FR2(layi,:,:)); 
-        else
-            M =  squeeze(act_CH2(layi,:,:)); 
-        end
-        M(M ==1) = 1000;M(M ==0) = 2000;
-        M = tril(M, -1);M(M==0) =[];
-        M(M==1000) = 1;M(M==2000) = 0;
-
-        allTEst = corr(allS, M', 'type', 's');
-
-        all_r_Times(subji, layi,:, : ) = reshape(allTEst, nFreqs, nTimes );  
-    end
+figure(); set(gcf, 'Position', [100 100 1500 500]);
+for layi = 1:8
+   subplot (1, 8, layi)
+   d2p = squeeze(ACT(layi, :,:)); 
+   d2p = 1- d2p;
+   [rdmMDS] = cmdscale(d2p);
+   scatter(rdmMDS(:,1),rdmMDS(:,2),350, cols, '.'); axis square
+   set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+   box on
+end
+ ha=get(gcf,'children');
+ n = .25; 
+ set(ha(1),'position',[.09 *7  0 n n ])
+ set(ha(2),'position',[.09 *6  0 n n ])
+ set(ha(3),'position',[.09 * 5 0 n n ])
+ set(ha(4),'position',[.09 * 4 0 n n])
+ set(ha(5),'position',[.09 * 3 0 n n ])
+ set(ha(6),'position',[.09 * 2 0 n n ])
+ set(ha(7),'position',[.09 0 n n])
+ set(ha(8),'position',[.0 0 n n ])
+ %legend
  
-end 
-
-cd (currentF) 
-toc 
-save(f2sav, 'all_r_Times');
-
-
-%% PLOT OBS DATA (all layers) - case with mix negative and positive clusters
-
-sub2exc =  [];
-
-nSubjs =size(all_r_Times, 1);  
-nLays = size(all_r_Times, 2); 
-nFreqs = size(all_r_Times, 3); 
-clear hL tL clustinfo
-for freqi = 1:nFreqs
-    allR = squeeze(all_r_Times(:, :, freqi, :));
-    allR(sub2exc,:,:) = []; 
-    for layi = 1:nLays
-        [hL(layi, freqi, :) p ci ts] = ttest(allR(:,layi,:)); 
-        tL(layi, freqi, :) = ts.tstat;
-    end
-end
-
-f = 1:52; % from 3 to 54
-
-clear max_clust_sum_obs allSTs
-for layi = 1:nLays
-    
-    hLay = squeeze(hL(layi,f,:)); 
-    tLay = squeeze(tL(layi,f,:));
-    
-    clear allSTs  
-    clustinfo = bwconncomp(hLay);
-    for pxi = 1:length(clustinfo.PixelIdxList)
-        % check whether it is a combined + and - cluster
-        V = tLay(clustinfo.PixelIdxList{pxi});
-        Vids = clustinfo.PixelIdxList{pxi}; 
-        if ~any(diff(sign(V(V~=0)))) %all time bins have tvalues of same sie
-            allSTs(pxi,:) = sum(tLay(clustinfo.PixelIdxList{pxi}));
-        else %remove the 
-            big0 = V>0; small0 = V<0; 
-            VidsS = Vids(small0); 
-            ids2k = Vids(big0); 
-            if sum(big0) > sum(small0)
-                V(small0) = NaN; 
-                hLay(VidsS) = 0; 
-                clustinfo.PixelIdxList{pxi} = ids2k; 
-            else
-                %V(big0) = NaN; 
-                %hLay(big0,:) = NaN; 
-            end
-            
-            allSTs(pxi,:) = sum(V, 'omitnan'); 
-        end
-    end
-
-    [maxh id] = max(abs(allSTs));
-    max_clust_sum_obs(layi,:) = allSTs(id); 
-
-    % % % % rem non-sig-clusters
-    for ci = 1:length(clustinfo.PixelIdxList)
-        modifiedCluster = abs(sum(tLay(clustinfo.PixelIdxList{ci})))+0.0001; %add this small number because removing negative values creates slighlly different valeus
-       if modifiedCluster < max(abs(allSTs))   %+ 1    %add +1 at the very end to delete all clusters
-          %disp(['layi > ' num2str(layi) ' > ' num2str(abs(sum(tLay(clustinfo.PixelIdxList{ci})))) '_' num2str(max(abs(allSTs)))]) 
-          hLay (clustinfo.PixelIdxList{ci}) =  0; 
-       end
-    end
-    
-    hL(layi, f, :) = hLay; 
-    tL(layi, f, :) = tLay; 
-end
-
-
-
-figure()
-layT = tiledlayout(8, 7);
-layT.TileSpacing = 'compact';
-layT.Padding = 'compact';
-for layi = 56:56 %1:nLays
-    
-    t = squeeze(tL(layi,:,:));
-    h = squeeze(hL(layi,:,:));
-    
-    if size(all_r_Times, 4) < 30 & size(all_r_Times, 4) > 5
-        % % % % encoding 
-        if nLays > 9
-            subplot(7, 8, layi)
-        else
-            subplot(3, 3, layi)
-        end
-        %times = -.5:.01:1.499;
-        times = 0:.01:1.499;
-        %freqs = [.1:.1:29.9 30:.5:150]; 
-        freqs = 1:520;
-        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
-        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
-        set(gca, 'xtick', [-0.055 .445 .945 1.45], 'xticklabel', [0 .5 1 1.5], 'clim', [-5 5]); colormap jet
-        set(gca,'XTick',[], 'YTick', [], 'xticklabel',[], 'FontSize', 12)
-
-    elseif size(all_r_Times, 4) == 5
-        % % % % encoding 
-        if nLays > 9
-            subplot(7, 8, layi)
-        else
-            subplot(3, 3, layi)
-        end
-        times = 0:.01:0.499;
-        %freqs = [.1:.1:29.9 30:.5:150]; 
-        freqs = 1:520;
-        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
-        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
-        set(gca, 'xtick', [-0.055 .445 .945 1.45], 'xticklabel', [0 .5 1 1.5], 'clim', [-5 5]); colormap jet
-        set(gca,'XTick',[], 'YTick', [], 'xticklabel',[], 'FontSize', 12)
-    else
-        if nLays > 9
-            subplot(7, 8, layi)
-        else
-            subplot(3, 3, layi)
-        end
-        %times = 0:.01:3.49;
-        times = 0:.01:4.49;
-        %freqs = [.1:.1:29.9 30:.5:150]; 
-        freqs = 1:520;
-        contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; 
-        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 1); %colorbar
-        plot([-0.055 -0.055], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
-        plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 2);
-        set(gca, 'xtick', [-0.055 .945 1.945 2.945 3.945 ], 'xticklabel', [0 1 2 3 4], 'xlim', [0 3.5], 'clim', [-3 3])
-        set(gca,'XTick',[], 'YTick', [])
-        set(gca,'xticklabel',[], 'FontSize', 12)
-        colormap jet
-    end
-
-end
-        
-
-f2p = 'myFig.png';
-exportgraphics(gcf, f2p, 'Resolution', 300)
-
-
-
-
-
-%% plot NICELY
-
-h = zeros(52, 45);
-
-figure(); set(gcf, 'Position', [100 100 1500 1000]);
-% Scheme|'BrBG'|'PRGn'|'PiYG'|'PuOr'|'RdBu'|'RdGy'|'RdYlBu'|'RdYlGn'|'Spectral'|
-myCmap = colormap(brewermap([],'*Spectral'));
-times = 0:.01:4.49;
-%freqs = [.1:.1:29.9 30:.5:150]; 
-freqs = 1:520;
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; 
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 10); %colorbar
-plot([.45 .45], get(gca, 'ylim'), 'k:', 'LineWidth', 12);
-plot([.95 .95], get(gca, 'ylim'), 'k:', 'LineWidth', 12);
-%plot([1.25 1.25], get(gca, 'ylim'), 'k:', 'LineWidth', 12);
-plot(get(gca, 'xlim'),[300 300], 'k:', 'LineWidth', 12);
-set(gca, 'xtick', [-0.055 .945 1.945 2.945 3.945 ], 'xticklabel', [0 1 2 3 4], 'xlim', [0 3.5], 'clim', [-4 4]); colorbar
-set(gca,'XTick',[], 'YTick', [])
-set(gca,'xticklabel',[], 'FontSize', 12)
-    
+ 
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
+%% Representational consistency all layers / time points Alexnet
 
-%% Frequency resolved RNN analysis for all trials and 8th time point only 
 
-clearvars -except act_CH act_FR 
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 8, []); act3 = act2(:,all(~isnan(act2)));  
 
-%lois         = [1 9 17 25 33 41 49]; 
-lois         = [8 16 24 32 40 48 56]; 
-f2sav       = 'RNN_pfc_Maint_Av_54_Real_nT_loi_8th'
-load_parameters_WMFRA;
-loadNet_WM;
 
-all_r_Times    = zeros(nSubj, length(lois), nFreqs, nTimes);
+allMS = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS(9,:) = nan; allMS(:,9) = nan; %need this for the pColor below
+allMS = tril(allMS, -1); allMS(allMS==0) = nan; 
 
-tic
 
-for subji=1:nSubj
-    disp (['Subj: ' num2str(subji)])
-    load(sublist{subji});
-    cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(:, :, :, resTime); 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'blo', [3 7]);
-    if strcmp(avMeth,'pow')
-       cfg_contrasts = average_repetitions(cfg_contrasts);
-    end
+% % % plot matrix
+figure()
+myCmap = brewermap([], '*Spectral') 
+%imagesc(allMS); axis square; colorbar
+s = pcolor(allMS); axis square; colorbar
+set(s, 'edgecolor', 'none'); 
+set(gca, 'ydir', 'reverse', 'FontSize', 20);
+set(gca, 'clim', [0 .9], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
+                'xticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'}, ...
+                'yticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'})
+
+colormap(myCmap)
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer Alexnet
+
+clc
+clearvars -except act_CH act_FR ACT
+act_CH = ACT;
+%create cateogy model
+M = zeros (60); 
+M(1:10, 1:10) = 1; 
+M(11:20, 11:20) = 1; 
+M(21:30, 21:30) = 1; 
+M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; 
+M(51:60, 51:60) = 1; 
+
+        
+for layi = 1:size(act_CH, 1)
+    d2p = squeeze(act_CH(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    %[rdmMDS] = cmdscale(d2p);
+    %nDims = size(rdmMDS,2);
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCI(layi) = (mAcross - mWithin) ;
     
-    for freqi = 1:length(freqs2test)
-        f  = freqs2test(freqi);
-        rdm_prev(freqi) = create_rdms(cfg_contrasts, f, it, 5, 1);
-    end
-    
-    [allS ids act_FR2 act_CH2] = getIDsAndnRDMs(rdm_prev, act_CH, act_FR); 
-   
-    
-    parfor layi = 1:length(lois)
-        if subji < subj_ch_fr
-            M =  squeeze(act_FR2(lois(layi),:,:)); 
-        else
-            M =  squeeze(act_CH2(lois(layi),:,:)); 
-        end
-        M(M ==1) = 1000;M(M ==0) = 2000;
-        M = tril(M, -1);M(M==0) =[];
-        M(M==1000) = 1;M(M==2000) = 0;
-
-        allTEst = corr(allS, M', 'type', 's');
-
-        all_r_Times(subji, layi,:, : ) = reshape(allTEst, nFreqs, nTimes );  
-    end
- 
- 
-end 
-
-cd (currentF) 
-toc 
-save(f2sav, 'all_r_Times');
-
-%% Plot in 3 different time periods vertical separately for first and last time points in each layer
-
-%allTC= squeeze(mean(all_r_Times(:, [1 9 17 25 33 41 49], :, :), 4, 'omitnan')); % first layer
-%allTC= squeeze(mean(all_r_Times(:, [8 16 24 32 40 48 56], :, :), 4, 'omitnan')); % lastlayer
-allTC= squeeze(mean(all_r_Times, 4, 'omitnan'));
-[h p ci ts] = ttest(allTC);
-t = squeeze(ts.tstat); h = squeeze(h);
-
-mAllTC = squeeze(mean(allTC, 'omitnan'))';
+end
 
 
-
-figure(); set(gcf, 'Position', [100 100 100 500])
-subplot(211)
-imagesc(flipud(myresizem(mAllTC, 10))); colorbar; hold on; 
-%set(gca, 'xtick', [], 'xticklabels', [], 'ytick', [], 'yticklabels', [])
-plot ([0 560],  [540-300 540-300],'k:', 'LineWidth', 2);
-set(gca, 'xlim', [0 70])
-
-subplot(212)
-imagesc(flipud(myresizem(t', 10))); colorbar; hold on;
-contour(flipud(myresizem(h', 10)), 1, 'Color', [0, 0, 0], 'LineWidth', 1);
-plot ([0 560],  [540-300 540-300],'k:', 'LineWidth', 2);
-set(gca, 'xlim', [0 70])
-
-
-
-
-exportgraphics(gcf, 'vertical_plots.png', 'Resolution', 300); 
-
-
-
-
-
-
-
-
-%% Plot in 3 different time periods vertical
-
-nLays = 56; 
-
-allTC= squeeze(mean(all_r_Times, 4, 'omitnan'));
-[h p ci ts] = ttest(allTC);
-t = squeeze(ts.tstat); h = squeeze(h);
-
-mAllTC = squeeze(mean(allTC, 'omitnan'))';
+% % % mds
+clear c1 c2 c3 cols
+c1 = (1:7)/7'; % sorted by time point
+c2 = repmat(zeros(1), 7, 1)';
+c3 = repmat(ones(1), 7, 1)';
+cols = [c1 ; c2 ; c3]';
 
 
 figure()
-subplot(211)
-imagesc(flipud(myresizem(mAllTC, 10))); colorbar; hold on; 
-plot ([80 80], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([160 160],get(gca, 'xlim'),  'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([240 240], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([320 320], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([400 400], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([480 480], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-set(gca, 'xtick', [], 'xticklabels', [], 'ytick', [], 'yticklabels', [])
-plot ([0 560],  [540-300 540-300],'k:', 'LineWidth', 2);axis equal
-set(gca, 'xlim', [0 560])
-
-subplot(212)
-imagesc(flipud(myresizem(t', 10))); colorbar; hold on;
-contour(flipud(myresizem(h', 10)), 1, 'Color', [0, 0, 0], 'LineWidth', 1);
-plot ([80 80], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([160 160],get(gca, 'xlim'),  'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([240 240], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([320 320], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([400 400], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-plot ([480 480], get(gca, 'xlim'), 'LineWidth', 1,'Color', [0 0 0 ] );
-set(gca, 'xtick', [], 'xticklabels', [], 'ytick', [], 'yticklabels', [])
-plot ([0 560],  [540-300 540-300],'k:', 'LineWidth', 2);axis equal
+plot (CCI, 'Linewidth', 3); axis square
+set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
+%%  permutations
+clearvars -except ACT CCI
 
+nPerm = 1000; 
 
-
-
-
-%% export sequences
-
-clear
-%ROI__layers__freqs__avRepet__avTimeFeatVect__freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-%example f2sav = 'RNN_pfc_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
-%f2sav = 'RNN_vvs_E_[8:8:56]_3-54_1_0_0_0_.1_5_1.mat'; 
-f2sav = 'RNN_pfc_M_[56]_30-38_1_0_0_0_.1_5_1.mat'; 
-cfg = getParams(f2sav);
-f2t = strsplit(f2sav, '_');
-region = f2t{2};
-paths = load_paths_WM(region);
-filelistSess = getFiles(paths.traces);
-
-t1 = datetime; 
-
-for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-
-    disp(['File > ' num2str(sessi)]);
-    load([paths.traces filelistSess{sessi}]);   
-    ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
-    ids2save = cfg_contrasts.oneListIds_c(ids); 
-    id3 = cellfun(@(x) strsplit(x), ids2save, 'un', 0);
-    id4 = cellfun(@(x) double(string(x(:, 13:15))), id3, 'un', 0);
-    id5 = cat(1, id4{:});
-    all_seqs{sessi,:} = id5; 
-    filename = ['sub_' num2str(sessi,  '%02.f') '_image_seqs_ALL.csv']
-    csvwrite(filename, id5);
-
+for permi = 1:nPerm
+    %create cateogy model
+    idSh = randperm(60*60);
+    M = zeros (60); 
+    M(1:10, 1:10) = 1; 
+    M(11:20, 11:20) = 1; 
+    M(21:30, 21:30) = 1; 
+    M(31:40, 31:40) = 1; 
+    M(41:50, 41:50) = 1; 
+    M(51:60, 51:60) = 1; 
+    M = M(idSh); M = reshape(M, [60 60]);
+    
+    for layi = 1:size(ACT, 1)
+        d2p = squeeze(ACT(layi, :,:)); 
+        d2p = 1- d2p;
+        rdmMDS = d2p; 
+        rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+        mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+        mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+        %CCIP(permi, layi) = (mAcross - mWithin) / (mAcross + mWithin);
+        CCIP(permi, layi) = (mAcross - mWithin);
+    
+    end
+        
 end
-
-%%
-
-sublist = dir('*.csv'); sublist = {sublist.name}'; 
-clear all_seqs1
-for subji = 1:length(sublist)
-    all_seqs1{subji,:} = csvread(sublist{subji}); 
-
-end
-
-
-%% GET ALL SEQUENCES 
-clear
-%Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'RNN_hipp_E123_[1-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI);
-filelistSess = getFiles(paths.traces);
-
-seq2 = []; 
-for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(sessi)]);
-    load([paths.traces filelistSess{sessi}]);   
-
-    ids0 = cfg_contrasts.oneListIds_c; 
-    ids = cellfun(@(x) strsplit(x), ids0, 'un', 0)
-    ids = cat(1, ids{:})
-    seq2use = double(string(ids(:, 13:15)));
-    fSeq = unique(seq2use, 'row'); 
-    allSeqs{sessi, :} = fSeq; 
-    seq2 = [seq2; fSeq];
- 
-
-
-end 
-
-
 
 %% 
-allSeqs = [seq2VVS; seq2PFC; seq2HIPP]
-
-all_seqs = unique (allSeqs, 'row')
-
-
+lay = 8; 
+obsT = CCI(lay); 
+permT = CCIP(:, lay);
 
 
-%% Trial level analysis
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-clear 
-f2sav = 'RNN_pfc_E123_[56]_3-54_0_0_0_1_.1_5_1.mat'; 
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI);
-load([paths.results.DNNs f2sav]);
-nnFit_PFC = nnFit([2 3  5  9 10 11 12 14 15 16]);; 
-
-f2sav = 'RNN_vvs_E123_[56]_3-54_0_0_0_1_.1_5_1.mat'; 
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI);
-load([paths.results.DNNs f2sav]);
-nnFit_VVS = nnFit([7 9 13 18 19 20 21 23 27 28]); ; 
-
-
-
-for subji = 1:length(nnFit_VVS)
-    %nexttile
-    trlsVVS = nnFit_VVS{subji};
-    mVVS = mean(trlsVVS(:, 6:15), 2); 
-    trlsPFC = nnFit_PFC{subji};
-    mPFC = mean(trlsPFC(:, 6:15), 2); 
-
-    rhoAll(subji, :) = corr(mVVS, mPFC, 'type', 's');
-    
-    
-end
-
-[h p ci ts] = ttest(rhoAll); 
-
-disp(['p = ' num2str(p) '   t = ' num2str(ts.tstat)])
-
-
- %exportgraphics(gcf, [paths.results.DNNs 'myCorr.png'], 'Resolution', 300); 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+figure
+histogram(permT); hold on; 
+scatter(obsT,0, 'filled','r');
 
 
 

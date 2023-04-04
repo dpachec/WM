@@ -443,10 +443,11 @@ set(gca, 'LineWidth', 3);
 %% COMPUTE AVERAGE PHASE LAG
 clearvars -except CON_ALL
 
-countA = 1; 
 for subji = 1:10
     diffPha_SI = CON_ALL{subji, 15}; 
     diffPha_MI = CON_ALL{subji, 16}; 
+    countA = 1; 
+    clear allSI allMI
     for chani = 1:size(diffPha_SI, 1)
         for chanj = 1:size(diffPha_SI, 2)
 
@@ -467,6 +468,15 @@ for subji = 1:10
         end
     end
 
+        figure()
+        tiledlayout(1, 2)
+        nexttile
+        histogram(allSI, 10); 
+        set(gca, 'xlim', [-4 4])
+        nexttile
+        histogram(allMI, 10); 
+        set(gca, 'xlim', [-4 4])
+        exportgraphics(gcf, [num2str(subji), '_.png'], 'Resolution', 150)
 end
     
 %% 

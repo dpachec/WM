@@ -35,7 +35,7 @@ save([paths.results.power 'pow2S_' region '_' num2str(cfg.timeRes*1000) 'ms'], '
 %% 
 clear
 paths = load_paths_WM('pfc');
-load([paths.results.power 'pow2S_vvs_10ms'], 'allPow');
+load([paths.results.power 'pow2S_pfc_10ms'], 'allPow');
 
 %% plot example trial 
 
@@ -79,19 +79,21 @@ imagesc(d2p)
 
 mSI = squeeze(mean(powSI)); 
 mMI = squeeze(mean(powMI)); 
-myCmap = colormap(brewermap([],'*Spectral'));
+
 
 %times = 1:550; 
 times = -1:0.01:4.49
 freqs = 1:54; 
 
 figure;
+myCmap = colormap(brewermap([],'*Spectral'));
 contourf(times, freqs, mSI, 100, 'linecolor', 'none'); hold on; colorbar
 set(gca, 'clim', [-0.08 0.08], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
 set(gca, 'FontSize', 14)
 title('Single-item trials')
 colormap(myCmap)
 
+figure()
 contourf(times, freqs, mMI, 100, 'linecolor', 'none'); hold on; colorbar
 set(gca, 'clim', [-0.08 0.08], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
 set(gca, 'FontSize', 14)
@@ -206,9 +208,197 @@ exportgraphics(gcf, [paths.results.power 'myP.png'], 'Resolution',150)
 
 
 
+
+%% direct comparison all trials
+
+
+%% 
+clear
+paths = load_paths_WM('pfc');
+load([paths.results.power 'pow2S_vvs_10ms'], 'allPow');
+allPow_VVS = allPow; 
+load([paths.results.power 'pow2S_pfc_10ms'], 'allPow');
+allPow_PFC = allPow; 
+
+
 %%
 
+pfc_ids = [2 3  5  9 10 11 12 14 15 16];
+vvs_ids = [7 9 13 18 19 20 21 23 27 28];
 
+
+allT_VVS = allPow_VVS(vvs_ids)'; 
+allT_PFC = allPow_PFC(pfc_ids)'; 
+
+
+
+p_vvs = struct2cell(cat(1, allT_VVS{:}))';
+p_vvs = p_vvs(:, 4);
+p_vvs2 = cellfun(@(x) squeeze(mean(mean(x))), p_vvs, 'un', 0);
+p_vvs2 = cat(3, p_vvs2{:}); 
+p_vvs3 = permute(p_vvs2, [3 1 2]);
+
+
+
+p_pfc = struct2cell(cat(1, allT_PFC{:}))';
+p_pfc = p_pfc(:, 4);
+p_pfc2 = cellfun(@(x) squeeze(mean(mean(x))), p_pfc, 'un', 0);
+p_pfc2 = cat(3, p_pfc2{:}); 
+p_pfc3 = permute(p_pfc2, [3 1 2]);
+
+
+%% comparison VVS PFC for all trials
+
+
+m_VVS = squeeze(mean(p_vvs3)); 
+m_PFC = squeeze(mean(p_pfc3)); 
+
+
+[h p ci ts] = ttest(p_vvs3, p_pfc3)
+h = squeeze(h); t = squeeze(ts.tstat);
+clustinfo = bwconncomp(h);
+for pxi = 1:length(clustinfo.PixelIdxList)
+    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));% 
+end
+
+max_clust_obs = max(abs(allTOBs))
+
+times = -1:0.01:4.49
+freqs = 1:54;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
+nexttile
+contourf(times, freqs, m_VVS, 40, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('All trials VVS')
+nexttile
+contourf(times, freqs, m_PFC, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('All trials PFC')
+nexttile
+contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+colormap(brewermap([],'*Spectral'))
+set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
+
+exportgraphics(gcf, 'myP.png', 'Resolution',150)
+
+%% compute separately for single and multi item trials 
+
+
+clear powSI_VVS powMI_VVS powSI_PFC powMI_PFC
+for subji = 1:10
+
+
+    
+    ids = cellfun(@(x) strsplit(x), allT_VVS{subji}.oneListIds_c, 'un', 0);
+    ids = cell2mat(cellfun(@(x) double(string(x(2))), ids, 'un', 0));
+    powSI_VVS(subji, :, :,:) = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
+    powMI_VVS(subji, :, :,:) = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
+
+    ids = cellfun(@(x) strsplit(x), allT_PFC{subji}.oneListIds_c, 'un', 0);
+    ids = cell2mat(cellfun(@(x) double(string(x(2))), ids, 'un', 0));
+    powSI_PFC(subji, :, :,:) = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
+    powMI_PFC(subji, :, :,:) = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
+
+    
+end
+
+
+%% plot mean across subjects SINGLE ITEM
+
+
+mSI_VVS = squeeze(mean(powSI_VVS)); 
+mSI_PFC = squeeze(mean(powSI_PFC)); 
+
+
+[h p ci ts] = ttest(powSI_VVS, powSI_PFC)
+h = squeeze(h); t = squeeze(ts.tstat);
+clustinfo = bwconncomp(h);
+for pxi = 1:length(clustinfo.PixelIdxList)
+    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));% 
+end
+
+max_clust_obs = max(abs(allTOBs))
+
+times = -1:0.01:4.49
+freqs = 1:54;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
+nexttile
+contourf(times, freqs, mSI_VVS, 40, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Single-item trials VVS')
+nexttile
+contourf(times, freqs, mSI_PFC, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Single-item trials PFC')
+nexttile
+contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+colormap(brewermap([],'*Spectral'))
+set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
+
+
+exportgraphics(gcf, 'myP.png', 'Resolution',150)
+
+
+%% plot mean across subjects MULTI-ITEM
+
+
+mMI_VVS = squeeze(mean(powMI_VVS)); 
+mMI_PFC = squeeze(mean(powMI_PFC)); 
+
+
+[h p ci ts] = ttest(powMI_VVS, powMI_PFC)
+h = squeeze(h); t = squeeze(ts.tstat);
+clustinfo = bwconncomp(h);
+for pxi = 1:length(clustinfo.PixelIdxList)
+    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));% 
+end
+
+max_clust_obs = max(abs(allTOBs))
+
+times = -1:0.01:4.49
+freqs = 1:54;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
+nexttile
+contourf(times, freqs, mMI_VVS, 40, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Multi-item trials VVS')
+nexttile
+contourf(times, freqs, mMI_PFC, 'linecolor', 'none'); hold on; colorbar
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+title('Multi-item trials PFC')
+nexttile
+contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
+contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
+plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+colormap(brewermap([],'*Spectral'))
+set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
+
+
+exportgraphics(gcf, 'myP.png', 'Resolution',150)
+
+%% 
+clear pvvs
+for subji = 1:10
+
+
+    pvvs{subji} = allT_VVS{subji}.oneListPow; 
+
+
+
+end
 
 
 
