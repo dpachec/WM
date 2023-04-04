@@ -2,12 +2,12 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-%f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-f2sav = 'RNN_pfc_MALL1_[8-8-56]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'CORs_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'RNN_pfc_MALL1_[8-8-56]_3-54_0_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
-filelistSess = getFiles(paths.traces);
+filelistSess = getFilesWM(paths.traces);
 
 t1 = datetime; 
 
@@ -44,38 +44,11 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                 
-                'BLnext2_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext2_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext3_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[7]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[5]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                'BLnext4_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-                
+                'CORs_vvs_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'CORs_pfc_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'CORs_vvs_E123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'CORs_pfc_E123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
+                                
                 
              };   
 
