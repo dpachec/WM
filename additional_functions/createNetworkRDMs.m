@@ -70,7 +70,7 @@ end
 
 
 
-if strcmp (cfg.net2load , 'RNN') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'COR')
+if strcmp (cfg.net2load , 'RNN') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'COR') | strcmp (cfg.net2load , 'CORs')
     networkRDMs = ACT(:, ids4, ids4);
 else
     networkRDMs = ACT; 

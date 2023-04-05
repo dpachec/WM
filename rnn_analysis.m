@@ -159,7 +159,8 @@ end
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 %clear , clc
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'CORs_pfc_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat';
+
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
