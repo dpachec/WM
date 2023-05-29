@@ -363,8 +363,8 @@ load ([paths.results.PLV 'trials_CON_ALL_3-8Hz'])
 %% 
 
 
-SI_TR = CON_ALL(:, 13);
-MI_TR = CON_ALL(:, 14);
+SI_TR = CON_ALL(:, 1);
+MI_TR = CON_ALL(:, 2);
 
 d2pSI = cellfun(@(x) squeeze(mean(mean(x))), SI_TR, 'un', 0)
 d2pMI = cellfun(@(x) squeeze(mean(mean(x))), MI_TR, 'un', 0)
@@ -381,10 +381,10 @@ c2 = cell2mat(d2pMI')';
 % c2 = bsxfun(@rdivide, c2 - mC2, stdC2); 
 
 
-md2pSI = mean(c1)
-md2pMI = mean(c2)
+md2pSI = mean(c1);
+md2pMI = mean(c2);
 
-[h p ci ts] = ttest(c1, c2)
+[h p ci ts] = ttest(c1, c2);
 
 
 %% Plot
@@ -395,14 +395,14 @@ mSI = squeeze(mean(d2SI));
 mMI = squeeze(mean(d2MI));
 
 times = -2:0.001:6.9999;
-hb = h; hb(hb==0) = nan; hb(hb==1) = -0.15; 
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0.1; 
 figure;
 plot(times, mSI, 'r', 'LineWidth', 2); hold on
 plot(times, mMI, 'b', 'LineWidth', 2)
 plot(times, hb, 'k', 'LineWidth', 8)
 legend({'SI' 'MI'})
 
-set(gca, 'FontSize', 14, 'xlim', [-1 3.5])
+set(gca, 'FontSize', 14, 'xlim', [-1 3.5], 'ylim', [.1 .2])
 
 %% check for the time period of network fit
 

@@ -8,7 +8,7 @@ function [ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);
     
     currentFolder = pwd; 
     
-    gPath = paths.activations.corNet; 
+    gPath = paths.activations.corNet_rt; 
     
     if sessi < subj_ch_fr
         cd ([gPath 'freiburg'])

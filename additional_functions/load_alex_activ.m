@@ -5,6 +5,7 @@ lays2load = cfg.lays2load;
 
 
     lays = {'conv1' 'conv2' 'conv3' 'conv4' 'conv5' 'fc6' 'fc7' 'fc8'};
+    %lays = {'relu1' 'relu2' 'relu3' 'relu4' 'relu5' 'relu6' 'relu7' 'fc8'};
     currentFolder = pwd; 
     net = alexnet;
     

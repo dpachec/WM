@@ -2,8 +2,9 @@
 %% first load traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-f2sav = 'CORs_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-%f2sav = 'RNN_pfc_MALL1_[8-8-56]_3-54_0_0_1_0_.1_5_1.mat'; 
+%f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Res18-2_pfc_MALL_[1]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -44,11 +45,9 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                'CORs_vvs_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'CORs_pfc_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'CORs_vvs_E123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
-                'CORs_pfc_E123_[1-32]_3-54_1_0_1_0_.1_5_1.mat'; 
-                                
+                'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+                'RNN_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
                 
              };   
 
@@ -130,7 +129,11 @@ for layi = 1:size(nnFit{1}, 1)
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
     if strcmp(cfg.period(1), 'M')
-        times = 1:40; 
+        if size(t, 2) > 40
+            times = 1:46; 
+        else
+            times = 1:40; 
+        end
     else
         times = 1:15; 
     end
@@ -141,8 +144,8 @@ for layi = 1:size(nnFit{1}, 1)
     
     if strcmp(cfg.period(1), 'M')
         set(gca, 'xlim', [1 40], 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}, 'FontSize', 16);
-        set(gca, 'xtick', [1 6.5 40], 'xticklabels', {'-.5' '0' '3.5'}, 'FontSize', 24);
-        plot([6.5 6.5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        set(gca, 'xtick', [ 3 40], 'xticklabels', {'0' '3.5'}, 'FontSize', 24);
+        plot([3 3],get(gca,'ylim'), 'k:','lineWidth', 2);
     else
         set(gca, 'clim', [-5 5], 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
         set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'FontSize', 22);
@@ -155,11 +158,47 @@ end
 
  exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
+
+ %% plot final figure only last layer MAINTENANCE ALEXNET
+times = 1:400;
+freqs = 1:520; 
+h = zeros(52, 40); 
+
+
+%h(clustinfo.PixelIdxList{2}) = 1; %pfc - Cornet
+%h(clustinfo.PixelIdxList{23}) = 1; %pfc - Cornet
+
+%h(clustinfo.PixelIdxList{8}) = 1; %pfc - ecoset
+%h(clustinfo.PixelIdxList{10}) = 1; %vvs1 - ecoset
+%h(clustinfo.PixelIdxList{23}) = 1; %vvs2 - ecoset
+
+myCmap = colormap(brewermap([],'*Spectral'));
+colormap(myCmap)
+%contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+%contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+
+
+if layi == 49
+    set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
+    set(gca, 'xtick', [3  37], 'xticklabels', {'0' '3.5'});
+else
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+end
+set(gca, 'xlim', [1 370], 'clim', [-5 5], 'FontSize', 10);
+%set(gca, 'clim', [-4 4], 'FontSize', 10);
+plot([25 25],get(gca,'ylim'), 'k:','lineWidth', 5); 
+%colorbar
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+
 %%  plot all layers RNN frequency resolved
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-%clear , clc
-%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
-f2sav = 'CORs_pfc_M123_[1-32]_3-54_1_0_1_0_.1_5_1.mat';
+clear , clc
+%f2sav = 'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'BLnext2_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat';
 
 
 cfg = getParams(f2sav);
@@ -248,10 +287,11 @@ end
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 %% plot final figure only last layer / time point RNN ENCODING
-times = 1:150;
+times = 1:210;
 freqs = 1:520; 
-h = zeros(52, 15); 
-%h(clustinfo.PixelIdxList{4}) = 1; 
+h = zeros(52, 21); 
+%h(clustinfo.PixelIdxList{3}) = 1; % Ecoset 
+%h(clustinfo.PixelIdxList{4}) = 1; %Cornet
 
 
 figure; set(gcf, 'Position', [100 100 200 400])
@@ -265,7 +305,7 @@ if layi == 49
 else
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
 end
-%set(gca, 'xlim', [1 37], 'clim', [-5 5], 'FontSize', 10);
+set(gca, 'xlim', [1 110], 'clim', [-5 5], 'FontSize', 10);
 set(gca, 'clim', [-4 4], 'FontSize', 10);
 plot([25 25],get(gca,'ylim'), 'k:','lineWidth', 5); 
 %colorbar
@@ -279,8 +319,14 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 times = 1:460;
 freqs = 1:520; 
 h = zeros(52, 46); 
-%h(clustinfo.PixelIdxList{7}) = 1; 
-h(clustinfo.PixelIdxList{8}) = 1; 
+
+
+%h(clustinfo.PixelIdxList{2}) = 1; %pfc - Cornet
+%h(clustinfo.PixelIdxList{23}) = 1; %pfc - Cornet
+
+%h(clustinfo.PixelIdxList{8}) = 1; %pfc - ecoset
+%h(clustinfo.PixelIdxList{10}) = 1; %vvs1 - ecoset
+%h(clustinfo.PixelIdxList{23}) = 1; %vvs2 - ecoset
 
 myCmap = colormap(brewermap([],'*Spectral'));
 colormap(myCmap)
@@ -296,8 +342,8 @@ if layi == 49
 else
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
 end
-%set(gca, 'xlim', [1 37], 'clim', [-5 5], 'FontSize', 10);
-set(gca, 'clim', [-4 4], 'FontSize', 10);
+set(gca, 'xlim', [1 370], 'clim', [-5 5], 'FontSize', 10);
+%set(gca, 'clim', [-4 4], 'FontSize', 10);
 plot([25 25],get(gca,'ylim'), 'k:','lineWidth', 5); 
 %colorbar
 
@@ -629,8 +675,7 @@ clear
 nPerm = 1000;
 
 listF2sav = {
-                %'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-                'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
+                'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
 
              };
     
@@ -704,10 +749,12 @@ etime(datevec(t2), datevec(t1))
 
 
 %% compute clusters in each permutation frequency resolved
-clear
+clearvars -except allTObs
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 f2sav = 'COR_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+%f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -755,6 +802,31 @@ end
 cd (paths.github)
 
 
+%% compute p value bands for all layers
+clc
+clear p
+
+for layi = 1:size(allTObs, 1)
+    clear mcsR mcsP
+    for pixi = 1:size(allTObs, 2)
+        mcsR = allTObs(layi, pixi); 
+
+        if mcsR ~= 0
+            mcsP = squeeze(max_clust_sum_perm(:,layi));
+        
+            %allAb = mcsP(abs(mcsP) > abs(mcsR));
+            allAb = mcsP(mcsP > mcsR);
+            p(layi, pixi,:) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
+        else
+            p(layi, pixi,:) = nan; 
+        end
+    end
+end
+
+p (p==1.0010 | p == 1) = 0; 
+
+
+
 %% COMPUTE TOBS FOR BANDS (ALL LAYERS RNN and Alex) 
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 
@@ -798,6 +870,7 @@ end
 %% compute clusters in each permutation BANDS for all layers
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p.mat'; 
+
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI);
@@ -966,7 +1039,7 @@ save([paths.results.DNNs f2sav], 'nnFit');
 %%  plot all layers MULTI-ITEM
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials;1:Trials)__timeRes__win__mf_FST
 clear 
-f2sav = 'BLnext2_pfc_MALL_[6]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'BLnext2_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 
@@ -1865,7 +1938,7 @@ for layi = 1:8
    subplot (1, 8, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    imagesc(d2p); axis square; 
-   set(gca,'cLim', [-.6 .6])
+   set(gca,'cLim', [0 .8])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 end
  ha=get(gcf,'children');
@@ -1878,7 +1951,6 @@ end
  set(ha(6),'position',[.09 * 2 0 n n ])
  set(ha(7),'position',[.09 0 n n])
  set(ha(8),'position',[.0 0 n n ])
- colorbar;
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% plot MDS one Line Vertical
@@ -1913,7 +1985,7 @@ end
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
-%% Representational consistency all layers / time points Alexnet
+%% Representational consistency all layers / time points CORNET
 
 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
@@ -1934,14 +2006,43 @@ s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse', 'FontSize', 20);
 set(gca, 'clim', [0 .9], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
-                'xticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'}, ...
-                'yticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'})
+                'xticklabels', {'V1 in', 'V1 out', 'V2 in', 'V2 out', 'V4 in', 'V4 out', 'IT in', 'IT out'}, ...
+                'yticklabels', {'V1 in', 'V1 out', 'V2 in', 'V2 out', 'V4 in', 'V4 out', 'IT in', 'IT out'})
 
 colormap(myCmap)
 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
-%% compute CCI for each layer Alexnet
+%% Representational consistency all layers / ONLY 4 TIME points (OUTPUT) CORNET
+
+
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act1 = act1([2 4 6 8]);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 4, []); act3 = act2(:,all(~isnan(act2)));  
+
+
+allMS = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS(5,:) = nan; allMS(:,5) = nan; %need this for the pColor below
+allMS = tril(allMS, -1); allMS(allMS==0) = nan; 
+
+
+% % % plot matrix
+figure()
+myCmap = brewermap([], '*Spectral') 
+%imagesc(allMS); axis square; colorbar
+s = pcolor(allMS); axis square; colorbar
+set(s, 'edgecolor', 'none'); 
+set(gca, 'ydir', 'reverse', 'FontSize', 20);
+set(gca, 'clim', [0 .9], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
+                'xticklabels', {'V1', 'V2', 'V4', 'IT'}, ...
+                'yticklabels', {'V1', 'V2', 'V4', 'IT'})
+
+colormap(myCmap)
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer Cornet
 
 clc
 clearvars -except act_CH act_FR ACT
@@ -1980,8 +2081,8 @@ cols = [c1 ; c2 ; c3]';
 
 
 figure()
-plot (CCI, 'Linewidth', 3); axis square
-set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
+plot (CCI([2 4 6 8]), 'Linewidth', 3); axis square
+set(gca, 'FontSize', 25, 'xlim', [0 5], 'ylim', [0 .5], 'xtick', [1 2 3 4], 'xticklabels', {'V1' 'V2' 'V4' 'IT'})
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
@@ -2025,6 +2126,49 @@ permT = CCIP(:, lay);
 figure
 histogram(permT); hold on; 
 scatter(obsT,0, 'filled','r');
+
+
+
+%% MDS all layers (pink and blue triangle-circles plot) only for first and last time points
+
+
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 8, []); act3 = act2(:,all(~isnan(act2)));  
+allM = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS = tril(allM, -1); allM(allM==0) = nan; 
+
+clear c1 c2 c3 cols
+c1 = (1:4)/4'; % sorted by time point
+c2 = repmat(zeros(1), 4, 1)';
+c3 = repmat(ones(1), 4, 1)';
+cols = [c1 ; c2 ; c3]';
+cols = repelem(cols, 2,1);
+
+d2p = 1- allMS;
+[rdmMDS] = cmdscale(allM);
+
+figure()
+plot(rdmMDS([1 2],1),rdmMDS([1 2],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([3 4],1),rdmMDS([3 4],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([5 6],1),rdmMDS([5 6],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([7 8],1),rdmMDS([7 8],2),'k', 'linewidth', 2);hold on; 
+
+fmt = {'o'; '^'};
+fmt = repelem(fmt, 1, 8);
+
+for i = 1:8
+    scatter(rdmMDS(i,1),rdmMDS(i,2),300,cols(i, :),fmt{i}, 'Markerfacecolor', cols(i,:)); 
+    set(gca,'FontSize', 30, 'xlim', [-.35 .55], 'ylim', [-.25 .5]); 
+end
+
+
+
+%scatter3(rdmMDS(:,1),rdmMDS(:,2),rdmMDS(:,3),500, '.'); hold on; 
+%plot(rdmMDS(:,1),rdmMDS(:,2)); hold on; 
+%brewermap_view({gca})
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 

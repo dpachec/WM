@@ -4,9 +4,9 @@ clear
 paths = load_paths_WM('vvs'); 
 
 %ROI_layers_freqs_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
-load ([paths.trial_level 'RNN_pfc_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
+load ([paths.results.trial_level 'RNN_pfc_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
 pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-load ([paths.trial_level 'RNN_vvs_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
+load ([paths.results.trial_level 'RNN_vvs_M123_[8-8-56]_13-29_0_0_0_1_.1_5_1.mat']); 
 vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
 load ([paths.electrodes_path 'pfc_elec']); 
 pfc = pfc_fits; 
@@ -143,11 +143,10 @@ s2e_pfc = ~(tmp([2 3  5  9 10 11 12 14 15 16],1) > 1);
 pfc_fits(s2e_pfc) = [];vvs_fits(s2e_pfc) = [];
 
 
-ff1 = 14:27; 
-tt1 = 8:13; 
-ff2 = 14:27;
-tt2 = 9:20; 
-%tt2 = 27:34; 
+ff1 = 11:27; 
+tt1 = 5:13; 
+ff2 = 9:12;
+tt2 = 30:38; 
 
 
 nLays = 7;

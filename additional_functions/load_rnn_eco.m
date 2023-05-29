@@ -2,7 +2,7 @@ function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loa
 
 
 currentFolder = pwd; 
-cd ([paths.activations '\ecoSet\'])
+cd ([paths.activations.ecoSet])
 
 
 if sessi < subj_ch_fr

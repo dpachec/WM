@@ -11,10 +11,12 @@ if strcmp (cfg.net2load , 'RNN')
     [ACT] = load_rnn_eco(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
-elseif strcmp (cfg.net2load , 'COR')
+elseif strcmp (cfg.net2load , 'CORrt')
     [ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 elseif strcmp (cfg.net2load , 'CORs')
     [ACT] = load_CORs_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+elseif strcmp (cfg.net2load , 'Res18-2') | strcmp (cfg.net2load , 'Res18-4') | strcmp (cfg.net2load , 'Res18-6') | strcmp (cfg.net2load , 'Res18-8') 
+    [ACT] = load_Res18_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 else
     %disp ('loading BLnext'); 
     [ACT] = load_blnext(cfg, sessi, paths, oneListIDs);
