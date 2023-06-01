@@ -1,8 +1,8 @@
-function[ACT] = load_rnn(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+function[ACT] = load_BLNETe(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
 
 currentFolder = pwd; 
-cd ([paths.activations.ecoSet])
+cd ([paths.activations.BLNETe])
 
 
 if sessi < subj_ch_fr
