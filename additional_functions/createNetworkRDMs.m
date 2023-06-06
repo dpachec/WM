@@ -14,6 +14,8 @@ elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
     [ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);
+elseif strcmp (cfg.net2load , 'CORrtRELU')
+    [ACT] = load_CORrtRELU_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORs')
     [ACT] = load_CORs_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'Res18-2') | strcmp (cfg.net2load , 'Res18-4') | strcmp (cfg.net2load , 'Res18-6') | strcmp (cfg.net2load , 'Res18-8') 

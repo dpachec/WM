@@ -1,10 +1,7 @@
 
-function [ACT] = load_COR_activ(cfg, sessi, subj_ch_fr, paths);
+function [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
 
     lays2load = cfg.lays2load;
-    
-    
-
     
     currentFolder = pwd; 
     

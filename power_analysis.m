@@ -180,8 +180,8 @@ exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 nPerm = 1000; 
 clear max_clust_sum_perm
 for permi = 1:nPerm
-    c1B = powSI(:,1:54,1:550); 
-    c2B = powMI(:,1:54,1:550); 
+    c1B = powSI(:,1:52,101:450); 
+    c2B = powMI(:,1:52,101:450); 
     c1B(c1B == 0) = nan; 
     c2B(c2B == 0) = nan; 
     for subji = 1:size(c1B, 1)
@@ -213,7 +213,6 @@ end
 clear p mcsR mcsP
 
 mcsR = max_clust_obs; 
-%mcsR  = 608.294938960190
 mcsP = abs(max_clust_sum_perm);
 
 allAb = mcsP(mcsP > mcsR);
@@ -328,8 +327,8 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 set(gca, 'LineWidth', 3);
 
-export_fig(2, '_2.png','-transparent', '-r300');
-close all;   
+%export_fig(2, '_2.png','-transparent', '-r300');
+%close all;   
 
 
 
@@ -349,19 +348,19 @@ for subji = 1:length(allT_PFC)
     vvs2cmp = squeeze(mean(allT_VVS{subji}.oneListPow(:,:, 3:54,:), 2)); 
 
     % % % % z-score the data separately for each condition
-    pfc2cmpSI = pfc2cmp(ids~=4,:,:); 
-    pfc2cmpSIN = normalize_within_cond_WM(pfc2cmpSI);
-    pfc2cmpMI = pfc2cmp(ids==4,:,:); 
-    pfc2cmpMIN = normalize_within_cond_WM(pfc2cmpMI);
-    vvs2cmpSI = vvs2cmp(ids~=4,:,:); 
-    vvs2cmpSIN = normalize_within_cond_WM(vvs2cmpSI);
-    vvs2cmpMI = vvs2cmp(ids==4,:,:); 
-    vvs2cmpMIN = normalize_within_cond_WM(vvs2cmpMI);
-    
-    pfc2cmp(ids~= 4, :, :) = pfc2cmpSIN;
-    pfc2cmp(ids== 4, :, :) = pfc2cmpMIN;
-    vvs2cmp(ids~= 4, :, :) = vvs2cmpSIN;
-    vvs2cmp(ids== 4, :, :) = vvs2cmpMIN;
+% % %     pfc2cmpSI = pfc2cmp(ids~=4,:,:); 
+% % %     pfc2cmpSIN = normalize_within_cond_WM(pfc2cmpSI);
+% % %     pfc2cmpMI = pfc2cmp(ids==4,:,:); 
+% % %     pfc2cmpMIN = normalize_within_cond_WM(pfc2cmpMI);
+% % %     vvs2cmpSI = vvs2cmp(ids~=4,:,:); 
+% % %     vvs2cmpSIN = normalize_within_cond_WM(vvs2cmpSI);
+% % %     vvs2cmpMI = vvs2cmp(ids==4,:,:); 
+% % %     vvs2cmpMIN = normalize_within_cond_WM(vvs2cmpMI);
+% % %     
+% % %     pfc2cmp(ids~= 4, :, :) = pfc2cmpSIN;
+% % %     pfc2cmp(ids== 4, :, :) = pfc2cmpMIN;
+% % %     vvs2cmp(ids~= 4, :, :) = vvs2cmpSIN;
+% % %     vvs2cmp(ids== 4, :, :) = vvs2cmpMIN;
 
 
     clear valTrVVS valTrPFC
@@ -402,7 +401,7 @@ tbl = [bb1 , bb2, Trial_Type, subj2u];
 tbl2 = table(tbl(:,1), tbl(:,2), tbl(:,3), tbl(:,4),'VariableNames',{'theta_VVS','theta_PFC','Trial_Type', 'Subj'});
 
 
-
+tbl2.Trial_Type = nominal(tbl2.Trial_Type)
 
 %% fit model
 clc
@@ -412,16 +411,53 @@ clc
 %lme = fitlme(tbl2,'theta_VVS~ theta_PFC+(1|Subj)'); 
 %lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1+theta_PFC|Subj)');
 %lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1|Subj)+(1|Trial_Type)'); 
-lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1|Subj)');
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1+theta_PFC|Subj)');
+lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1|Subj)'); % random intercept model
+%lme = fitlme(tbl2,'theta_VVS ~ theta_PFC+ Trial_Type + (1|theta_PFC:Trial_Type) + (1|Subj)'); % random intercept model
+
+
+%lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1+Trial_Type|Subj)'); % random slope and intercept model
+%lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1+theta_PFC|Subj)'); % does not make 
 %lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1+theta_PFC|Subj)+(1+theta_PFC|Trial_Type)');
 %lme = fitlme(tbl2,'theta_PFC~theta_VVS+(1+theta_VVS|Subj)+(1+theta_VVS|Trial_Type)');
 
 lme
 %lme.Coefficients
 
+%% 'caseorder' | 'fitted' | 'lagged' | 'probability' | 'symmetry'
+%plotResiduals(lme)
+%plotResiduals(lme,'histogram')
+%plotResiduals(lme,'caseorder')
+plotResiduals(lme,'fitted')
+%plotResiduals(lme,'lagged')
+%plotResiduals(lme,'probability')
+%plotResiduals(lme,'symmetry')
+
 %%
-compare(lme2, lme3)
+F = fitted(lme);
+R = residuals(lme);
+
+plot(F,R,'bx')
+xlabel('Fitted Values')
+ylabel('Residuals')
+
+
+%%
+F = fitted(lme);
+R = response(lme);
+figure();
+plot(R,F,'rx')
+xlabel('Response')
+ylabel('Fitted')
+%%
+figure()
+gscatter(F,R,tbl2.Trial_Type)
+
+%%
+figure
+ypred = predict(lme)
+plot(tbl2.theta_VVS,tbl2.theta_PFC,'o',ypred,tbl2.theta_PFC, 'x')
+legend('Data','Predictions')
+
 
 
 %% 
