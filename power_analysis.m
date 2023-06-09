@@ -94,8 +94,8 @@ imagesc(d2p)
 
 %% plot mean across subjects
 
-powSI = powSI_PFC(:, 3:54,:);
-powMI = powMI_PFC(:, 3:54,:);
+powSI = powSI_VVS(:, 3:54,:);
+powMI = powMI_VVS(:, 3:54,:);
 
 mSI = squeeze(mean(powSI)); 
 mMI = squeeze(mean(powMI)); 
@@ -137,8 +137,8 @@ end
 
 [max_clust_obs id] = max(abs(allTOBs));
 
-%h = zeros(52, 550);
-%h(clustinfo.PixelIdxList{id})= 1; 
+h = zeros(52, 550);
+h(clustinfo.PixelIdxList{id})= 1; 
 
 
 figure()
@@ -167,13 +167,31 @@ contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
 contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); set(gca, 'clim', [-5 5])
 plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
 plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-colormap(brewermap([],'*Spectral'))
+colormap(brewermap([],'Spectral'))
 set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 27 52], 'yticklabels', {'3', '30', '150'}, 'xlim', [-.5 3.5]);
 
 
 exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 
 
+%% 
+h = zeros(52, 550);
+h1 = h; h2 = h; 
+h1(clust_vvs)= 1;
+h2(clust_pfc)= 2;
+h = h1+h2; 
+hc = h; hc(hc>0) = 1;
+
+times = -1:0.01:4.49;
+freqs = 1:52;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 400 800])
+nexttile
+imagesc(times, freqs, flipud(h)); hold on;
+plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
+colormap(brewermap([],'*Spectral'))
+%set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 27 52], 'yticklabels', {'3', '30', '150'}, 'xlim', [-.5 3.5]);
+set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 22 52], 'yticklabels', {'150', '30', '3'}, 'xlim', [0.25 1.6], 'ylim', [22 52]);
+exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 
 %% permutations 
 

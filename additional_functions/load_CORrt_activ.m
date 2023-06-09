@@ -11,7 +11,7 @@ function [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
         cd ([gPath 'freiburg'])
         fold2load = dir('*cornet*'); fold2load= {fold2load.name}';
         fold2load  = fold2load([4 3 6 5 8 7 2 1]);
-        for layi=1:length(fold2load)
+        for layi= cfg.lays2load%1:length(fold2load)
             cd (fold2load{layi})
             b = readNPY('features.npy');
             rdm = corr(b', 'type','s');
@@ -22,7 +22,7 @@ function [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
        cd ([gPath 'china'])
         fold2load = dir('*cornet*'); fold2load= {fold2load.name}';
         fold2load  = fold2load([4 3 6 5 8 7 2 1]);
-        for layi=1:length(fold2load)
+        for layi= cfg.lays2load%1:length(fold2load)
             cd (fold2load{layi})
             b = readNPY('features.npy');
             rdm = corr(b', 'type','s');
