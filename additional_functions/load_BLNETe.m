@@ -10,23 +10,22 @@ if sessi < subj_ch_fr
     sublist = {sublist.name};  sublist = sort(sublist');
     load(sublist{1});
     if length(cfg.lays2load) > 1
-        fs2= squeeze(a(cfg.lays2load, :, :)); 
+        ACT = squeeze(a(cfg.lays2load, :, :)); 
     else
-        fs2= a(cfg.lays2load, :, :); 
+        ACT = a(cfg.lays2load, :, :); 
     end
 
-    ACT = fs2;   
+    
 else
     sublist = dir('*CH.mat');
     sublist = {sublist.name};  sublist = sort(sublist');
     load(sublist{1});
     if length(cfg.lays2load) > 1
-        fs2= squeeze(a(cfg.lays2load, :, :)); 
+        ACT = squeeze(a(cfg.lays2load, :, :)); 
     else
-        fs2= a(cfg.lays2load, :, :); 
+        ACT = a(cfg.lays2load, :, :); 
     end
-    ACT = fs2;   
-
+    
 end
 
 cd (currentFolder)

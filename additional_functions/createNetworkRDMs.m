@@ -18,6 +18,9 @@ elseif strcmp (cfg.net2load , 'AlexEco')
     [ACT] = load_alexECO_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
     [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
+elseif strcmp (cfg.net2load , 'CORr')
+    %[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrtRELU')
     [ACT] = load_CORrtRELU_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORs')
@@ -83,7 +86,7 @@ end
 
 if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'CORrt') ...
         | strcmp (cfg.net2load , 'CORs')  | strcmp (cfg.net2load , 'CORrtRELU')  | strcmp (cfg.net2load , 'BLNETeBatchNorm') ...
-        | strcmp (cfg.net2load , 'AlexEco') 
+        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') 
 
     networkRDMs = ACT(:, ids4, ids4);
 else
