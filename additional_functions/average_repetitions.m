@@ -164,14 +164,18 @@ end
 if isfield(cfg_contrasts, 'oneListIds_enc')
     cfg_contrasts.oneListIds              =       [cfg_contrasts.oneListIds_enc ; cfg_contrasts.oneListIds_maint];
     cfg_contrasts.oneListPow              =       cat(1, cfg_contrasts.oneListPow_enc, cfg_contrasts.oneListPow_maint);
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_enc'); 
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_enc'); 
 else
     cfg_contrasts.oneListIds              =       cfg_contrasts.oneListIds;
 end
 
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_enc'); 
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_maint'); 
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_enc'); 
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_maint'); 
+if isfield(cfg_contrasts, 'oneListIds_maint')
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_maint'); 
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_maint'); 
+end
+
+
 
 
 
