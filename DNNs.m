@@ -35,10 +35,10 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 
     
     neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
 
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-    nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
+    nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
     
 end
 
@@ -63,8 +63,29 @@ listF2sav = {
                     %'CORrt_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
                     %'CORrt_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
                     
-                    'CAT_vvs_E123_[1]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CAT_vvs_E123_[1]_39-54_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                    'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                    'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                    'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                    'CORrt_pfc_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                    'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
                     
 
                     
@@ -95,10 +116,10 @@ for listi = 1:length(listF2sav)
         end
     
         neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
         
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-        nnFit{sessi,2}              = cfg_contrasts.oneListIds_c; 
+        nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
         
     end
     
@@ -117,17 +138,30 @@ nPerm = 1000;
 
 listF2sav = {
 
-%                 'AlexEco_pfc_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_vvs_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_vvs_M123_[1-8]_30-38_1_0_0_0_.1_5_1.mat';
-%                 'AlexEco_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
 
-                  'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1'; 
+                    'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
+
+                    'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
+
+                    'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
+                    'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
+
+                    'CORrt_pfc_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
+                    'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
 
              };
     
@@ -161,7 +195,7 @@ for listi = 1:length(listF2sav)
             end
         
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
     
     
             % % % restrict time for permutation data
@@ -1277,7 +1311,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         end
     
         neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
         
         
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
@@ -1405,7 +1439,7 @@ for listi = 1:length(listF2sav)
         end
     
         neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds_c, sessi, paths);
+        [networkRDMs ids2rem]       = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
         
         neuralRDMs(ids2rem, :, : ,:) = []; 
         neuralRDMs(:,ids2rem, : ,:) = []; 
