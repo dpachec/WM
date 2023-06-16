@@ -5,7 +5,6 @@ oneListPow = cfg_contrasts.oneListPow;
 
 
 % % % first average only 1 2 3 trials at encoding
-
 ids0 = cellfun(@(x) strsplit(string(x)), oneListIds, 'un', 0);
 x3c =  cell2mat(cellfun(@(x) str2double(x{3}), ids0, 'un', 0));
 fidr = isnan(x3c); 
@@ -152,19 +151,27 @@ if exist('oneListPowAv') & exist('oneListPowAv2')
     cfg_contrasts.oneListPow_enc = oneListPowAv; 
     cfg_contrasts.oneListPow_maint = oneListPowAv2;
 elseif exist('oneListPowAv') & ~exist('oneListPowAv2') 
-   cfg_contrasts.oneListIds_c = oneListIdsAv;
+   cfg_contrasts.oneListIds = oneListIdsAv;
    cfg_contrasts.oneListPow = oneListPowAv; 
 elseif ~exist('oneListPowAv') & exist('oneListPowAv2') 
-   cfg_contrasts.oneListIds_c = oneListIdsAv2;
+   cfg_contrasts.oneListIds = oneListIdsAv2;
    cfg_contrasts.oneListPow = oneListPowAv2; 
 else %analysis locked to the probe
-   cfg_contrasts.oneListIds_c = oneListIdsAv2;
+   cfg_contrasts.oneListIds = oneListIdsAv2;
    cfg_contrasts.oneListPow = oneListPowAv2; 
 end
-
-
    
+if isfield(cfg_contrasts, 'oneListIds_enc')
+    cfg_contrasts.oneListIds              =       [cfg_contrasts.oneListIds_enc ; cfg_contrasts.oneListIds_maint];
+    cfg_contrasts.oneListPow              =       cat(1, cfg_contrasts.oneListPow_enc, cfg_contrasts.oneListPow_maint);
+else
+    cfg_contrasts.oneListIds              =       cfg_contrasts.oneListIds;
+end
 
+cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_enc'); 
+cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_maint'); 
+cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_enc'); 
+cfg_contrasts = rmfield(cfg_contrasts, 'oneListPow_maint'); 
 
 
 

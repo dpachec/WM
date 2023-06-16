@@ -1,33 +1,22 @@
 %% load cfg_contrasts
 %% 
-
 clearvars
 region              = 'vvs';
-paths = load_paths_WM(region);
+paths = load_paths_WM(region, []);
 filelistSess = getFiles(paths.out_contrasts);
 
 
 frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
 fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
-
-%frequncies2test = [{3:8} {13:29} {30:38} ]';
-%fnames = { '3-8Hz' '13-29Hz' '30-75Hz' }'; fnames = fnames';
-
-
 win_width           = 5; 
 mf                  = 1; 
-meanInTime          = 1; 
-avMeth              = 'none';  % average across image repetitions or not
+meanInTime          = 0; 
 meanInFreq          = 0; 
-takeElec            = 0; 
-takeFreq            = 0;
+avMeth              = 'pow';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
-contr2save          = { 'DISC_EM2' 'DIDC_EM2'};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
-%contr2save          = {'DISC_M2123V1' 'DIDC_M2123V1' 'DISC_M2123V2' 'DIDC_M2123V2' 'DISC_M2123CNCV1' ...
-%                          'DIDC_M2123CNCV1' 'DISC_M2123CNCV2' 'DIDC_M2123CNCV2' 'DISC_M2123NC' 'DIDC_M2123NC' ...
-%                          'DISC_M2A' 'DIDC_M2A' 'DISC_M2A123' 'DIDC_M2A123'}; 
+contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
@@ -44,19 +33,16 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts filelistSess{sessi}]);   
     
-    disp ([ 'fnames = ' fnames{:} newline ...
-            'win_width = ' num2str(win_width) newline ...
-            'mf = ' num2str(mf) newline ...
-            'meanInTime = ' num2str(meanInTime) newline ...
-            'meanInFreq = ' num2str(meanInFreq) newline ...
-            'TG = ' num2str(TG) newline ...
-            'bline = ' num2str(bline) newline ...
-            'acrossTrials = ' num2str(acrossTrials) newline ...
-            'batch_bin = ' num2str(batch_bin);
-            ]);
+    disp ([ 'fnames = ' fnames{:} newline 'win_width = ' num2str(win_width) newline 'mf = ' num2str(mf) newline ...
+            'meanInTime = ' num2str(meanInTime) newline 'meanInFreq = ' num2str(meanInFreq) newline 'TG = ' num2str(TG) newline ...
+            'bline = ' num2str(bline) newline 'acrossTrials = ' num2str(acrossTrials) newline 'batch_bin = ' num2str(batch_bin)  ]);
         
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
+    % % check the normalizatoin across trials works 
+    %d2p = squeeze(mean(oneListPow(oneListIds(:, 1) ==1, :, :, :)));
+    % imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
+
  
     cfg_contrasts.contr2save = contr2save';
     cfg_contrasts.n2s = n2s;
@@ -70,23 +56,14 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     
     [out_contrasts] = create_contrasts_WM (cfg_contrasts);
         
-        
-    if ~exist('idxCH')
-       idxCH = []; 
-    end
-    if ~exist('idxF')
-       idxF = []; 
-    end
-  
+ 
     for freqi = 1:length(frequncies2test)
-        %create folder
         fname = fnames{freqi};
         mkdir ([paths.results.bands fname]);
         cd ([paths.results.bands fname]);
         f           = frequncies2test{freqi}; 
- 
-        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, takeElec, takeFreq, idxCH, idxF, sessi, TG, 0)
- 
+        % % the rsa_WM function saves the similarity matrices (TG=1) or diagonals (TG = 0)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, sessi, TG, 0)
         cd ..
     end
  
@@ -95,7 +72,7 @@ end
 cd .. 
 
  
-%%process Folders
+%% process Folders and create one file per condition including all subjects
 
 clearvars -except region
 paths = load_paths_WM(region); 
@@ -123,415 +100,301 @@ disp ('done')
 
 
 
+%% LOAD all conditions
+clearvars
 
+region = 'vvs'; 
+paths = load_paths_WM(region, []);
 
+contrasts = {
+              'DISC_EE' 'DIDC_EE';
+              %'DISC_M2M2' 'DIDC_M2M2';
+              %'DISC_EM2' 'DIDC_EM2';
+              %'DISC_M2A' 'DIDC_M2A';
+             };
 
- 
- 
-%% Plot all trials
-%%load cfg_contrasts
-clear
-tic
-sublist = dir('*contr.mat');
-sublist = {sublist.name};
-disp (['measurements -> ' num2str(length(sublist))]);
- 
-for subji=1:1%length(sublist)
-    disp(['File > ' num2str(subji)]);
-    load(sublist{subji});
-    s_all{subji} = cfg_contrasts; 
-    %size(cfg_contrasts.oneListPow)
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    if exist("all_IDs")
+        idData{i,:} = all_IDs;
+    end
 end
-s_all = s_all';
+
+
+%% PLOT
+clc
+%clear all; 
+tic; 
+
+%define conditions 
+cond1 = 'DISC_EE';
+cond2 = 'DIDC_EE';
+
+cond1B = eval(cond1);
+cond2B = eval(cond2);
+ 
+cfg             =       [];
+cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc   =       [1]; % pfc
+cfg.clim        =       [-.01 .0115];
+cfg.climT       =       [-7 7]; %color scale for t-map
+cfg.saveimg     =       1;
+cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '1-1'; %1-1 1-4 4-4
+cfg.cond1       =       cond1;
+cfg.cond2       =       cond2;
+cfg.lwd1        =       2; %baseline 
+cfg.lwd2        =       2; %significant outline
+cfg.remClust    =       0; 
+cfg.plot1clust  =       1;  
+cfg.clust2plot  =       3;  
+cfg.runperm     =       0;  
+cfg.all_cond1   =       cond1B; 
+cfg.all_cond2   =       cond2B; 
+cfg.alpha       =       0.05; 
+
+
+[out_real]   = plot_reinst_map_wm(cfg);
+ 
 toc
+
+
+
+
+%% PERMUTATIONS
+
+%%perm
+cfg_perm                    =       [];
+cfg_perm.n_perm             =       1000; 
+cfg_perm.savePerm           =       1;
+cfg_perm.out_real           =       out_real;
+cfg_perm.pval               =       0.05;
+cfg_perm.cond1              =       cond1;
+cfg_perm.cond2              =       cond2;
+cfg_perm.ids_all_cond       =       [];
+
  
-%% plot by trials
-bline               = [100 200];
-acrossTrials       = 0;
-zScType = 'allTrials'; 
- 
-for subji = 1:length(sublist)
-   cfg_contrasts = s_all{subji};    
-   cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline)
-   oneListPow = cfg_contrasts.oneListPow;
-   for triali = 1:size(oneListPow, 1)
-       chanN = size(oneListPow, 2);
-       pag2plot = ceil(chanN/100);
-       cstri = 0;
-       for pagi = 1:pag2plot
-           figure(pagi);set(gcf,'Position', [0 0 2000 1500]); 
-           csubi = 1;
-           startChan = (cstri*100) +1
-           endChan = (cstri*100) +100
-           if endChan > chanN
-               endChan = chanN
-           end
-           
-           for chani = startChan:endChan
-                subplot (10, 10, csubi)
-                imagesc(squeeze(oneListPow(triali,chani,:,:))); 
-                title(num2str(triali))
-                set(gca,'YDir','normal')
-                csubi = csubi + 1; 
-           end
-           
-           cstri = cstri + 1;
-           filename = [num2str(subji) '_tr_' num2str(triali) '_' num2str(pagi)];
-           %export_fig(pagi, filename,'-r200');    
-           close all;  
-       end
+
+[out_perm] = myPerm(cfg_perm);
+if ~isempty (out_perm.max_clust_sum_real)
+    max_clust_sum = out_perm.max_clust_sum;
+    obs = max(out_real.all_clust_tsum_real(:,1));
+    %allAb = max_clust_sum(abs(max_clust_sum) > obs);
+    allAb = max_clust_sum((max_clust_sum) > obs);
+    p = (1 - (cfg_perm.n_perm - (length (allAb) ) )  /cfg_perm.n_perm) + (1/cfg_perm.n_perm);
+    disp (['p = ' num2str(p)]);
+end
+
+
+%%
+figure
+histogram(out_perm.max_clust_sum)
+
+
+
+%% analysis high temporal resolution: Fig2E
+
+clearvars
+
+curr_fold = pwd; 
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+
+contrasts = {'DISC_EE' 'DIDC_EE'};
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    if exist("all_IDs")
+        idData{i,:} = all_IDs;
     end
-   
 end
- 
-
-%% generate random vectors for plots
-
-x = randn(1, 20)
-figure(); set(gcf, 'Position', [50 100 575 25])
-myCmap = colormap(brewermap([],'*Spectral'));
-colormap(myCmap)
-
-imagesc(x)
-set(gca, 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [], 'clim', [-1.6 1.6])
-export_fig(gca, 'hola.png','-r300');  
 
 
-%% 
+%% extract only diagonal for each subject in each conditoon
 
+%subj2exc    =       [18 22];% vvs;
+subj2exc   =       [1]; % pfc
 
-x = randn(1, 75)
-figure(); set(gcf, 'Position', [50 100 150 25])
-myCmap = colormap(brewermap([],'*Spectral'));
-colormap(myCmap)
+DISC_EE(subj2exc) = []; DIDC_EE(subj2exc) = []; 
 
-imagesc(x)
-set(gca, 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [], 'clim', [-1.6 1.6])
-export_fig(gca, 'hola.png','-r300');  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-%% plot by channels
-bline               = [3 7];
-acrossTrials       = 1;
-zScType = 'allTrials'; 
- 
-for subji = 1:1 %1:length(sublist)
-   cfg_contrasts = s_all{subji};    
-   cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline)
-   oneListPow = cfg_contrasts.oneListPow;
-   for chani = 1:1%size(oneListPow, 2)
-       trialN = size(oneListPow, 1);
-       pag2plot = ceil(trialN/100);
-       cstri = 0;
-       for pagi = 1:1%pag2plot
-           figure(pagi);set(gcf,'Position', [0 0 2000 1500]); 
-           csubi = 1;
-           startTri = (cstri*100) +1
-           endTri = (cstri*100) +100
-           if endTri > trialN
-               endTri = trialN
-           end
-           
-           for triali = startTri:endTri
-                subplot (10, 10, csubi)
-                myCmap = colormap(brewermap([],'*Spectral'));
-                colormap(myCmap)
-                d2p = squeeze(oneListPow(triali,chani,1:30,:)); 
-                %imagesc(); 
-                contourf(d2p, 40, 'linecolor', 'none')
-                %title(num2str(triali))
-                set(gca,'YDir','normal', 'clim', [-1.5 5], 'xlim', [200 400], 'xtick', [], 'xticklabel', [], 'ytick', [], 'yticklabel', [])
-                %colorbar
-                csubi = csubi + 1; 
-           end
-           
-           cstri = cstri + 1;
-           filename = [num2str(subji) '_' num2str(chani) '_' num2str(pagi)];
-           export_fig(pagi, filename,'-r200');    
-           close all;  
-       end
-    end
-   
-end
- 
- 
-%% plot by channels ONE
-bline               = [3 7];
-takeAllTrials       = 1;
- 
-cfg_contrasts = normalize_WM(cfg_contrasts, takeAllTrials, 'blo', bline);
-oneListPow = cfg_contrasts.oneListPow;
-for chani = 1:size(oneListPow, 2)
-   trialN = size(oneListPow, 1);
-   pag2plot = ceil(trialN/100);
-   cstri = 0;
-   for pagi = 1:pag2plot
-       figure(pagi);set(gcf,'Position', [0 0 2000 1500]); 
-       csubi = 1;
-       startTri = (cstri*100) +1
-       endTri = (cstri*100) +100
-       if endTri > trialN
-           endTri = trialN
-       end
-
-       for triali = startTri:endTri
-            subplot (10, 10, csubi)
-            imagesc(squeeze(oneListPow(triali,chani,:,:))); 
-            title(num2str(triali))
-            set(gca,'YDir','normal')
-            csubi = csubi + 1; 
-       end
-
-       cstri = cstri + 1;
-       filename = [num2str(subji) '_' num2str(chani) '_' num2str(pagi)];
-       export_fig(pagi, filename,'-r200');    
-       close all;  
-   end
-    
- 
- 
-end
+cond1 = cell2mat(cellfun(@(x) diag(squeeze(mean(x, 1, 'omitnan')))', DISC_EE, 'un', 0));
+cond2 = cell2mat(cellfun(@(x) diag(squeeze(mean(x, 1, 'omitnan')))', DIDC_EE, 'un', 0));
 
 
 
 %%
- 
-imagesc(squeeze(oneListPow(10,20,:,:))); colorbar;
- 
- 
- 
- 
- 
- 
- 
- 
-%% count electrodes
-%%load cfg_contrasts
-clearvars
-tic
-sublist = dir('*contr.mat');
-sublist = {sublist.name};
-disp (['measurements -> ' num2str(length(sublist))]);
- 
-for subji=1:length(sublist)
-    disp(['File > ' num2str(subji)]);
-    load(sublist{subji});
-    %s_all{subji} = size(cfg_contrasts.oneListPow, 2); 
-    s_all{subji} = cfg_contrasts.chanNames; 
-    %size(cfg_contrasts.oneListPow)
-end
-s_all = s_all';
+mc1 = mean(cond1); 
+mc2 = mean(cond2); 
 
-elLength = cell2mat(cellfun(@length, s_all, 'un', 0))
-sum(elLength)
+[h p ci ts] = ttest(cond1-cond2); 
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0; 
 
-toc
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+plot(mc1-mc2, 'linewidth' ,2);hold on; 
+plot(hb, 'linewidth' ,2);
 
-%% count hippocapmal electrodes
 
-clear s_ids
-for subji = 1:length(sublist)
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
-    chanNames = allChans{subji};
-    c = string(chanNames(:,5));
-    ids = strfind(c, '38');
-    id = ~cellfun('isempty',ids);
-    if ~isempty(find(id))
-        s_ids(subji,:) = 1; 
+
+%% shaded error version 
+
+mc1 = mean(cond1); 
+mc2 = mean(cond2); 
+
+[h p ci ts] = ttest(cond1-cond2); 
+hb = h; hb(hb==0) = nan; hb(hb==1) = 0; 
+
+diff2U = cond1-cond2; 
+mDiff = mean(diff2U); 
+stdDiff = std(diff2U); 
+seDiff = std(diff2U)/sqrt(size(diff2U, 1))
+times = -.75:.01:.75
+
+figure()
+shadedErrorBar(times, mDiff, seDiff, 'b', 1); hold on; 
+plot(times, hb, 'linewidth' ,2);
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+
+
+
+%% analysis high temporal resolution: Fig2E
+
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+load all % this file contains the traces from VVS and PFC computed in the cells above
+
+mc1PFC = mean(cond1_PFC); 
+mc2PFC = mean(cond2_PFC); 
+cPFC = cond1_PFC-cond2_PFC;
+mcPFC = mean(cPFC)
+stdPFC = std(cPFC); 
+sePFC = stdPFC/sqrt(size(cPFC, 1))
+
+mc1VVS = mean(cond1_VVS); 
+mc2VVS = mean(cond2_VVS); 
+cVVS = cond1_VVS - cond2_VVS; 
+mcVVS = mean(cVVS); 
+stdVVS = std(cVVS); 
+seVVS = stdVVS/sqrt(size(cVVS, 1))
+
+
+l2y = -.015; 
+[hPFC p ci ts] = ttest(cPFC); 
+hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y+.0015; 
+[hVVS p ci ts] = ttest(cVVS); 
+hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045; 
+
+
+[hBoth p ci ts] = ttest2(cVVS, cPFC); 
+hbBoth = hBoth; hbBoth(hBoth==0) = nan; hbBoth(hbBoth==1) = l2y +.00775; 
+
+times = -.75:.01:.75
+
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+shadedErrorBar(times, mcPFC, sePFC, 'k', 1); hold on; 
+shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
+plot(times, hbPFC, 'k', 'linewidth' ,10);
+plot(times, hbVVS, 'r', 'linewidth' ,10);
+plot(times, hbBoth, 'g', 'linewidth' ,10);
+set(gca, 'FontSize', 20, 'xlim', [-.5, .75], 'ylim', [l2y 0.06])
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+
+%% stats: condition label shuffling 
+
+clearvars -except cond1_PFC cond1_VVS cond2_PFC cond2_VVS
+
+nPerm = 1000; 
+
+
+for permi =1:1000
+
+
+
+    mc1PFC = mean(cond1_PFC); 
+    mc2PFC = mean(cond2_PFC); 
+    cPFC = cond1_PFC-cond2_PFC;
+    
+    mc1VVS = mean(cond1_VVS); 
+    mc2VVS = mean(cond2_VVS); 
+    cVVS = cond1_VVS - cond2_VVS; 
+
+    junts = [ cVVS; cPFC];
+    rndIndex = [zeros(1, size(cVVS, 1)), ones(1 ,size(cPFC, 1))]';
+    %rndIndex = rndIndex(randperm(length(rndIndex)));
+    junts1 = junts(rndIndex==0, :);
+    junts2 = junts(rndIndex==1, :);
+        
+    [hPerm p ci ts] = ttest2(junts1, junts2); 
+    tPerm = ts.tstat; 
+
+    clustinfo = bwconncomp(hPerm);
+    [numPixPermi(permi) maxi] = max([0 cellfun(@numel,clustinfo.PixelIdxList) ]); % the zero accounts for empty maps
+    if numPixPermi(permi) > 0
+        max_clust_sum(permi,:) = sum (tPerm(clustinfo.PixelIdxList{maxi-1}));
     else
-        s_ids(subji,:) = 0;
-    end
-    
-end
-
-sum(s_ids)
- 
- 
-%% ALL correlation analysis ENCODING
-clear 
-% loop through all folders with band specific results 
-paths = load_paths_WM('pfc');
-main_path_pfc = paths.results.bands; 
-paths = load_paths_WM('vvs');
-main_path_vvs = paths.results.bands;  
-
-%pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-%vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
-
-fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
-
-for bandi = 1:6
-
-    flist = dir([main_path_vvs fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
-    load([main_path_vvs fnames{bandi} '\' f2load])
-    %ALL_EE = ALL_EE([7 9 13 18 19 20 21 23 27 28]); 
-    %allPFC{bandi,:} = ALL_EE; % 6 bands and 10 subjects
-    ALL_EM2 = ALL_EM2([7 9 13 18 19 20 21 23 27 28]); 
-    allPFC{bandi,:} = ALL_EM2; % 6 bands and 10 subjects
-
-    flist = dir([main_path_pfc fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
-    load([main_path_pfc fnames{bandi} '\' f2load])
-    %ALL_EE = ALL_EE([2 3  5  9 10 11 12 14 15 16]);
-    %allVVS{bandi,:} = ALL_EE;  % 6 bands and 10 subjects
-    ALL_EM2 = ALL_EM2([2 3  5  9 10 11 12 14 15 16]);
-    allVVS{bandi,:} = ALL_EM2;  % 6 bands and 10 subjects
-
-
-end
-
-
- 
-
-%% 
-clear c1VVS allPSPFC allPSVVS clear allRho
-onlyDiag = 0; % is the pattern a 2D matrix or just matching time points
-timeL = 6:15; 
-
-for bandi = 1:6
-
-    c1VVS_band = allVVS{bandi}; 
-    c1PFC_band = allPFC{bandi}; 
-
-    for subji = 1:10
-    
-        c1VVS_subj = c1VVS_band{subji}; 
-        c1PFC_subj = c1PFC_band{subji}; 
-        
-        clear cVVSF cPFCF
-        for triali = 1:size(c1VVS_subj, 1)
-            
-            cVVS_tr = squeeze(c1VVS_subj(triali, :, :));
-            cPFC_tr = squeeze(c1PFC_subj(triali, :, :));
-
-            % % % only diagonal (if matrix)
-            if ~onlyDiag
-                cVVS_tr_diag = diag(cVVS_tr(timeL, timeL)); % restricted to the period of significant dynamicity
-                cPFC_tr_diag = diag(cPFC_tr(timeL, timeL)); % restricted to the period of significant dynamicity
-            else %diagonal was extracted before
-                cVVS_tr_diag = cVVS_tr(timeL); % restricted to the period of significant dynamicity
-                cPFC_tr_diag = cPFC_tr(timeL); % restricted to the period of significant dynamicity
-            end
-           
-            cVVSF(triali, :) = mean(cVVS_tr_diag); 
-            cPFCF(triali, :) = mean(cPFC_tr_diag); 
-    
-        end
-    
-        allRho(bandi, subji,:) = corr(cVVSF, cPFCF, 'type', 's'); 
-        
-
+        %disp (['no significant cluster in permutation ' num2str(permi)]);
+        max_clust_sum(permi,:) = 0; 
     end
 
     
-
 end
 
+%% plot histogram
+
+figure()
+histogram(max_clust_sum); hold on; 
+scatter(121.939054751820, 0, 2000, '.', 'r' )
+
+
+
+%% stats
+
+allAb = max_clust_sum(max_clust_sum > 121.939054751820);
+p =1 - (nPerm - (length (allAb)+1) )  /nPerm;
+
+disp (['p = ' num2str(p)]);
 
 
 
 
-%% 
-
-[h p ci ts] = ttest(allRho')
 
 
-%% ALL correlation analysis MAINTENANCE
-clear 
-% loop through all folders with band specific results 
-paths = load_paths_WM('pfc');
-main_path_pfc = paths.results.bands; 
-paths = load_paths_WM('vvs');
-main_path_vvs = paths.results.bands;  
-
-%pfc_fits = nnFit([2 3  5  9 10 11 12 14 15 16]);
-%vvs_fits = nnFit([7 9 13 18 19 20 21 23 27 28]); 
-
-fnames = {'3-150Hz' '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
-
-for bandi = 1:6
-
-    flist = dir([main_path_vvs fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
-    load([main_path_vvs fnames{bandi} '\' f2load])
-    ALL_EM2 = ALL_EM2([7 9 13 18 19 20 21 23 27 28]); 
-    allPFC{bandi,:} = ALL_EM2; % 6 bands and 10 subjects
-
-    flist = dir([main_path_pfc fnames{bandi}]); f2load = [flist.name]; f2load = f2load(4:end);
-    load([main_path_pfc fnames{bandi} '\' f2load])
-    ALL_EM2 = ALL_EM2([2 3  5  9 10 11 12 14 15 16]);
-    allVVS{bandi,:} = ALL_EM2;  % 6 bands and 10 subjects
 
 
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
 
 
  
-
-%% 
-clear c1VVS allPSPFC allPSVVS clear allRho
-onlyDiag = 0; % is the pattern a 2D matrix or just matching time points
-timeL1 = 6:15; 
-timeL2 = 6:15; 
-
-for bandi = 1:6
-
-    c1VVS_band = allVVS{bandi}; 
-    c1PFC_band = allPFC{bandi}; 
-
-    for subji = 1:10
-    
-        c1VVS_subj = c1VVS_band{subji}; 
-        c1PFC_subj = c1PFC_band{subji}; 
-        
-        clear cVVSF cPFCF
-        for triali = 1:size(c1VVS_subj, 1)
-            
-            cVVS_tr = squeeze(c1VVS_subj(triali, timeL1));
-            cPFC_tr = squeeze(c1PFC_subj(triali, timeL1));
-
-            cVVSF(triali, :) = mean(cVVS_tr, 'all'); 
-            cPFCF(triali, :) = mean(cPFC_tr, 'all'); 
-    
-        end
-    
-        allRho(bandi, subji,:) = corr(cVVSF, cPFCF, 'type', 's'); 
-        
-
-    end
-
-    
-
-end
-
-
-
-
-
-%% 
-
-[h p ci ts] = ttest(allRho')
-
-
-
-
-
+ 
 
 
 

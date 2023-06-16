@@ -3,7 +3,11 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
 
     oneListTraces_c = cfg_contrasts.oneListTraces; 
     timeRes = cfg.timeRes;  
-    period = cfg.period; 
+    DNN_analysis = cfg.DNNs; 
+    if DNN_analysis
+        period = cfg.period; 
+    end
+
     
    % disp ('>> extracting power ... ');
     sr = 1000;
@@ -11,34 +15,14 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
 
     
     if timeRes == 0.01
-%        lim_1   = 1; %
-%        lim_2   = 901; 
-%         disp ('10ms');  
-         lim_1   = 101; %
+         disp ('10ms');  
+         lim_1   = 101; 
          lim_2   = 650; 
-%         disp(['lim_1 = ' num2str(lim_1) ' lim_2 = ' num2str(lim_2)]);
     end
     
-    if timeRes == 0.05 %total length 240 
-         disp ('50ms');  
-         lim_1   = 91 - 5; %substract only here but not to the baseline
-         lim_2   = 190 - 5; %substract only here but not to the baseline
-         disp(['lim_1 = ' num2str(lim_1) ' lim_2 = ' num2str(lim_2)]);
-    end
-
-    if timeRes == 0.1
-        
+    if timeRes == 0.1        
          lim_1   = 1; %
          lim_2   = 70; 
-        
-%         disp ('100ms');  
-%         %lim_1   = 14; %
-%         %lim_2   = 70; %for the locked to cue 
-%         lim_1   = 1; % for the locked to probe
-%         lim_2   = 70; %
-%         
-%         
-%         disp(['lim_1 = ' num2str(lim_1) ' lim_2 = ' num2str(lim_2)]);
     end
 
     %fieldtrip analysis
@@ -66,9 +50,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     cfg              = [];
     cfg.method       = 'wavelet'; %'mtmconvol'; % 'wavelet'; %
     cfg.width        = linspace(6, 12, 25);
-    %cfg.width        = linspace(6, 12, 121);
     cfg.output       = 'pow';
-    %cfg.foi          = [30:1:150]   % analysis 2 to X Hz in steps of 2 Hz 
     cfg.foi          = [30:5:150];   % analysis 2 to X Hz in steps of 2 Hz 
     cfg.pad          = 'nextpow2';
     if strcmp (timeRes, 'all')
@@ -82,11 +64,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     tf_data_H          = ft_freqanalysis(cfg, data_ft);
     dataH = tf_data_H.powspctrm;
 
-
-
-
     dataLH = cat (3, dataL, dataH);
-
 
     %cut edge artefacts from -6-6 to finalCut
     if ~strcmp(timeRes, 'all')
@@ -97,13 +75,13 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
 
     oneListPow = dataLH;
         
-     if strcmp(period(1), 'E') & timeRes == 0.1
-        oneListPow = oneListPow(:,:,:,16:40);
-     elseif strcmp(period(1), 'M') & timeRes == 0.1
-        oneListPow = oneListPow(:,:,:,16:65);
+    if DNN_analysis
+        if strcmp(period(1), 'E') & timeRes == 0.1
+           oneListPow = oneListPow(:,:,:,16:40);
+        elseif strcmp(period(1), 'M') & timeRes == 0.1
+            oneListPow = oneListPow(:,:,:,16:65);
+        end
     end
-
-
 
 
 end

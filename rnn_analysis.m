@@ -488,7 +488,7 @@ clearvars -except allTObs
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CORrt_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_3000p.mat'; 
+f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
