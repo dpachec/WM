@@ -1,6 +1,6 @@
-function[rdm] = vectorizeRDM(rdm)
-        rdm(rdm ==1) = 1000;rdm(rdm ==0) = 2000;
-        rdm = tril(rdm, -1);rdm(rdm==0) =[];
-        rdm(rdm==1000) = 1;rdm(rdm==2000) = 0;
-
+function[vectorizedRDM] = vectorizeRDM(rdm)
+    rows = size(rdm, 1);
+    vectorizedRDM = rdm(tril(true(rows), -1));
 end
+
+

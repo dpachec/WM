@@ -191,7 +191,7 @@ sessi = 1;
 subj_ch_fr = 1; 
 paths = load_paths_WM(cfg.brainROI);
 [ACT] = load_BLNETi(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
-%[ACT] = load_rnn_eco(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+
 
 %% correlate imagenet and ecoset activations 
 
