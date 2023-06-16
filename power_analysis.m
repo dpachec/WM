@@ -1,11 +1,9 @@
 %% first load traces
-%%
+%% power computation
 clear
 region = 'pfc';
 paths = load_paths_WM(region);
 filelistSess = getFiles(paths.traces);
-
-
 
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
@@ -22,9 +20,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     cfg.period = 'M'; 
     cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
 
-    %cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    %cfg_contrasts = normalize_WM(cfg_contrasts, 0, 'sess', [51 100]);
-    
+    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
     allPow{sessi} = cfg_contrasts; 
    
 end
@@ -33,42 +29,26 @@ mkdir ([paths.results.power]);
 save([paths.results.power 'pow2S_' region '_' num2str(cfg.timeRes*1000) 'ms'], 'allPow');
 
 
-%% 
-clear
-paths = load_paths_WM('pfc');
-load([paths.results.power 'pow2S_pfc_10ms'], 'allPow');
-
 %% DIRECT COMPARISON all trials
  
 clear
-paths = load_paths_WM('pfc');
+paths = load_paths_WM('pfc', []);
 load([paths.results.power 'pow2S_vvs_10ms'], 'allPow');
 allPow_VVS = allPow; 
 load([paths.results.power 'pow2S_pfc_10ms'], 'allPow');
 allPow_PFC = allPow; 
 
 
-
-%% plot example trial 
-
-size(allPow{1}.oneListPow)
-
-d2p = squeeze(allPow{1}.oneListPow(1, 1,:,:));
-
-figure
-imagesc(d2p)
-
-
 %% compute mean over trials and over electrodes for each subject
 
 clearvars -except allPow_VVS allPow_PFC
 
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-vvs_ids = [7 9 13 18 19 20 21 23 27 28];
+pfc_ids = [2 3  5  9 10 11 12 14 15 16]; %ids of subject with electrodes in both regions
+vvs_ids = [7 9 13 18 19 20 21 23 27 28]; % ids of subjects with electrodes in both regions
 
 
-allT_VVS = allPow_VVS(vvs_ids)'; 
-allT_PFC = allPow_PFC(pfc_ids)'; 
+allT_VVS = allPow_VVS(vvs_ids)'; %% select VVS or PFC
+allT_PFC = allPow_PFC(pfc_ids)'; %% select VVS or PFC
 
 clear powSI_VVS powMI_VVS powSI_PFC powMI_PFC powMI_PFC_TR powMI_VVS_TR
 for subji = 1:length(allT_PFC)
@@ -85,7 +65,6 @@ end
 
 
 %% plot one example subject
-
 
 d2p = squeeze(powSI_PFC(4,:,:));
 figure
@@ -109,7 +88,6 @@ figure;
 myCmap = colormap(brewermap([],'*Spectral'));
 contourf(times, freqs, mSI, 100, 'linecolor', 'none'); hold on; colorbar
 set(gca, 'clim', [-0.08 0.08], 'ytick', [1 27 52], 'yticklabels', {'3' '30' '150'})
-%set(gca, 'clim', [-3 3], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
 set(gca, 'FontSize', 14)
 title('Single-item trials')
 colormap(myCmap)
@@ -117,7 +95,6 @@ colormap(myCmap)
 figure()
 contourf(times, freqs, mMI, 100, 'linecolor', 'none'); hold on; colorbar
 set(gca, 'clim', [-0.08 0.08], 'ytick', [1 27 52], 'yticklabels', {'3' '30' '150'})
-%set(gca, 'clim', [-3 3], 'ytick', [1 29 54], 'yticklabels', {'1' '30' '150'})
 set(gca, 'FontSize', 14)
 title('Multi-item trials')
 colormap(myCmap)
@@ -174,24 +151,6 @@ set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 27 52], 'yticklabels',
 exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 
 
-%% 
-h = zeros(52, 550);
-h1 = h; h2 = h; 
-h1(clust_vvs)= 1;
-h2(clust_pfc)= 2;
-h = h1+h2; 
-hc = h; hc(hc>0) = 1;
-
-times = -1:0.01:4.49;
-freqs = 1:52;
-tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 400 800])
-nexttile
-imagesc(times, freqs, flipud(h)); hold on;
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-colormap(brewermap([],'*Spectral'))
-%set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 27 52], 'yticklabels', {'3', '30', '150'}, 'xlim', [-.5 3.5]);
-set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 22 52], 'yticklabels', {'150', '30', '3'}, 'xlim', [0.25 1.6], 'ylim', [22 52]);
-exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 
 %% permutations 
 
@@ -246,12 +205,12 @@ histogram(max_clust_sum_perm); hold on;
 scatter(max_clust_obs,0, 200, 'filled','r');
 set(gca, 'FontSize', 14);
 xlabel('T')
-exportgraphics(gcf, [paths.results.power 'myP.png'], 'Resolution',150)
-
 
 
 %% trial level correlations between regions MI trials
-load clust_vvs_pfc_52.mat
+
+cd D:\_WM\analysis
+load clust_vvs_pfc_52.mat %contains the two clusters identified previously
 %load clusts_vvs_pfc.mat
 
 clearvars -except allPow_VVS allPow_PFC clust_vvs clust_pfc
@@ -285,21 +244,6 @@ for subji = 1:length(allT_PFC)
     pfc2cmp = squeeze(mean(allT_PFC{subji}.oneListPow(:,:, 3:54,:), 2)); 
     vvs2cmp = squeeze(mean(allT_VVS{subji}.oneListPow(:,:, 3:54,:), 2)); 
 
-    % z-score the data separately for each condition
-    pfc2cmpSI = pfc2cmp(ids~=4,:,:); 
-    pfc2cmpSIN = normalize_within_cond_WM(pfc2cmpSI);
-    pfc2cmpMI = pfc2cmp(ids==4,:,:); 
-    pfc2cmpMIN = normalize_within_cond_WM(pfc2cmpMI);
-    vvs2cmpSI = vvs2cmp(ids~=4,:,:); 
-    vvs2cmpSIN = normalize_within_cond_WM(vvs2cmpSI);
-    vvs2cmpMI = vvs2cmp(ids==4,:,:); 
-    vvs2cmpMIN = normalize_within_cond_WM(vvs2cmpMI);
-    
-    pfc2cmp(ids~= 4, :, :) = pfc2cmpSIN;
-    pfc2cmp(ids== 4, :, :) = pfc2cmpMIN;
-    vvs2cmp(ids~= 4, :, :) = vvs2cmpSIN;
-    vvs2cmp(ids== 4, :, :) = vvs2cmpMIN;
-
     clear valTrVVS valTrPFC
     for triali = 1:size(vvs2cmp, 1)
         x = vvs2cmp(triali, clust_vvs);
@@ -311,15 +255,17 @@ for subji = 1:length(allT_PFC)
     powMI_PFC_TR{subji,:} = valTrVVS;
     powMI_VVS_TR{subji,:} = valTrPFC;
 
+    x1 = valTrVVS(ids<4); %% only for single or multi-item trials 
+    y1 = valTrPFC(ids<4); %% only for single or multi-item trials 
+
     figure()
-    x1 = valTrVVS; y1 = valTrPFC;
     scatter(x1, y1, 50, '.'); hold on; 
     p = polyfit(x1,y1,1); 
     f = polyval(p,x1); 
     plot(x1,y1,'.',x1,f,'-', 'LineWidth', 2) 
 
 
-    allRho(subji, :) = corr(valTrVVS, valTrPFC, 'type','s');
+    allRho(subji, :) = corr(x1, y1, 'type','s');
 
 end
 
@@ -365,22 +311,6 @@ for subji = 1:length(allT_PFC)
     pfc2cmp = squeeze(mean(allT_PFC{subji}.oneListPow(:,:, 3:54,:), 2)); 
     vvs2cmp = squeeze(mean(allT_VVS{subji}.oneListPow(:,:, 3:54,:), 2)); 
 
-    % % % % z-score the data separately for each condition
-% % %     pfc2cmpSI = pfc2cmp(ids~=4,:,:); 
-% % %     pfc2cmpSIN = normalize_within_cond_WM(pfc2cmpSI);
-% % %     pfc2cmpMI = pfc2cmp(ids==4,:,:); 
-% % %     pfc2cmpMIN = normalize_within_cond_WM(pfc2cmpMI);
-% % %     vvs2cmpSI = vvs2cmp(ids~=4,:,:); 
-% % %     vvs2cmpSIN = normalize_within_cond_WM(vvs2cmpSI);
-% % %     vvs2cmpMI = vvs2cmp(ids==4,:,:); 
-% % %     vvs2cmpMIN = normalize_within_cond_WM(vvs2cmpMI);
-% % %     
-% % %     pfc2cmp(ids~= 4, :, :) = pfc2cmpSIN;
-% % %     pfc2cmp(ids== 4, :, :) = pfc2cmpMIN;
-% % %     vvs2cmp(ids~= 4, :, :) = vvs2cmpSIN;
-% % %     vvs2cmp(ids== 4, :, :) = vvs2cmpMIN;
-
-
     clear valTrVVS valTrPFC
     for triali = 1:size(vvs2cmp, 1)
         x = vvs2cmp(triali, clust_vvs);
@@ -424,22 +354,9 @@ tbl2.Trial_Type = nominal(tbl2.Trial_Type)
 %% fit model
 clc
 
-%lme = fitlme(tbl2,'theta_VVS ~ 1+ theta_PFC');
-%lme = fitlme(tbl2,'theta_VVS ~ theta_PFC'); % first two are the same (included by default)
-%lme = fitlme(tbl2,'theta_VVS~ theta_PFC+(1|Subj)'); 
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1+theta_PFC|Subj)');
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1|Subj)+(1|Trial_Type)'); 
 lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1|Subj)'); % random intercept model
-%lme = fitlme(tbl2,'theta_VVS ~ theta_PFC+ Trial_Type + (1|theta_PFC:Trial_Type) + (1|Subj)'); % random intercept model
-
-
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1+Trial_Type|Subj)'); % random slope and intercept model
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+Trial_Type+(1+theta_PFC|Subj)'); % does not make 
-%lme = fitlme(tbl2,'theta_VVS~theta_PFC+(1+theta_PFC|Subj)+(1+theta_PFC|Trial_Type)');
-%lme = fitlme(tbl2,'theta_PFC~theta_VVS+(1+theta_VVS|Subj)+(1+theta_VVS|Trial_Type)');
-
 lme
-%lme.Coefficients
+
 
 %% 'caseorder' | 'fitted' | 'lagged' | 'probability' | 'symmetry'
 %plotResiduals(lme)
@@ -478,261 +395,28 @@ legend('Data','Predictions')
 
 
 
-%% 
-mean(Y(Trial_Type == 1))
-mean(Y(Trial_Type == 2))
-figure()
-
-histogram(Y(Trial_Type == 1)); hold on; 
-histogram(Y(Trial_Type == 2)); 
-
-x = Y(Trial_Type == 1); 
-y = Y(Trial_Type == 2);
-[h p ci ts] = ttest2(x,y)
 
 
 
 
+%% plot two clusters ONLY, CARTOON FIGURE 1F
+h = zeros(52, 550);
+h1 = h; h2 = h; 
+h1(clust_vvs)= 1;
+h2(clust_pfc)= 2;
+h = h1+h2; 
+hc = h; hc(hc>0) = 1;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% DIRECT COMPARISON all trials
- 
-clear
-paths = load_paths_WM('pfc');
-load([paths.results.power 'pow2S_vvs_10ms'], 'allPow');
-allPow_VVS = allPow; 
-load([paths.results.power 'pow2S_pfc_10ms'], 'allPow');
-allPow_PFC = allPow; 
-
-
-
-%%
-
-pfc_ids = [2 3  5  9 10 11 12 14 15 16];
-vvs_ids = [7 9 13 18 19 20 21 23 27 28];
-
-
-allT_VVS = allPow_VVS(vvs_ids)'; 
-allT_PFC = allPow_PFC(pfc_ids)'; 
-
-
-
-p_vvs = struct2cell(cat(1, allT_VVS{:}))';
-p_vvs = p_vvs(:, 4);
-p_vvs2 = cellfun(@(x) squeeze(mean(mean(x))), p_vvs, 'un', 0);
-p_vvs2 = cat(3, p_vvs2{:}); 
-p_vvs3 = permute(p_vvs2, [3 1 2]);
-
-
-
-p_pfc = struct2cell(cat(1, allT_PFC{:}))';
-p_pfc = p_pfc(:, 4);
-p_pfc2 = cellfun(@(x) squeeze(mean(mean(x))), p_pfc, 'un', 0);
-p_pfc2 = cat(3, p_pfc2{:}); 
-p_pfc3 = permute(p_pfc2, [3 1 2]);
-
-
-%% 
-
-clear powDIFF_VVS powDIFF_PFC  
-for subji = 1:length(allT_VVS)
-
-
-    
-    ids = cellfun(@(x) strsplit(x), allT_VVS{subji}.oneListIds_c, 'un', 0);
-    ids = cell2mat(cellfun(@(x) double(string(x(2))), ids, 'un', 0));
-
-    t1 = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
-    t2 = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
-    powDIFF_VVS(subji, :, :)  = t1-t2; 
-    
-    t1 = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
-    t2 = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
-    powDIFF_PFC(subji, :, :)  = t1-t2; 
-
-
-end
-
-
-
-
-%% comparison VVS PFC for all trials
-
-
-m_Diff= powDIFF_PFC - powDIFF_VVS; 
-m_VVS = squeeze(mean(powDIFF_VVS)); 
-m_PFC = squeeze(mean(powDIFF_PFC)); 
-
-
-[h p ci ts] = ttest(m_Diff);
-h = squeeze(h); t = squeeze(ts.tstat);
-clustinfo = bwconncomp(h);
-for pxi = 1:length(clustinfo.PixelIdxList)
-    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));%
-end
-
-max_clust_obs = max(abs(allTOBs));
-
-times = -1:0.01:4.49
-freqs = 1:54;
-tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
+times = -1:0.01:4.49;
+freqs = 1:52;
+tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 400 800])
 nexttile
-contourf(times, freqs, m_VVS, 40, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);set(gca, 'clim', [-.2 .2])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Single minus multi-item VVS')
-nexttile
-contourf(times, freqs, m_PFC, 40, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);set(gca, 'clim', [-.2 .2])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Single minus multi-item PFC')
-nexttile
-contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
-contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
+imagesc(times, freqs, flipud(h)); hold on;
 plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
 colormap(brewermap([],'*Spectral'))
-set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
-
-exportgraphics(gcf, 'myP.png', 'Resolution',150)
-
-
-%% compute separately for single and multi item trials 
-
-
-clear powSI_VVS powMI_VVS powSI_PFC powMI_PFC
-for subji = 1:10
-
-
-    
-    ids = cellfun(@(x) strsplit(x), allT_VVS{subji}.oneListIds_c, 'un', 0);
-    ids = cell2mat(cellfun(@(x) double(string(x(2))), ids, 'un', 0));
-    powSI_VVS(subji, :, :,:) = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
-    powMI_VVS(subji, :, :,:) = squeeze(mean(mean(allT_VVS{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
-    
-
-    ids = cellfun(@(x) strsplit(x), allT_PFC{subji}.oneListIds_c, 'un', 0);
-    ids = cell2mat(cellfun(@(x) double(string(x(2))), ids, 'un', 0));
-    powSI_PFC(subji, :, :,:) = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids ~= 4,: ,:,:), 2))); 
-    powMI_PFC(subji, :, :,:) = squeeze(mean(mean(allT_PFC{subji}.oneListPow(ids == 4,: ,:,:), 2))); 
-
-    
-end
-
-
-%% plot mean across subjects SINGLE ITEM
-
-
-mSI_VVS = squeeze(mean(powSI_VVS)); 
-mSI_PFC = squeeze(mean(powSI_PFC)); 
-
-
-[h p ci ts] = ttest(powSI_VVS, powSI_PFC)
-h = squeeze(h); t = squeeze(ts.tstat);
-clustinfo = bwconncomp(h);
-for pxi = 1:length(clustinfo.PixelIdxList)
-    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));% 
-end
-
-max_clust_obs = max(abs(allTOBs))
-
-times = -1:0.01:4.49
-freqs = 1:54;
-tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
-nexttile
-contourf(times, freqs, mSI_VVS, 40, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Single-item trials VVS')
-nexttile
-contourf(times, freqs, mSI_PFC, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Single-item trials PFC')
-nexttile
-contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
-contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-colormap(brewermap([],'*Spectral'))
-set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
-
-
-exportgraphics(gcf, 'myP.png', 'Resolution',150)
-
-
-%% plot mean across subjects MULTI-ITEM
-
-
-mMI_VVS = squeeze(mean(powMI_VVS)); 
-mMI_PFC = squeeze(mean(powMI_PFC)); 
-
-
-[h p ci ts] = ttest(powMI_VVS, powMI_PFC)
-h = squeeze(h); t = squeeze(ts.tstat);
-clustinfo = bwconncomp(h);
-for pxi = 1:length(clustinfo.PixelIdxList)
-    allTOBs(pxi,:) = sum(t(clustinfo.PixelIdxList{pxi}));% 
-end
-
-max_clust_obs = max(abs(allTOBs))
-
-times = -1:0.01:4.49
-freqs = 1:54;
-tiledlayout(3, 1,'TileSpacing','loose'); set(gcf, 'Position', [100 100 600 800])
-nexttile
-contourf(times, freqs, mMI_VVS, 40, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);%set(gca, 'clim', [-.1 .1])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Multi-item trials VVS')
-nexttile
-contourf(times, freqs, mMI_PFC, 'linecolor', 'none'); hold on; colorbar
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3); %set(gca, 'clim', [-.1 .1])
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-title('Multi-item trials PFC')
-nexttile
-contourf(times, freqs, t, 40, 'linecolor', 'none'); hold on; colorbar
-contour(times, freqs,h, 1, 'Color', [0, 0, 0], 'LineWidth', 2); %set(gca, 'clim', [-3 4])
-plot([0 0 ],get(gca,'ylim'), 'k:','lineWidth', 3);
-plot([.5 .5],get(gca,'ylim'), 'k:','lineWidth', 3);
-colormap(brewermap([],'*Spectral'))
-set(findobj(gcf,'type','axes'),'FontSize',20, 'ytick', [1 30 54], 'yticklabels', {'1', '30', '150'});
-
-
-exportgraphics(gcf, 'myP.png', 'Resolution',150)
-
-%% 
-clear pvvs
-for subji = 1:10
-
-
-    pvvs{subji} = allT_VVS{subji}.oneListPow; 
-
-
-
-end
-
-
-
-
-
-
+%set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 27 52], 'yticklabels', {'3', '30', '150'}, 'xlim', [-.5 3.5]);
+set(findobj(gcf,'type','axes'),'FontSize',16, 'ytick', [1 22 52], 'yticklabels', {'150', '30', '3'}, 'xlim', [0.25 1.6], 'ylim', [22 52]);
+exportgraphics(gcf, ['myP.png'], 'Resolution',300)
 
 
 
