@@ -99,6 +99,7 @@ for listi = 1:length(listF2sav)
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
+    cfg.DNNs = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFiles(paths.traces);
     
@@ -173,6 +174,7 @@ for listi = 1:length(listF2sav)
     f2sav       = listF2sav{listi}
         
     cfg = getParams(f2sav);
+    cfg.DNNs = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFiles(paths.traces);
     
