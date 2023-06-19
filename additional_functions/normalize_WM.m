@@ -1,7 +1,7 @@
 function [cfg_contrasts] = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline)
 
 oneListPow = cfg_contrasts.oneListPow;
-oneListIds = cfg_contrasts.oneListIds_c;
+oneListIds = cfg_contrasts.oneListIds;
 oneListIds = str2num(cell2mat(oneListIds));
 
 if strcmp (zScType, 'sess')

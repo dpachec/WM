@@ -1,4 +1,6 @@
-function[neuralRDMs] = createNeuralRDMs(cfg, oneListPow)
+function[neuralRDMs] = createNeuralRDMs(cfg, cfg_contrasts)
+
+oneListPow = cfg_contrasts.oneListPow;
 
 freqs2test = cfg.freqs; 
 win_width = cfg.win_width; 

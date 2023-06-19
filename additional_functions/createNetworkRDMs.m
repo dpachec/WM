@@ -1,5 +1,10 @@
-function [networkRDMs ids2rem]  = createNetworkRDMs(cfg, oneListIDs, sessi, paths)
-         
+function [networkRDMs ids2rem]  = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths)
+
+if isfield(cfg_contrasts, 'oneListIds_c')
+    oneListIDs = cfg_contrasts.oneListIds_c; 
+else
+    oneListIDs = cfg_contrasts.oneListIds; 
+end
 
 
 if strcmp(cfg.brainROI, 'vvs')  subj_ch_fr = 17; end %%VVS
@@ -17,7 +22,8 @@ elseif strcmp (cfg.net2load , 'Alex')
 elseif strcmp (cfg.net2load , 'AlexEco')
     [ACT] = load_alexECO_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
-    [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
+    %[ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORr')
     %[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
     [ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);

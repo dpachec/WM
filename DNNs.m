@@ -4,7 +4,6 @@ clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
-%f2sav = 'Res18-2_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'CORrtRELU_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
@@ -12,7 +11,9 @@ clear
 %f2sav = 'AlexEco_pfc_E123_[1-8]_3-54_1_0_0_0_.1_5_1.mat';
 %f2sav = 'CORr_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETi_pfc_M123_[56]_3-54_1_0_1_0_.1_5_1.mat';
-f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
+f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 cfg.DNNs = 1; 
@@ -34,8 +35,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
 
     
-    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
+    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
 
     nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
@@ -54,42 +55,28 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                    %'Res18-2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat';                 
-                    %'Res18-2_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat';                 
-                    %'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1.mat'; 
-                    %'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1.mat'; 
-                    %'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
-                    %'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
-                    %'CORrt_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1.mat'; 
-                    %'CORrt_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat'; 
-                    
-                    'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
 
-                    'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+                    'Res18-8_pfc_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 
-                    'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+                    'Res18-2_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-4_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-6_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-8_pfc_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
 
-                    'CORrt_pfc_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
-                    
+                    'Res18-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-4_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-6_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-8_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
 
-                    
+                    'Res18-2_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-4_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-6_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 
+                    'Res18-2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-4_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-6_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
+                    'Res18-8_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
 
              };   
 
@@ -107,17 +94,15 @@ for listi = 1:length(listF2sav)
         load([paths.traces filelistSess{sessi}]);   
        
         [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-        tic
         cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-        toc
         
         cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
         if (cfg.avRep)
             cfg_contrasts               = average_repetitions(cfg_contrasts);
         end
     
-        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
         
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
         nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
@@ -360,7 +345,8 @@ clear , clc
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'CORr_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')

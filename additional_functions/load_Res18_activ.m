@@ -12,8 +12,6 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
     
     nLays = 1; % for now
     if strcmp(net2load, 'Res18-2')
-        
-            
         if lays2load == 1
             all_act = load('Features_resnet18_bl_8steps-2samples.mat');
         end
@@ -29,13 +27,80 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
             clear all_act
             all_act = appendStruct(all_act0, all_act1);
         end
-        
         seqEnd = 6; 
-    
-    
+    end
+
+    if strcmp(net2load, 'Res18-4')
+        if lays2load == 1
+            all_act = load('Features_resnet18_bl_8steps-4samples.mat');
+        end
+        if lays2load == 3
+            all_act0 = load('Features_resnet18_bl_8steps-layer3[0].record-4samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer3[1].record-4samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        if lays2load == 4
+            all_act0 = load('Features_resnet18_bl_8steps-layer4[0].record-4samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer4[1].record-4samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        seqEnd = 12; 
+    end
+
+    if strcmp(net2load, 'Res18-6')
+        if lays2load == 1
+            all_act = load('Features_resnet18_bl_8steps-6samples.mat');
+        end
+        if lays2load == 3
+            all_act0 = load('Features_resnet18_bl_8steps-layer3[0].record-6samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer3[1].record-6samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        if lays2load == 4
+            all_act0 = load('Features_resnet18_bl_8steps-layer4[0].record-6samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer4[1].record-6samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        seqEnd = 18; 
+    end
+
+    if strcmp(net2load, 'Res18-8')
+        if lays2load == 1
+            all_act = load('Features_resnet18_bl_8steps-8samples.mat');
+        end
+        if lays2load == 3
+            all_act0 = load('Features_resnet18_bl_8steps-layer3[0].record-8samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer3[1].record-8samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        if lays2load == 4
+            all_act0 = load('Features_resnet18_bl_8steps-layer4[0].record-8samples.mat');
+            all_act1 = load('Features_resnet18_bl_8steps-layer4[1].record-8samples.mat');
+            clear all_act
+            all_act = appendStruct(all_act0, all_act1);
+        end
+        seqEnd = 24; 
     end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
      if strcmp(period(1:2), 'E4') | strcmp(period(1), 'M')
         id3 = cellfun(@(x) strsplit(x), oneListIDs, 'un', 0);

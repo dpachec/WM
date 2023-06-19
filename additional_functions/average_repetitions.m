@@ -1,6 +1,6 @@
 function [cfg_contrasts] = average_repetitions(cfg_contrasts)
 
-oneListIds = cfg_contrasts.oneListIds_c;
+oneListIds = cfg_contrasts.oneListIds;
 oneListPow = cfg_contrasts.oneListPow;
 
 
@@ -65,7 +65,7 @@ end
 
 % %  % % 2) Average cued items during maintenance
 
-oneListIds = cfg_contrasts.oneListIds_c;
+oneListIds = cfg_contrasts.oneListIds;
 oneListPow = cfg_contrasts.oneListPow;
 
 for i = 1:length(oneListIds)
@@ -176,7 +176,9 @@ if isfield(cfg_contrasts, 'oneListIds_enc')
 
 end
 
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_c'); 
+if isfield(cfg_contrasts, 'oneListIds_c')
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_c'); 
+end
 cfg_contrasts = rmfield(cfg_contrasts, 'oneListTraces'); 
 
 end

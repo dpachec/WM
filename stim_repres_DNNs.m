@@ -800,12 +800,15 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 % % CORNET 
 % % % 
 clear, clc
-f2sav = 'CORrt_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
+%f2sav = 'CORrt_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
+f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 sessi = 1; 
 subj_ch_fr = 1; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load    );
-[ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+%[ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+[ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+
 
 %% Plot all layers CORNET one line horizontal
 

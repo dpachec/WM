@@ -86,42 +86,8 @@ else % if only 3 dimensions (frequencies used as features)
                 end
             end
         end    
-
-
-    
-    all_r_Times = squeeze(all_r_Times);
-    
-    
-    
-    
-    
-    
-    
-    
+        all_r_Times = squeeze(all_r_Times);
+    end
 end
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-end
-    
-    
-
 end
