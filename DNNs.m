@@ -142,8 +142,8 @@ for listi = 1:length(listF2sav)
                 cfg_contrasts               = average_repetitions(cfg_contrasts);
             end
         
-            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts.oneListPow);
-            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts.oneListIds, sessi, paths);
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
     
     
             % % % restrict time for permutation data
