@@ -1,8 +1,8 @@
-function[ACT] = load_CORr(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+function[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
 
 currentFolder = pwd; 
-cd ([paths.activations.corNet_r])
+cd ([paths.activations.corNet_rTL])
 
 
 

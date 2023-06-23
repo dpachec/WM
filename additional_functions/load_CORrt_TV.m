@@ -1,11 +1,11 @@
 
-function [ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
+function [ACT] = load_CORrt_TV(cfg, sessi, subj_ch_fr, paths);
 
     lays2load = cfg.lays2load;
     
     currentFolder = pwd; 
     
-    gPath = paths.activations.corNet_rt; 
+    gPath = paths.activations.corNet_rtTV; 
     
     if sessi < subj_ch_fr
         cd ([gPath 'freiburg'])

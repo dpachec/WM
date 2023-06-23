@@ -22,15 +22,15 @@ elseif strcmp (cfg.net2load , 'Alex')
 elseif strcmp (cfg.net2load , 'AlexEco')
     [ACT] = load_alexECO_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
-    %[ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);
+    %[ACT] = load_CORrt_TV(cfg, sessi, subj_ch_fr, paths);
     [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORr')
-    %[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
-    [ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
+    %[ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrtRELU')
     [ACT] = load_CORrtRELU_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORs')
-    [ACT] = load_CORs_activ(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORs_TV(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'Res18-2') | strcmp (cfg.net2load , 'Res18-4') | strcmp (cfg.net2load , 'Res18-6') | strcmp (cfg.net2load , 'Res18-8') 
     [ACT] = load_Res18_activ(cfg, sessi, paths, oneListIDs);
 elseif strcmp (cfg.net2load , 'CAT')

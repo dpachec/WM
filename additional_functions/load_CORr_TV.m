@@ -1,36 +1,41 @@
-function[ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
+function [ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
 
-currentFolder = pwd; 
-cd ([paths.activations.BLNETe])
-
-
-if sessi < subj_ch_fr
-    sublist = dir('*FR.mat');
-    sublist = {sublist.name};  sublist = sort(sublist');
-    load(sublist{1});
-    if length(cfg.lays2load) > 1
-        ACT = squeeze(a(cfg.lays2load, :, :)); 
+    lays2load = cfg.lays2load;
+    
+    currentFolder = pwd; 
+    
+    gPath = paths.activations.corNet_rTV; 
+    
+    if sessi < subj_ch_fr
+        cd ([gPath 'freiburg'])
+        fold2load = dir('*cornet*'); fold2load= {fold2load.name}';
+        fold2load  = fold2load([4 3 6 5 8 7 2 1]);
+        count = 1; 
+        for layi= cfg.lays2load%1:length(fold2load)
+            cd (fold2load{layi})
+            b = readNPY('features.npy');
+            rdm = corr(b', 'type','s');
+            ACT(count,:,:) = rdm; 
+            count = count+1; 
+            cd ..
+        end    
     else
-        ACT = a(cfg.lays2load, :, :); 
+       cd ([gPath 'china'])
+        fold2load = dir('*cornet*'); fold2load= {fold2load.name}';
+        fold2load  = fold2load([4 3 6 5 8 7 2 1]);
+        count = 1; 
+        for layi= cfg.lays2load%1:length(fold2load)
+            cd (fold2load{layi})
+            b = readNPY('features.npy');
+            rdm = corr(b', 'type','s');
+            ACT(count,:,:) = rdm; 
+            count = count+1; 
+            cd ..
+        end   
+        
     end
 
-    
-else
-    sublist = dir('*CH.mat');
-    sublist = {sublist.name};  sublist = sort(sublist');
-    load(sublist{1});
-    if length(cfg.lays2load) > 1
-        ACT = squeeze(a(cfg.lays2load, :, :)); 
-    else
-        ACT = a(cfg.lays2load, :, :); 
-    end
-    
+    cd (currentFolder)
+      
 end
-
-cd (currentFolder)
-
-
-
-end
-

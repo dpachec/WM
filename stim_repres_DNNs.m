@@ -801,13 +801,58 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 % % % 
 clear, clc
 %f2sav = 'CORrt_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
-cfg = getParams(f2sav);
+%f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
+%cfg = getParams(f2sav);
+cfg.lays2load = 1:34;
 sessi = 1; 
 subj_ch_fr = 1; 
-paths = load_paths_WM(cfg.brainROI, cfg.net2load    );
-%[ACT] = load_CORrt_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+paths = load_paths_WM('pfc', 'EXAMPLE');
+%[ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+
+%% RNN all RDMS
+
+figure()
+for layi = 1:34
+   subplot (7, 8, layi)
+   d2p = squeeze(ACT(layi, :,:)); 
+   imagesc(d2p); axis square; 
+   set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+   set(gca,'cLim', [0 1])
+   title(num2str(layi))
+end
+
+%exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% 
+% % 
+
+clear, clc
+cfg1.lays2load = 8;
+sessi = 1; 
+subj_ch_fr = 1; 
+paths = load_paths_WM('pfc', 'EXAMPLE');
+[ACT1] = load_CORrt_TV(cfg1, sessi, subj_ch_fr, paths);%load network if not loaded yet
+d2p1 = squeeze(ACT1)
+
+cfg2.lays2load = 34;
+sessi = 1; 
+subj_ch_fr = 1; 
+paths = load_paths_WM('pfc', 'EXAMPLE');
+[ACT2] = load_CORrt_TL(cfg2, sessi, subj_ch_fr, paths);%load network if not loaded yet
+d2p2 = squeeze(ACT2)
+
+
+
+
+%[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+
+%%
+figure()
+
+imagesc(d2p2); axis square; colorbar
+set(gca, 'clim', [0 1])
+
 
 
 %% Plot all layers CORNET one line horizontal

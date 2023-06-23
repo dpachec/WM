@@ -121,8 +121,7 @@ function[ACT] = load_blnext(cfg, subji, paths, oneListIDs);%load network if not 
             end
         end
     
-        % % % % acts now contains for each sequence the data presented in time
-        % to the network (seqLen x netTime x units)
+        % % % % acts now contains for each sequence the activations after each image presentation (seqLen x netTime x units)
         
         for evi = 1:size(acts, 2)
             out=squeeze(acts(:, evi, :));
