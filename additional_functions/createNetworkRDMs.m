@@ -22,11 +22,11 @@ elseif strcmp (cfg.net2load , 'Alex')
 elseif strcmp (cfg.net2load , 'AlexEco')
     [ACT] = load_alexECO_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
-    %[ACT] = load_CORrt_TV(cfg, sessi, subj_ch_fr, paths);
-    [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORrt_TV(cfg, sessi, subj_ch_fr, paths);
+    %[ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORr')
-    [ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
-    %[ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
+    %[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);
+    [ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrtRELU')
     [ACT] = load_CORrtRELU_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORs')

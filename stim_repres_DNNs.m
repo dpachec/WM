@@ -801,7 +801,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 % % % 
 clear, clc
 %f2sav = 'CORrt_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
-%f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
 %cfg = getParams(f2sav);
 cfg.lays2load = 1:34;
 sessi = 1; 
@@ -809,8 +809,10 @@ subj_ch_fr = 1;
 paths = load_paths_WM('pfc', 'EXAMPLE');
 %[ACT] = load_CORr_TV(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+%ACT = ACT([1:18 20:22 24:26 29:30 33:34], :, :);
 
 %% RNN all RDMS
+
 
 figure()
 for layi = 1:34
@@ -824,35 +826,6 @@ end
 
 %exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
-%% 
-% % 
-
-clear, clc
-cfg1.lays2load = 8;
-sessi = 1; 
-subj_ch_fr = 1; 
-paths = load_paths_WM('pfc', 'EXAMPLE');
-[ACT1] = load_CORrt_TV(cfg1, sessi, subj_ch_fr, paths);%load network if not loaded yet
-d2p1 = squeeze(ACT1)
-
-cfg2.lays2load = 34;
-sessi = 1; 
-subj_ch_fr = 1; 
-paths = load_paths_WM('pfc', 'EXAMPLE');
-[ACT2] = load_CORrt_TL(cfg2, sessi, subj_ch_fr, paths);%load network if not loaded yet
-d2p2 = squeeze(ACT2)
-
-
-
-
-%[ACT] = load_CORr_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
-
-%%
-figure()
-
-imagesc(d2p2); axis square; colorbar
-set(gca, 'clim', [0 1])
-
 
 
 %% Plot all layers CORNET one line horizontal
@@ -861,9 +834,11 @@ figure(); set(gcf, 'Position', [100 100 1500 500]);
 myCmap = brewermap([], '*Spectral') 
 colormap(myCmap)
 
-for layi = [2 4 6 8]
+l2l = [5 10 14 18 22 26 30 34];
+
+for layi = 1:8
    subplot (1, 8, layi)
-   d2p = squeeze(ACT(layi, :,:)); 
+   d2p = squeeze(ACT(l2l(layi), :,:)); 
    imagesc(d2p); axis square; 
    set(gca,'cLim', [0 .8])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
@@ -874,8 +849,13 @@ end
  set(ha(2),'position',[.09 *6  0 n n ])
  set(ha(3),'position',[.09 * 5 0 n n ])
  set(ha(4),'position',[.09 * 4 0 n n])
+ set(ha(5),'position',[.09 * 3 0 n n ])
+ set(ha(6),'position',[.09 * 2 0 n n ])
+ set(ha(7),'position',[.09 0 n n])
+ set(ha(8),'position',[.0 0 n n ])
  
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
 
 %% plot MDS one Line Vertical
 cols = brewermap(6, 'Accent') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
@@ -884,9 +864,9 @@ cols = repelem(cols, 10, 1);
 % also nice palette here: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/a64ed616-e9ce-4b1d-8d18-5118cc03f8d2/images/screenshot.png
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
-for layi = [2 4 6 8]
+for layi = 1:8
    subplot (1, 8, layi)
-   d2p = squeeze(ACT(layi, :,:)); 
+   d2p = squeeze(ACT(l2l(layi), :,:)); 
    d2p = 1- d2p;
    [rdmMDS] = cmdscale(d2p);
    scatter(rdmMDS(:,1),rdmMDS(:,2),350, cols, '.'); axis square
@@ -899,7 +879,10 @@ end
  set(ha(2),'position',[.09 *6  0 n n ])
  set(ha(3),'position',[.09 * 5 0 n n ])
  set(ha(4),'position',[.09 * 4 0 n n])
- 
+ set(ha(5),'position',[.09 * 3 0 n n ])
+ set(ha(6),'position',[.09 * 2 0 n n ])
+ set(ha(7),'position',[.09 0 n n])
+ set(ha(8),'position',[.0 0 n n ])
  %legend
  
  
@@ -907,7 +890,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 %% Representational consistency all layers / time points CORNET
-
+%ACT = ACT(l2l,:,:);
 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
@@ -927,12 +910,101 @@ s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse', 'FontSize', 20);
 set(gca, 'clim', [0 .9], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
-                'xticklabels', {'V1 in', 'V1 out', 'V2 in', 'V2 out', 'V4 in', 'V4 out', 'IT in', 'IT out'}, ...
-                'yticklabels', {'V1 in', 'V1 out', 'V2 in', 'V2 out', 'V4 in', 'V4 out', 'IT in', 'IT out'})
+                'xticklabels', {'V1 input', 'V1 conv1', 'V2 input', 'V2 conv1', 'V4 input', 'V4 conv1', 'IT input', 'IT conv1'}, ...
+                'yticklabels', {'V1 input', 'V1 conv1', 'V2 input', 'V2 conv1', 'V4 input', 'V4 conv1', 'IT input', 'IT conv1'})
 
 colormap(myCmap)
 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer Alexnet
+
+clc
+clearvars -except act_CH act_FR ACT
+act_CH = ACT;
+%create cateogy model
+M = zeros (60); 
+M(1:10, 1:10) = 1; 
+M(11:20, 11:20) = 1; 
+M(21:30, 21:30) = 1; 
+M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; 
+M(51:60, 51:60) = 1; 
+
+        
+for layi = 1:size(act_CH, 1)
+    d2p = squeeze(act_CH(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    %[rdmMDS] = cmdscale(d2p);
+    %nDims = size(rdmMDS,2);
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCI(layi) = (mAcross - mWithin) ;
+    
+end
+
+
+% % % mds
+clear c1 c2 c3 cols
+c1 = (1:7)/7'; % sorted by time point
+c2 = repmat(zeros(1), 7, 1)';
+c3 = repmat(ones(1), 7, 1)';
+cols = [c1 ; c2 ; c3]';
+
+
+figure()
+plot (CCI, 'Linewidth', 3); %axis square
+set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%  permutations
+clearvars -except ACT CCI
+
+nPerm = 1000; 
+
+for permi = 1:nPerm
+    %create cateogy model
+    idSh = randperm(60*60);
+    M = zeros (60); 
+    M(1:10, 1:10) = 1; 
+    M(11:20, 11:20) = 1; 
+    M(21:30, 21:30) = 1; 
+    M(31:40, 31:40) = 1; 
+    M(41:50, 41:50) = 1; 
+    M(51:60, 51:60) = 1; 
+    M = M(idSh); M = reshape(M, [60 60]);
+    
+    for layi = 1:size(ACT, 1)
+        d2p = squeeze(ACT(layi, :,:)); 
+        d2p = 1- d2p;
+        rdmMDS = d2p; 
+        rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+        mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+        mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+        %CCIP(permi, layi) = (mAcross - mWithin) / (mAcross + mWithin);
+        CCIP(permi, layi) = (mAcross - mWithin);
+    
+    end
+        
+end
+
+%% 
+lay = 8; 
+obsT = CCI(lay); 
+permT = CCIP(:, lay);
+
+
+figure
+histogram(permT); hold on; 
+scatter(obsT,0, 'filled','r');
+
+
+
+
 
 %% Representational consistency all layers / ONLY 4 TIME points (OUTPUT) CORNET
 
@@ -1050,7 +1122,7 @@ scatter(obsT,0, 'filled','r');
 
 
 
-%% MDS all layers (pink and blue triangle-circles plot) only for INPUT AND OUTPUT
+%% MDS all layers (pink and blue triangle-circles plot) only for INPUT AND OUTPUT CORNET
 
 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);

@@ -13,7 +13,7 @@ clear
 %f2sav = 'BLNETi_pfc_M123_[56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
 
 
 cfg = getParams(f2sav);
@@ -58,11 +58,35 @@ clear, clc
 listF2sav = {
 
                     
-                    'Res18-2_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                    'Res18-4_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                    'Res18-6_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                    'Res18-8_vvs_MALL_[4]_3-54_0_0_1_0_.1_5_1.mat'; 
-                    'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
+                'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+                'CORrt_pfc_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+                'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+                'CORrt_vvs_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+
+                'CORrt_pfc_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
+                'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
+                'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+
 
              };   
 
@@ -185,10 +209,10 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-%f2sav = 'CORrt_pfc_M123_[1-34]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
-f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -221,8 +245,8 @@ for layi = 1:size(nnFit{1}, 1)
     
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
-    [h p ci ts] = ttest(nnH, 0, "Tail","right");
-    %[h p ci ts] = ttest(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat);
     
     d2p = squeeze(mean(nnH, 'omitnan'));
