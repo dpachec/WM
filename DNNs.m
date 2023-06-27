@@ -13,7 +13,7 @@ clear
 %f2sav = 'BLNETi_pfc_M123_[56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+%f2sav = 'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
 
 
 cfg = getParams(f2sav);
@@ -133,7 +133,9 @@ clear
 nPerm = 1000;
 
 listF2sav = {
-                'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+                'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
+                'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
+                'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
              };
     
 
@@ -209,7 +211,7 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'CORrt_pfc_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
@@ -309,8 +311,8 @@ h = zeros(52, 11);
 %h(clustinfo.PixelIdxList{3}) = 1; % Ecoset 
 %h(clustinfo.PixelIdxList{4}) = 1; % Ecoset cluster 2
 
-%h(clustinfo.PixelIdxList{4}) = 1; %Cornet
-%h(clustinfo.PixelIdxList{5}) = 1; %Cornet cluster 2
+%h(clustinfo.PixelIdxList{2}) = 1; %Cornet
+%h(clustinfo.PixelIdxList{4}) = 1; %Cornet cluster 2
 
 
 figure; set(gcf, 'Position', [100 100 200 400])
@@ -337,9 +339,10 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% plot final figure only last layer MAINTENANCE
 times = 1:370;
 freqs = 1:520; 
-%h = zeros(52, 37); 
+h = zeros(52, 37); 
 
-%h(clustinfo.PixelIdxList{7}) = 1; %BL-NET PFC
+%h(clustinfo.PixelIdxList{12}) = 1; %CORNET PFC
+h(clustinfo.PixelIdxList{18}) = 1; %CORNET VVS
 
 %h(clustinfo.PixelIdxList{5}) = 1; %category model
 
@@ -378,13 +381,13 @@ clearvars -except allTObs
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CORrt_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav =  'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -544,8 +547,8 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 clear, clc 
 %f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
 %f2sav = 'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-%f2sav = 'BLNETi_vvs_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
+f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+%f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
 
 
 cfg = getParams(f2sav);
@@ -583,7 +586,8 @@ for layi = 1:size(nnFit{1}, 1)
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
 
-    [h p ci ts] = ttest(nnH);
+    %[h p ci ts] = ttest(nnH);
+    [h p ci ts] = ttest(nnH, 0, "Tail","right");
     h = squeeze(h); t = squeeze(ts.tstat);
     clustinfo = bwconncomp(h);
     
@@ -600,9 +604,7 @@ for layi = 1:size(nnFit{1}, 1)
     d2p = squeeze(mean(nnH, 'omitnan'));
     
     %times = -1.75:.1:6.849; 
-     
-    [h p ci ts] = ttest(nnH);
-    h = squeeze(h); t = squeeze(ts.tstat);
+    
     hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
     
     mART = squeeze(mean(nnH)); 
@@ -688,6 +690,7 @@ for layi = 1:size(nnFit{1}, 1)
     nnH = squeeze(nnH);
 
     [h p ci ts] = ttest(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     h = squeeze(h); t = squeeze(ts.tstat);
     clustinfo = bwconncomp(h);
     
@@ -1007,10 +1010,10 @@ end
 %f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
+f2sav = 'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-f2sav = 'CORrt_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
+%f2sav = 'CORrt_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -1040,6 +1043,7 @@ for layi = 1:size(nnFitPerm, 3)
         dataP = squeeze(nnFitPerm(permi, :,layi, :));
         dataP(sub2exc, :,:) = []; 
         [h p ci ts] = ttest(dataP);
+        %[h p ci ts] = ttest(dataP, 0, "Tail","right");
         h = squeeze(h); t = squeeze(ts.tstat);
     
         
