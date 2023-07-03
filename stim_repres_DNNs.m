@@ -5,7 +5,7 @@ clear, clc
 f2sav = 'Alex_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 sessi = 1; 
-subj_ch_fr = 1; 
+subj_ch_fr = 20; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
@@ -13,14 +13,14 @@ paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 %% Plot all layers Alexnet one line horizontal
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
-myCmap = brewermap([], 'Spectral') 
+myCmap = brewermap([], '*Spectral') 
 colormap(myCmap)
 
 for layi = 1:8
    subplot (1, 8, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    imagesc(d2p); axis square; 
-   set(gca,'cLim', [-.2 .6])
+   set(gca,'cLim', [0 1])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 end
  ha=get(gcf,'children');
@@ -87,7 +87,7 @@ myCmap = brewermap([], '*Spectral')
 s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse', 'FontSize', 20);
-set(gca, 'clim', [0 .9], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
+set(gca, 'clim', [0.5 1], 'xtick',  (1:8) +.5, 'ytick', (1:8) +.5, ...
                 'xticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'}, ...
                 'yticklabels', {'Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5', 'Fc6', 'Fc7', 'Fc8'})
 
@@ -180,16 +180,27 @@ figure
 histogram(permT); hold on; 
 scatter(obsT,0, 'filled','r');
 
+%% compute mean at each layer 
+
+
+for layi = 1:8 
+
+    mPT(layi) = mean(CCIP(:, layi));
+
+
+
+
+end
 
 
 %% % RNN 
 % % % 
 clear, clc
-f2sav = 'RNN_pfc_E123_[1-56]_3-8_0_0_1_1_.1_5_1.mat'; 
+f2sav = 'BLNETi_pfc_E123_[1-56]_3-54_0_0_0_1_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 sessi = 1; 
 subj_ch_fr = 1; 
-paths = load_paths_WM(cfg.brainROI);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 [ACT] = load_BLNETi(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
 
@@ -698,8 +709,8 @@ set(gca, 'FontSize', 15)
 
 %% Representational consistency only first and last time point
 
-lois         = [1 9 17 25 33 41 49]; 
-%lois         = [8 16 24 32 40 48 54]; 
+%lois         = [1 9 17 25 33 41 49]; 
+lois         = [8 16 24 32 40 48 54]; 
 
 
 act = ACT; 
@@ -710,6 +721,7 @@ act2 = reshape(act2, 56, []); act3 = act2(:,all(~isnan(act2)));
 
 allM = corr(act3', 'type', 's');
 allMS = allM(lois, lois);
+allMS(8,:) = nan; allMS(:,8) = nan; %need this for the pColor below
 allMS = tril(allMS, -1); allMS(allMS==0) = nan; 
 
 % % % matrix
@@ -719,8 +731,8 @@ myCmap = brewermap([], '*Spectral')
 s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse');
-set(gca, 'FontSize', 15, 'clim', [0 1], 'xtick',  (1:7) +.5, 'ytick', (1:7) +.5, 'xticklabels', {'1', '2', '3', '4', '5', '6', '7', '8'}, ...
-                'yticklabels', {'1', '2', '3', '4', '5', '6', '7', '8'})
+set(gca, 'clim', [0.5 1], 'xtick',  (1:7) +.5, 'ytick', (1:7) +.5, 'xticklabels', {'1', '2', '3', '4', '5', '6', '7'}, ...
+                'yticklabels', {'1', '2', '3', '4', '5', '6', '7'})
 
 set(gca, 'FontSize', 25)
 colormap(myCmap)
@@ -887,8 +899,8 @@ sessi = 1; subj_ch_fr = 1;
 paths = load_paths_WM('pfc', 'EXAMPLE');
 [ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
-l2l = [5 14 22 30]; % first time-point
-%l2l = [10 18 26 34]; % last time-point
+%l2l = [5 14 22 30]; % first time-point
+l2l = [10 18 26 34]; % last time-point
 
 
 ACT = ACT(l2l,:,:);
@@ -909,7 +921,7 @@ myCmap = brewermap([], '*Spectral')
 s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse', 'FontSize', 20);
-set(gca, 'clim', [0 .9], 'xtick',  (1:4) +.5, 'ytick', (1:4) +.5, ...
+set(gca, 'clim', [0.5 1], 'xtick',  (1:4) +.5, 'ytick', (1:4) +.5, ...
                 'xticklabels', {'V1','V2', 'V4','IT'}, ...
                 'yticklabels', {'V1','V2', 'V4','IT'})
 

@@ -428,6 +428,14 @@ sum(elLength)
 
 toc
 
+%% 
+s_all = chanNames_all
+elLength = cell2mat(cellfun(@length, s_all, 'un', 0))
+
+mean(elLength)
+std(elLength)
+
+
 %% count hippocapmal electrodes
 
 clear s_ids

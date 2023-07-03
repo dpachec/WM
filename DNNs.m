@@ -3,7 +3,7 @@
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 
-%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'CORrtRELU_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
@@ -58,34 +58,10 @@ clear, clc
 listF2sav = {
 
                     
-                'CORrt_pfc_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
-                'CORrt_pfc_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
-                'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1.mat';
-                'CORrt_vvs_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
-
-                'CORrt_pfc_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
-
-                'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_M123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
-
-                'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
-
-                'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1.mat';
-                'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
+                'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+                'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'
+                'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'
+                'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
 
 
              };   
@@ -133,9 +109,8 @@ clear
 nPerm = 1000;
 
 listF2sav = {
-                'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
+                
+                'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'
              };
     
 
@@ -211,7 +186,7 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'CORrt_pfc_E123_[8]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
@@ -379,15 +354,15 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 clearvars -except allTObs
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-%f2sav = 'CORrt_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav =  'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_100p.mat'; 
+f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -466,90 +441,15 @@ p_ranked = sort(p_ranked(:))
 
 
 
-%% load file to plot BANDS (one Layer - time Point)
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear , clc
-%f2sav = 'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
-f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1.mat';
-
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav]);
-
-if strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22];
-elseif strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1];
-    %sub2exc = [1 7 13 16]; %at least 3 electrodres
-    %sub2exc = [1 3 4 7 10 13 16]; %at least 4 electrodres
-elseif strcmp(cfg.brainROI, 'hipp')
-    sub2exc = [2]
-end
-
-for subji = 1:length(nnFit)
-    % 8    16    24    32    40    48    56
-   nnH(subji, : ,:) = nnFit{subji, 1}(1,:);
-   %nnH(subji, : ,:) = nnFit{subji, 1}(7,:);
-   %nnH(subji, : ,:,:) = nnFit{subji};
-        
-end
-
-
-nnH(sub2exc, :, :) = []; 
-nnH = squeeze(nnH);
-[h p ci ts] = ttest(nnH);
-h = squeeze(h); t = squeeze(ts.tstat);
-clustinfo = bwconncomp(h);
-allTObs = sum(t(clustinfo.PixelIdxList{1}))
-d2p = squeeze(mean(nnH, 'omitnan'));
-
-%times = -1.75:.1:6.849; 
-
-figure
-[h p ci ts] = ttest(nnH);
-h = squeeze(h); t = squeeze(ts.tstat);
-hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
-
-mART = squeeze(mean(nnH)); 
-stdART = squeeze(std(nnH)); 
-seART = stdART/ sqrt(size(nnH, 1));
-
-if strcmp(cfg.period(1), 'M')
-    times = 1:46;
-    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
-    shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
-    plot (times, hb, 'Linewidth', 4)
-    %set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
-    set(gca, 'xtick', [3 8 37], 'xticklabels', {'0' '0.5' '3.5'}, 'xlim', [1 37])
-    set(gca, 'FontSize', 18, 'ylim', [-.03 .035]);
-    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',1);
-    plot([8 8],get(gca,'ylim'), 'k:','lineWidth',1);
-    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',1);
-elseif strcmp(cfg.period(1), 'E')
-    times = 1:21; 
-    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
-    shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
-    plot (times, hb, 'Linewidth', 4)
-    set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'xlim', [1 15])
-    set(gca, 'FontSize', 12);
-    plot([5.5 5.5],get(gca,'ylim'), 'k:','lineWidth',2);
-    
-end
-
-exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
-
-
-
 
 
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
 %f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-%f2sav = 'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
+%f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
 %f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-
+f2sav = 'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -586,8 +486,8 @@ for layi = 1:size(nnFit{1}, 1)
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
 
-    %[h p ci ts] = ttest(nnH);
-    [h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     h = squeeze(h); t = squeeze(ts.tstat);
     clustinfo = bwconncomp(h);
     
@@ -648,8 +548,9 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
 %f2sav = 'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
-%f2sav = 'BLNETi_vvs_M123_[1-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+%f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
+f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -664,10 +565,10 @@ paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav]);
 
 % % % % only for CORNET NETWORK
-for subji = 1:length(nnFit)
-   nnH = nnFit{subji, 1}([2 4 6 8],:);
-   nnFit{subji, 1} = nnH; 
-end
+% for subji = 1:length(nnFit)
+%    nnH = nnFit{subji, 1}([2 4 6 8],:);
+%    nnFit{subji, 1} = nnH; 
+% end
 
 % % % % only for BLNETi NETWORK (this has to be computed properly)
 % % for subji = 1:length(nnFit)
@@ -731,12 +632,9 @@ if strcmp(cfg.period(1), 'M')
 
     
     %ALEXNET
-    %myCmap = colormap(brewermap(20,'RdPu'));
-    %myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-    %x = (-.012:-.0035:-.038)';
-    %hbL(1:8, :) = nan; % ALL
-    %hbL([1:5 8], :) = nan; % VVS THETA
-    %hbL(8, 35:end) = nan; % VVS THETA
+    myCmap = colormap(brewermap(20,'RdPu'));
+    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+    x = (-.012:-.0035:-.038)';
     %hbL(1, :) = nan; % VVS ALPHA
     %hbL(:, 1:10) = nan; % VVS ALPHA
     %hbL(8, 1:20) = nan; % VVS ALPHA
@@ -750,18 +648,15 @@ if strcmp(cfg.period(1), 'M')
     %hbL(6, 1:20) = nan; % VVS THETA
     %hbL([1:4], 1:20) = nan; % VVS ALPHA
     %hbL([7], 21:end) = nan; % VVS ALPHA
-    
-    
-    
     %hbL(1:6, :) = nan; % PFC BETA
 
 
     % % % % cornet
-    myCmap = colormap(brewermap(size(mART, 1),'RdBu'));    
-    x = (-.015:-.003:-.025)';
+    %myCmap = colormap(brewermap(size(mART, 1),'RdBu'));    
+    %x = (-.015:-.003:-.025)';
     %hbL(1, 1:25) = nan; % VVS ALPHA
     %hbL(3, 1:25) = nan; % VVS ALPHA
-    hbL(2, 25:37) = nan; % VVS ALPHA
+    %hbL(2, 25:37) = nan; % VVS ALPHA
     
 
     
@@ -777,19 +672,14 @@ elseif strcmp(cfg.period(1), 'E')
     
     figure()
     set(gcf, 'Position', [100 100 150 300])
-    %myCmap = colormap(brewermap(size(mART, 1),'RdBu'));
-    
-    %myCmap = colormap(jet(8));
     times = 1:11;
-    %set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
-    %shadedErrorBar(times, mART, seART, 'r', 1); hold on; 
     plot(times, mART, 'Linewidth', 3); hold on; 
     
     % ALEXNET
     myCmap = colormap(brewermap(20,'RdPu'));
     myCmap = myCmap([6 8 10 12 14 16 18 20],:)
     x = (-.012:-.0035:-.038)';
-    %hbL([1:8], :) = nan; % ALL
+    hbL([1:8], :) = nan; % ALL
     %hbL([2 3], :) = nan; % VVS HIGH GAMMA ALEX
     %hbL([3 5:8], :) = nan; % PFC GAMMA ALEX
     
@@ -811,16 +701,11 @@ elseif strcmp(cfg.period(1), 'E')
     %myCmap = myCmap([12 14 16 18],:)
     %hbL(1, 10:20) = nan; % VVS ALPHA
 
-    %hbL = hbL+x;
-    %plot (times, hbL, 'Linewidth', 4); hold on; 
-    
-    
-    
-    %scatter(times, hb, 200,'.','Linewidth', 4)
-    %set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'}, 'xlim', [1 15])
+    hbL = hbL+x;
+    plot (times, hbL, 'Linewidth', 4); hold on; 
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 11]); 
     %set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
-    set(gca, 'FontSize', 12, 'ylim', [-.0385 .1]);
+    set(gca, 'FontSize', 12, 'ylim', [-.025 .035]);
     plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
     
@@ -842,6 +727,120 @@ imagesc(1:8)
 colormap(myCmap)
 set(gca, 'xtick', [], 'ytick', [])
 exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+
+%% compute clusters in each permutation BANDS for all layers
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+%f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p.mat'; 
+%f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat';
+%f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
+%f2sav = 'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1_1000p.mat';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1_1000p.mat'; 
+%f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
+%f2sav = 'CORrt_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
+
+cfg = getParams(f2sav);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+cd ([paths.results.DNNs])
+load(f2sav);
+
+if strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+end
+
+f2t = strsplit(f2sav, '_');
+nPerm = double(string((f2t{13}(1:end-5))));
+if ndims (nnFitPerm) == 3
+    nnFitPerm1(:, :, 1,:) = nnFitPerm;
+    nnFitPerm = nnFitPerm1;
+
+end
+
+
+% % % % only for CORNET NETWORK
+
+for layi = 1:size(nnFitPerm, 3)
+    for permi = 1:nPerm
+        
+        dataP = squeeze(nnFitPerm(permi, :,layi, :));
+        dataP(sub2exc, :,:) = []; 
+        [h p ci ts] = ttest(dataP);
+        %[h p ci ts] = ttest(dataP, 0, "Tail","right");
+        h = squeeze(h); t = squeeze(ts.tstat);
+    
+        
+        clear allSTs  
+        clustinfo = bwconncomp(h);
+        for pxi = 1:length(clustinfo.PixelIdxList)
+           allSTs(pxi) = sum(t(clustinfo.PixelIdxList{pxi}));% 
+        end
+        
+        %sort all clusters 
+        if exist('allSTs')
+            [max2u id] = max(allSTs);
+            max_clust_sum_perm(permi,layi, :) = allSTs(id); 
+        else
+            max_clust_sum_perm(permi,layi, :) = 0; 
+        end
+    
+    
+    end
+end
+
+
+cd (paths.github)
+
+
+%% compute p value bands for all layers
+clc
+clear p
+
+for layi = 1:size(allTObs, 1)
+    clear mcsR mcsP
+    for pixi = 1:size(allTObs, 2)
+        mcsR = allTObs(layi, pixi); 
+
+        if mcsR ~= 0
+            mcsP = squeeze(max_clust_sum_perm(:,layi));
+        
+            %allAb = mcsP(abs(mcsP) > abs(mcsR));
+            allAb = mcsP(mcsP > mcsR)
+            p(layi, pixi,:) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
+        else
+            p(layi, pixi,:) = nan; 
+        end
+    end
+end
+
+p (p==1.0010 | p == 1) = 0; 
+p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
+p_ranked = sort(p_ranked(:))
+
+
+
+%%
+%figure
+%histogram(mcsP); hold on; 
+%catter(mcsR,0, 'filled','r');
+    
+
+%% compute p for one layer only
+clear p mcsR mcsP
+
+mcsR =    65.4844891668492
+mcsP = squeeze(max_clust_sum_perm(:, 7));
+
+for clusti = 1:length(mcsR)
+    
+    %allAb = mcsP(abs(mcsP) > abs(mcsR));
+    allAb = mcsP(mcsP > mcsR);
+    p = 1 - ((nPerm-1) - (length (allAb)))  / nPerm
+
+end
+
 
 %% load files to plot all CATEGORY RESULTS  -- IN one PLOT ONLY 
 
@@ -1005,117 +1004,9 @@ end
 
 
 
-%% compute clusters in each permutation BANDS for all layers
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-%f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p.mat'; 
-%f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-f2sav = 'Alex_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1_1000p.mat'; 
-%f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'CORrt_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
-
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-cd ([paths.results.DNNs])
-load(f2sav);
-
-if strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1];
-elseif strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22];
-end
-
-f2t = strsplit(f2sav, '_');
-nPerm = double(string((f2t{13}(1:end-5))));
-if ndims (nnFitPerm) == 3
-    nnFitPerm1(:, :, 1,:) = nnFitPerm;
-    nnFitPerm = nnFitPerm1;
-
-end
-
-
-% % % % only for CORNET NETWORK
-
-for layi = 1:size(nnFitPerm, 3)
-    for permi = 1:nPerm
-        
-        dataP = squeeze(nnFitPerm(permi, :,layi, :));
-        dataP(sub2exc, :,:) = []; 
-        [h p ci ts] = ttest(dataP);
-        %[h p ci ts] = ttest(dataP, 0, "Tail","right");
-        h = squeeze(h); t = squeeze(ts.tstat);
-    
-        
-        clear allSTs  
-        clustinfo = bwconncomp(h);
-        for pxi = 1:length(clustinfo.PixelIdxList)
-           allSTs(pxi) = sum(t(clustinfo.PixelIdxList{pxi}));% 
-        end
-        
-        %sort all clusters 
-        if exist('allSTs')
-            [max2u id] = max(allSTs);
-            max_clust_sum_perm(permi,layi, :) = allSTs(id); 
-        else
-            max_clust_sum_perm(permi,layi, :) = 0; 
-        end
-    
-    
-    end
-end
-
-
-cd (paths.github)
 
 
 
-%% compute p value bands for all layers
-clc
-clear p
-
-for layi = 1:size(allTObs, 1)
-    clear mcsR mcsP
-    for pixi = 1:size(allTObs, 2)
-        mcsR = allTObs(layi, pixi); 
-
-        if mcsR ~= 0
-            mcsP = squeeze(max_clust_sum_perm(:,layi));
-        
-            %allAb = mcsP(abs(mcsP) > abs(mcsR));
-            allAb = mcsP(mcsP > mcsR)
-            p(layi, pixi,:) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
-        else
-            p(layi, pixi,:) = nan; 
-        end
-    end
-end
-
-p (p==1.0010 | p == 1) = 0; 
-p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
-p_ranked = sort(p_ranked(:))
-
-
-
-%%
-%figure
-%histogram(mcsP); hold on; 
-%catter(mcsR,0, 'filled','r');
-    
-
-%% compute p for one layer only
-clear p mcsR mcsP
-
-mcsR =    65.4844891668492
-mcsP = squeeze(max_clust_sum_perm(:, 7));
-
-for clusti = 1:length(mcsR)
-    
-    %allAb = mcsP(abs(mcsP) > abs(mcsR));
-    allAb = mcsP(mcsP > mcsR);
-    p = 1 - ((nPerm-1) - (length (allAb)))  / nPerm
-
-end
 
 
 
