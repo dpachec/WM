@@ -99,7 +99,7 @@ if strcmp(cfg.res, '100_perm')
     end
 
     if strcmp(cfg.cut2, '1-4')
-        cfg_plot.mlimE = 8:15; %1:85;
+        cfg_plot.mlimE = 8:17; %1:85;
         cfg_plot.mlimR = 8:47; %1:85
         cfg_plot.binsE = 40; 
         cfg_plot.binsR = 8; 

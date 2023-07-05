@@ -5,12 +5,17 @@ clear, clc
 f2sav = 'Alex_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
 cfg = getParams(f2sav);
 sessi = 1; 
-subj_ch_fr = 20; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-[ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+
+subj_ch_fr = 1; 
+ACT_FR = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
+subj_ch_fr = 20; 
+ACT_CH = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
 
 %% Plot all layers Alexnet one line horizontal
+
+ACT = ACT_FR; 
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 myCmap = brewermap([], '*Spectral') 
@@ -36,6 +41,9 @@ end
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% plot MDS one Line Vertical
+
+ACT = ACT_FR; 
+
 cols = brewermap(6, 'Accent') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
 cols = repelem(cols, 10, 1);
 %plot(1,1,'.','color',cols(11,:), 'Markersize', 2000) % check the color
@@ -69,16 +77,24 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% Representational consistency all layers / time points Alexnet
 
-
+ACT = ACT_FR; 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
 act2 = reshape(act2, 8, []); act3 = act2(:,all(~isnan(act2)));  
+allMS_FR = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS_FR(9,:) = nan; allMS_FR(:,9) = nan; %need this for the pColor below
+allMS_FR = tril(allMS_FR, -1); allMS_FR(allMS_FR==0) = nan; 
 
+ACT = ACT_CH; 
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 8, []); act3 = act2(:,all(~isnan(act2)));  
+allMS_CH = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS_CH(9,:) = nan; allMS_CH(:,9) = nan; %need this for the pColor below
+allMS_CH = tril(allMS_CH, -1); allMS_CH(allMS_CH==0) = nan; 
 
-allMS = corr(act3', 'type', 's'); %allMS = allM.^2;
-allMS(9,:) = nan; allMS(:,9) = nan; %need this for the pColor below
-allMS = tril(allMS, -1); allMS(allMS==0) = nan; 
-
+allMS2 = cat(3, allMS_FR, allMS_CH);
+allMS = squeeze(mean(allMS2, 3))
 
 % % % plot matrix
 figure()
@@ -98,45 +114,44 @@ exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 %% compute CCI for each layer Alexnet
 
 clc
-clearvars -except act_CH act_FR ACT
-act_CH = ACT;
-%create cateogy model
-M = zeros (60); 
-M(1:10, 1:10) = 1; 
-M(11:20, 11:20) = 1; 
-M(21:30, 21:30) = 1; 
-M(31:40, 31:40) = 1; 
-M(41:50, 41:50) = 1; 
-M(51:60, 51:60) = 1; 
+clearvars -except ACT_FR ACT_CH 
 
-        
-for layi = 1:size(act_CH, 1)
-    d2p = squeeze(act_CH(layi, :,:)); 
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
     d2p = 1- d2p;
     rdmMDS = d2p; 
-    %[rdmMDS] = cmdscale(d2p);
-    %nDims = size(rdmMDS,2);
     rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
     mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
     mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
     %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
-    CCI(layi) = (mAcross - mWithin) ;
-    
+    CCI_FR(layi) = (mAcross - mWithin) ;
 end
 
+%china
+ACT = ACT_CH;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    CCI_CH(layi) = (mAcross - mWithin) ;
+end
 
-% % % mds
-clear c1 c2 c3 cols
-c1 = (1:7)/7'; % sorted by time point
-c2 = repmat(zeros(1), 7, 1)';
-c3 = repmat(ones(1), 7, 1)';
-cols = [c1 ; c2 ; c3]';
-
+CCI2 = [CCI_FR; CCI_CH]; 
+CCI = mean(CCI2); 
 
 figure()
 plot (CCI, 'Linewidth', 3); %axis square
 set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
 
 
 %%  permutations
@@ -147,13 +162,7 @@ nPerm = 1000;
 for permi = 1:nPerm
     %create cateogy model
     idSh = randperm(60*60);
-    M = zeros (60); 
-    M(1:10, 1:10) = 1; 
-    M(11:20, 11:20) = 1; 
-    M(21:30, 21:30) = 1; 
-    M(31:40, 31:40) = 1; 
-    M(41:50, 41:50) = 1; 
-    M(51:60, 51:60) = 1; 
+    M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
     M = M(idSh); M = reshape(M, [60 60]);
     
     for layi = 1:size(ACT, 1)
@@ -163,7 +172,6 @@ for permi = 1:nPerm
         rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
         mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
         mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-        %CCIP(permi, layi) = (mAcross - mWithin) / (mAcross + mWithin);
         CCIP(permi, layi) = (mAcross - mWithin);
     
     end

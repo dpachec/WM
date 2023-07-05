@@ -107,9 +107,9 @@ region = 'vvs';
 paths = load_paths_WM(region, []);
 
 contrasts = {
-              'DISC_EE' 'DIDC_EE';
+              %'DISC_EE' 'DIDC_EE';
               %'DISC_M2M2' 'DIDC_M2M2';
-              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_EM2' 'DIDC_EM2';
               %'DISC_M2A' 'DIDC_M2A';
              };
 
@@ -130,27 +130,27 @@ clc
 tic; 
 
 %define conditions 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
-cfg.subj2exc    =       [18 22];% vvs;
-%cfg.subj2exc   =       [1]; % pfc
+%cfg.subj2exc    =       [18 22];% vvs;
+cfg.subj2exc   =       [1]; % pfc
 cfg.clim        =       [-.01 .0115];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %1-1 1-4 4-4
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '1-4'; %1-1 1-4 4-4
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.lwd1        =       2; %baseline 
 cfg.lwd2        =       2; %significant outline
 cfg.remClust    =       0; 
-cfg.plot1clust  =       1;  
-cfg.clust2plot  =       3;  
+cfg.plot1clust  =       0;  
+cfg.clust2plot  =       7;  
 cfg.runperm     =       0;  
 cfg.all_cond1   =       cond1B; 
 cfg.all_cond2   =       cond2B; 
@@ -187,6 +187,25 @@ if ~isempty (out_perm.max_clust_sum_real)
     p = (1 - (cfg_perm.n_perm - (length (allAb) ) )  /cfg_perm.n_perm) + (1/cfg_perm.n_perm);
     disp (['p = ' num2str(p)]);
 end
+
+
+%%
+n_perm = 1000; 
+max_clust_sum = out_perm.max_clust_sum;
+obs = max(out_perm.max_clust_sum_real);
+allAb = max_clust_sum((max_clust_sum) > obs);
+p = (1 - (n_perm - (length (allAb) ) )  /n_perm) + (1/n_perm);
+disp (['p = ' num2str(p)]);
+
+
+
+%% stats
+
+allAb = max_clust_sum(max_clust_sum > 121.939054751820);
+p =1 - (nPerm - (length (allAb)+1) )  /nPerm;
+
+disp (['p = ' num2str(p)]);
+
 
 
 %%

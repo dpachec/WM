@@ -92,13 +92,12 @@ colormap jet;
 
 ax3 = subplot (133);
 if plot1clust
-    sigMH_thres = zeros(size(sigMH_thres)); 
-    sigMH_thres(out_real.clustInfoReal.PixelIdxList{clust2plot}) = 1;
-    sigMH_thres = triu(sigMH_thres.',1) + tril(sigMH_thres);
+    sigMH_real = zeros(size(sigMH_real)); 
+    sigMH_real(out_real.clustInfoReal.PixelIdxList{clust2plot}) = 1;
 end
 imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; 
 if cfg_plot.plotClust
-    contour(flipud(myresizem(sigMH_thres, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k');colorbar; 
+    contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k');colorbar; 
 end
 if cfg_plot.plotCueOnset
     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 

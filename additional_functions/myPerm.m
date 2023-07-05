@@ -61,51 +61,36 @@ function [out_perm] = myPerm (cfg_perm)
     numPixPermi = numPixPermi';
     out_perm.max_clust_sum = out_perm.max_clust_sum';
     
-    
-    %%threshold to the sum of the significant cluster of t values
-    lower_threshold = prctile(out_perm.max_clust_sum,    (cfg_perm.pval*100)/2);
-    out_perm.max_clust_sum_perm = prctile(out_perm.max_clust_sum,100-((cfg_perm.pval*100)/2)); % /2 for a 2 sided test
-    %out_perm.max_clust_sum_perm = prctile(out_perm.max_clust_sum,100-((cfg_perm.pval*100)));
+    %out_perm.max_clust_sum_perm = prctile(out_perm.max_clust_sum,100-((cfg_perm.pval*100)/2)); % /2 for a 2 sided test
+    out_perm.max_clust_sum_perm = prctile(out_perm.max_clust_sum,100-((cfg_perm.pval*100)));
 
-    %numPixThres = prctile(abs(numPixPermi),100-cfg_perm.pvalC*100);
-    %whichclusters2remove = find(numPixReal < numPixThres);
-    
-    %keep the biggest cluster
-    %whichclusters2remove = find(cfg_perm.out_real.all_clust_tsum_real(:,1) < max_clust_sum_real);
-    
     %keep based on summed t-values
     if ~isempty(cfg_perm.out_real.all_clust_tsum_real)
         whichclusters2remove = find(cfg_perm.out_real.all_clust_tsum_real(:,1) < out_perm.max_clust_sum_perm);
     else
         whichclusters2remove = [];
     end
-    %whichclusters2remove = 1:31 %hack for NaN
     
     out_perm.sigMH_thres = sigMH_real;
     %remove small clusters
     for i=1:length(whichclusters2remove)
         out_perm.sigMH_thres(clustInfoReal.PixelIdxList{whichclusters2remove(i)})=0;
     end
-    %manually delete all items
-     %load ('clustInfoReal_plot');
-     %out_perm.sigMH_thres(clustInfoReal.PixelIdxList{1})=1;
-     %out_perm.sigMH_thres(clustInfoReal.PixelIdxList{16})=1;
-     %out_perm.sigMH_thres(clustInfoReal.PixelIdxList{17})=0;
      
-     
-        fprintf('\n');
-     
-     
-        all_clust_tsum_real             =   cfg_perm.out_real.all_clust_tsum_real;
-        max_clust_sum_real              =   cfg_perm.out_real.max_clust_sum_real;
-        max_clust_sum                   =   out_perm.max_clust_sum;
-        max_clust_sum_perm              =   out_perm.max_clust_sum_perm;
-        out_perm.max_clust_sum_real     =   cfg_perm.out_real.max_clust_sum_real;
-        
-        if cfg_perm.savePerm
-            filename =  [num2str(cfg_perm.n_perm) 'p_' cfg_perm.cond1 '_' cfg_perm.cond2];
-                save (filename, 'all_clust_tsum_real', 'out_perm');
-        end
+ 
+    fprintf('\n');
+ 
+ 
+    all_clust_tsum_real             =   cfg_perm.out_real.all_clust_tsum_real;
+    max_clust_sum_real              =   cfg_perm.out_real.max_clust_sum_real;
+    max_clust_sum                   =   out_perm.max_clust_sum;
+    max_clust_sum_perm              =   out_perm.max_clust_sum_perm;
+    out_perm.max_clust_sum_real     =   cfg_perm.out_real.max_clust_sum_real;
+    
+    if cfg_perm.savePerm
+        filename =  [num2str(cfg_perm.n_perm) 'p_' cfg_perm.cond1 '_' cfg_perm.cond2];
+            save (filename, 'all_clust_tsum_real', 'out_perm');
+    end
 
 end
 
