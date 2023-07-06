@@ -111,8 +111,9 @@ nPerm = 1000;
 listF2sav = {
                 
                 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'
-                'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-                'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+                %'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+                %'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+
              };
     
 
@@ -188,9 +189,9 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat';
+%f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
@@ -318,8 +319,8 @@ times = 1:370;
 freqs = 1:520; 
 h = zeros(52, 37); 
 
-%h(clustinfo.PixelIdxList{12}) = 1; %CORNET PFC
-h(clustinfo.PixelIdxList{18}) = 1; %CORNET VVS
+h(clustinfo.PixelIdxList{12}) = 1; %CORNET PFC
+%h(clustinfo.PixelIdxList{18}) = 1; %CORNET VVS
 
 %h(clustinfo.PixelIdxList{5}) = 1; %category model
 
@@ -363,8 +364,8 @@ clearvars -except allTObs
 %f2sav =  'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+f2sav = 'BLNETi_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+%f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -450,8 +451,9 @@ p_ranked = sort(p_ranked(:))
 clear, clc 
 %f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
 %f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
-%f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-f2sav = 'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat';
+%f2sav = 'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat';
+f2sav = 'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -551,8 +553,9 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 clear, clc 
 %f2sav = 'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1.mat'; 
-%f2sav = 'CORrt_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1.mat';
-f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
+%f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
+f2sav = 'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -565,12 +568,6 @@ end
 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav]);
-
-% % % % only for CORNET NETWORK
-% for subji = 1:length(nnFit)
-%    nnH = nnFit{subji, 1}([2 4 6 8],:);
-%    nnFit{subji, 1} = nnH; 
-% end
 
 % % % % only for BLNETi NETWORK (this has to be computed properly)
 % % for subji = 1:length(nnFit)
@@ -634,9 +631,9 @@ if strcmp(cfg.period(1), 'M')
 
     
     %ALEXNET
-    myCmap = colormap(brewermap(20,'RdPu'));
-    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-    x = (-.012:-.0035:-.038)';
+%     myCmap = colormap(brewermap(20,'RdPu'));
+%     myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+%     x = (-.012:-.0035:-.038)';
     %hbL(1, :) = nan; % VVS ALPHA
     %hbL(:, 1:10) = nan; % VVS ALPHA
     %hbL(8, 1:20) = nan; % VVS ALPHA
@@ -654,12 +651,13 @@ if strcmp(cfg.period(1), 'M')
 
 
     % % % % cornet
-    %myCmap = colormap(brewermap(size(mART, 1),'RdBu'));    
-    %x = (-.015:-.003:-.025)';
-    %hbL(1, 1:25) = nan; % VVS ALPHA
-    %hbL(3, 1:25) = nan; % VVS ALPHA
-    %hbL(2, 25:37) = nan; % VVS ALPHA
-    
+    x = (-.015:-.0035:-.028)';
+    myCmap = colormap(brewermap(18,'RdPu'));
+    myCmap = myCmap([6 10 14 18],:)
+    hbL(1:4, 1:37) = nan; % ALL
+    %hbL(1, 1:37) = nan; % VVS ALPHA
+    %hbL(1:4, 1:25) = nan; % VVS ALPHA
+    %hbL(1:4, 1:25) = nan; % PFC BETA
 
     
     hbL = hbL+x;
@@ -678,10 +676,10 @@ elseif strcmp(cfg.period(1), 'E')
     plot(times, mART, 'Linewidth', 3); hold on; 
     
     % ALEXNET
-    myCmap = colormap(brewermap(20,'RdPu'));
-    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-    x = (-.012:-.0035:-.038)';
-    hbL([1:8], :) = nan; % ALL
+    %myCmap = colormap(brewermap(20,'RdPu'));
+    %myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+    %x = (-.012:-.0035:-.038)';
+    %hbL([1:8], :) = nan; % ALL
     %hbL([2 3], :) = nan; % VVS HIGH GAMMA ALEX
     %hbL([3 5:8], :) = nan; % PFC GAMMA ALEX
     
@@ -698,16 +696,20 @@ elseif strcmp(cfg.period(1), 'E')
     
 
     %CorNET
-    %x = (-.015:-.003:-.025)';
-    %myCmap = colormap(brewermap(18,'RdPu'));
-    %myCmap = myCmap([12 14 16 18],:)
-    %hbL(1, 10:20) = nan; % VVS ALPHA
+    x = (-.015:-.0035:-.028)';
+    myCmap = colormap(brewermap(18,'RdPu'));
+    myCmap = myCmap([6 10 14 18],:)
+    %hbL(1:4, 1:11) = nan; % ALL
+    %hbL(1, 10:11) = nan; % VVS ALPHA
+    
+    
 
     hbL = hbL+x;
     plot (times, hbL, 'Linewidth', 4); hold on; 
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 11]); 
-    %set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
-    set(gca, 'FontSize', 12, 'ylim', [-.025 .035]);
+    set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
+    %set(gca, 'FontSize', 12, 'ylim', [-.025 .035]);
+    %set(gca, 'FontSize', 12, 'ylim', [-.0275 .035]);
     plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
     
@@ -724,8 +726,9 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% 
 myCmap = colormap(brewermap(20,'RdPu'));
 myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-figure(); set(gcf, 'Position', [100 100 800 100])
-imagesc(1:8)
+%figure(); set(gcf, 'Position', [100 100 800 100]) % for blnet and alexnet 
+figure(); set(gcf, 'Position', [100 100 500 100]) % for Cornet
+imagesc(1:4)
 colormap(myCmap)
 set(gca, 'xtick', [], 'ytick', [])
 exportgraphics(gcf, 'myP.png', 'Resolution', 300)
@@ -738,9 +741,9 @@ exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 %f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1_1000p.mat'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'CORrt_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
+f2sav = 'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
