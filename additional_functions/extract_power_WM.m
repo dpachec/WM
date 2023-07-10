@@ -1,15 +1,15 @@
 
 function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
 
+    % disp ('>> extracting power ... ');
+    
     oneListTraces_c = cfg_contrasts.oneListTraces; 
     timeRes = cfg.timeRes;  
-    DNN_analysis = cfg.DNNs; 
+    DNN_analysis = cfg.DNN_analysis; 
     if DNN_analysis
         period = cfg.period; 
     end
 
-    
-   % disp ('>> extracting power ... ');
     sr = 1000;
     data_ft = mat2ft(oneListTraces_c, sr);
 

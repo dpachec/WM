@@ -1,7 +1,6 @@
 function [EEG] = select_electrodes(EEG, region)
 
-atlas = ft_read_atlas('aparc aseg-in-rawavg.nii'); %located in 'D:\_WM\scripts\additional_functions'
-% the ft_read_atlas function changes in the new fieldtrip version, so the SPM12 version has to be employed (whih is now included in the additional_functions folder)
+atlas = ft_read_atlas('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg.nii'); %from SPM12 (included in the additional_functions)
 atlas.coordsys = 'mni';
 
 S = struct2cell(EEG.chanlocs)'; 
@@ -27,7 +26,6 @@ for chani = 1:length(elec_mni_frv.chanpos)
     labels = ft_volumelookup(cfg, atlas);
     [~, indx] = max(labels.count); 
     % check https://www.fieldtriptoolbox.org/faq/how_can_i_determine_the_anatomical_label_of_a_source/
-    %each entry nidicates how many times an electrode fall into a specific region
     myCoord(chani,:) = labels.name(indx);
     EEG.chanlocs(chani).location = labels.name(indx);
 end

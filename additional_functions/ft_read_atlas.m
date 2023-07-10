@@ -63,7 +63,7 @@ if isa(filename, 'cell')
 end % iscell
 
 % optionally get the data from the URL and make a temporary local copy
-filename = fetch_url(filename);
+%filename = fetch_url(filename);
 
 [p, f, x] = fileparts(filename);
 

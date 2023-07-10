@@ -455,13 +455,13 @@ if subji < 47 %for the german data
    EEG.TTL = TTL;
    EEG.comments = '';
    EEG.subj = sublist{subji}(1:end-4);
-   EEG.tr2exc_manu = [];
+   
 elseif subji > 46 & subji < 65 % for the chinese data
    eventChannel = 'POL DC13';TTL = strmatch(eventChannel, {EEG.chanlocs.labels}, 'exact');
    EEG.TTL = TTL;
    EEG.comments = '';
    EEG.subj = sublist{subji}(1:end-4);
-   EEG.tr2exc_manu = []; 
+   
 else 
    EEG.chanlocs = EEG.chanlocs';
    c = allE{subji}(:,1);
@@ -469,7 +469,7 @@ else
    EEG.TTL = [];
    EEG.comments = '';
    EEG.subj = sublist{subji}(1:end-4);
-   EEG.tr2exc_manu = [];  
+   
 end
 
 

@@ -22,7 +22,7 @@ montage         =       'bipo';            %   'aver', 'bipo'
 timeRes         =       0.1; %0.01;               %    0.1 = 100ms; 0.01 = 10ms; or 'all' 
 takeAllTrials   =       0; 
 region          =       'vvs';
-rawD            =       0; %power or raw amplitude time series
+powOrAmp        =       'pow'; %power or raw amplitude time series
   
 disp ([ 'eLim = ' num2str(eLim) newline ...
         'takeMean = ' num2str(takeMean) newline ...
@@ -67,29 +67,18 @@ for subji = subjfir:subjend
     
     %remove noisy trials 
     if cleaning
-        [tr2exc_auto ] = remTriwithNans_WM (oneListTraces, oneListIds, oneListMarkers, xlimE, eLim);
+        [tr2exc] = remTriwithNans_WM (oneListTraces, oneListIds, oneListMarkers, xlimE, eLim);
                                             
-               
         %first remove trials detected automatically
-        if exist ('tr2exc_auto')
+        if exist ('tr2exc')
             disp(['oneListTraces before removing: ' num2str(size(oneListTraces))]);
-            disp (['removing trials : ' num2str(tr2exc_auto) ]);
-            oneListTraces_c  = oneListTraces(:,:,~tr2exc_auto); %I do this after decomposition to avoid NaNs
-            oneListIds_c     = oneListIds(~tr2exc_auto);
-            oneListMarkers_c = oneListMarkers(:,:,~tr2exc_auto);
- 
-            disp ([num2str(length(find(tr2exc_auto))) ' trials were excluded automatically']);
+            disp (['removing trials : ' num2str(tr2exc) ]);
+            oneListTraces_c  = oneListTraces(:,:,~tr2exc); %I do this after decomposition to avoid NaNs
+            oneListIds_c     = oneListIds(~tr2exc);
+            oneListMarkers_c = oneListMarkers(:,:,~tr2exc);
         end
-        
-        %exclude manually detected trilals
-        t2excM = EEG.tr2exc_manu;
-        [C ia ib] = intersect(t2excM, oneListIds_c);
-        oneListTraces_c(:,:,ib) = []; 
-        oneListMarkers_c(:,:,ib) = []; 
-        oneListIds_c(ib) = [];
- 
-        disp ([num2str(length(find(ib))) ' trials were excluded manually']);
         disp(['oneListTraces after removing: ' num2str(size(oneListTraces_c))]);
+
     else
         oneListTraces_c  = oneListTraces; 
         oneListIds_c     = oneListIds;
@@ -98,13 +87,12 @@ for subji = subjfir:subjend
     
     disp (['size onelistTraces_c > ' num2str(size(oneListTraces_c)) ]);
     
-    if rawD
+    if strcmp(powOrAmp, 'amp')
         cfg_contrasts.oneListIds_c        =       oneListIds_c; 
         cfg_contrasts.oneListTraces       =       oneListTraces_c; 
         cfg_contrasts.chanNames           =       struct2cell(EEG.chanlocs)'; %[{EEG.chanlocs.labels}']; 
         cfg_contrasts.subj                =       EEG.subj; 
-        
-    else
+    elseif strcmp(powOrAmp, 'pow')
         cfg.timeRes = timeRes; 
         cfg_contrasts.oneListTraces = oneListTraces_c; 
         cfg_contrasts.oneListIds_c = oneListIds_c; 
