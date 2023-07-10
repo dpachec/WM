@@ -40,8 +40,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
     % % check the normalizatoin across trials works 
-    %d2p = squeeze(mean(oneListPow(oneListIds(:, 1) ==1, :, :, :)));
-    % imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
+    %d2p = squeeze(mean(cfg_contrasts.oneListPow(cfg_contrasts.oneListIds(:, 1) ==1, :, :, :)));
+    %imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
 
  
     cfg_contrasts.contr2save = contr2save';
