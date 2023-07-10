@@ -35,11 +35,11 @@ disp ([ 'eLim = ' num2str(eLim) newline ...
 [all_events] = loadLogsWM;
     
  
-for subji = subjfir:subjend 
-    disp (['Subj: ' num2str(subji)]);
+for sessi = subjfir:subjend 
+    disp (['Subj: ' num2str(sessi)]);
     
-    events = all_events{subji};
-    EEG = load_data_WM (subji, events);
+    events = all_events{sessi};
+    EEG = load_data_WM (sessi, events);
     
     if rereference
         EEG = re_reference_WM(EEG, montage); % chans2exc, EEG, average, bipolar    
@@ -48,7 +48,7 @@ for subji = subjfir:subjend
     EEG = select_electrodes_WM(EEG, region); %selects electrodes and assign labels to the subset
     
     if isempty(EEG.data)
-       disp(['Subject ' num2str(subji) ' has no matching electrodes']);
+       disp(['Subject ' num2str(sessi) ' has no matching electrodes']);
        continue %skips the rest and begins the next iteration. Avoids subjects with no channels
     end
        

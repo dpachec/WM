@@ -1,6 +1,10 @@
 function [cfg_contrasts] = average_repetitions(cfg_contrasts)
 
-oneListIds = cfg_contrasts.oneListIds;
+if isfield(cfg_contrasts, 'oneListIds_c')
+    oneListIds = cfg_contrasts.oneListIds_c;
+else
+    oneListIds = cfg_contrasts.oneListIds;
+end
 oneListPow = cfg_contrasts.oneListPow;
 
 

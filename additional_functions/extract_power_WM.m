@@ -45,8 +45,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     tf_data_L          = ft_freqanalysis(cfg, data_ft);
     dataL = tf_data_L.powspctrm;
 
-
-
+    
     cfg              = [];
     cfg.method       = 'wavelet'; %'mtmconvol'; % 'wavelet'; %
     cfg.width        = linspace(6, 12, 25);
