@@ -596,7 +596,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% Representational consistency all layers / time points
 
-act = ACT; 
+act = ACT_FR; 
 act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
 act2 = reshape(act2, 56, []); act3 = act2(:,all(~isnan(act2)));  
@@ -701,7 +701,7 @@ cols = [c1 ; c2 ; c3]';
 
 clear allM2_FR
 for tlyi = 1:55
-    allM2_FR(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');allMS = allM;
+    allM2_FR(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');
 end
 
 act = ACT_CH; 
@@ -716,7 +716,7 @@ cols = [c1 ; c2 ; c3]';
 
 clear allM2_CH
 for tlyi = 1:55
-    allM2_CH(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');allMS = allM;
+    allM2_CH(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');
 end
 
 allM2 = [allM2_FR  allM2_CH];
@@ -736,6 +736,25 @@ plot(abs(allM2(49:55)), 'Linewidth', lw, 'Color', [cols(7,:)])
 %set(gca, 'ylim', [0.8 1], 'xlim', [0.5 7.5], 'xtick', [1:7], 'xticklabels', {'1-2' '2-3' '3-4' '4-5' '5-6' '6-7' '7-8'}, 'FontSize', 22)
 set(gca, 'ylim', [0.8 1], 'xlim', [0.5 7.5], 'xtick', [1:7], 'xticklabels', {'1' '2' '3' '4' '5' '6' '7'}, 'FontSize', 22)
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+%%
+for i = 1:54
+   
+    allps(i,:) = compare_correlation_coefficients(allM2(i), allM2(i+1), 1770, 1770)
+    allp2s(i,:) = corr_rtest(allM2(i), allM2(i+1), 1770, 1770)
+
+end
+
+
+%%
+d2p = allM2(1:7); 
+d2p2 = stdfilt(d2p)
+%diff(d2p)
+
+plot(d2p); hold on; 
+plot(d2p2)
+
+
 
 
 %% 

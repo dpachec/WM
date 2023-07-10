@@ -58,11 +58,29 @@ clear, clc
 listF2sav = {
 
                     
-                'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
-                'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'
-                'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat'
-                'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat'
+                'BLNETi_vvs_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
 
+                'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_E123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
+
+                'BLNETi_vvs_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
+
+                'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
+                'BLNETi_pfc_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
 
              };   
 
@@ -110,10 +128,8 @@ nPerm = 1000;
 
 listF2sav = {
                 
-                'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'
-                'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-                'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-
+                'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+               
              };
     
 
@@ -177,7 +193,7 @@ for listi = 1:length(listF2sav)
     end
     
     mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
     
 
 end
@@ -191,8 +207,8 @@ etime(datevec(t2), datevec(t1))
 clear , clc
 %f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1.mat';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1.mat'; 
-f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
-%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1.mat';
+f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1.mat'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -354,7 +370,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 
 %% COMPUTE CLUSTERS in each permutation FREQUENCY RESOLVED
-
+clc
 clearvars -except allTObs
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
@@ -363,9 +379,11 @@ clearvars -except allTObs
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav =  'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p.mat';
-%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
-f2sav = 'BLNETi_vvs_M123_[1-56]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p.mat'; 
+%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p.mat';
 %f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p.mat';
+
+
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -443,16 +461,18 @@ p_ranked = sort(p_ranked(:))
 
 
 
-
+%%
+x = p(4,:); 
+x = sort(x)
 
 
 %% load file to plot BANDS (ALL LAYERS RNN and Alex)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
 %f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1.mat'; 
-%f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
 %f2sav = 'Alex_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1.mat';
-f2sav = 'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+%f2sav = 'CORrt_vvs_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1.mat';
+f2sav = 'BLNETi_pfc_M123_[1-56]_13-29_1_0_0_0_.1_5_1.mat'; 
 
 
 cfg = getParams(f2sav);
@@ -551,10 +571,10 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 %% load file to plot BANDS (ALL LAYERS RNN and Alex) -- IN one PLOT ONLY 
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-%f2sav = 'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1.mat';
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1.mat'; 
 %f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1.mat';
-f2sav = 'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1.mat';
+%f2sav = 'CORrt_pfc_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1.mat';
 
 
 cfg = getParams(f2sav);
@@ -631,18 +651,19 @@ if strcmp(cfg.period(1), 'M')
 
     
     %ALEXNET
-%     myCmap = colormap(brewermap(20,'RdPu'));
-%     myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-%     x = (-.012:-.0035:-.038)';
+    myCmap = colormap(brewermap(20,'RdPu'));
+    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+    x = (-.012:-.0035:-.038)';
+    %hbL(1:8, :) = nan; % ALL
     %hbL(1, :) = nan; % VVS ALPHA
     %hbL(:, 1:10) = nan; % VVS ALPHA
     %hbL(8, 1:20) = nan; % VVS ALPHA
 
     %BLNET
-    %myCmap = colormap(brewermap(18,'RdPu'));
-    %myCmap = myCmap([6 8 10 12 14 16 18],:)
-    %x = (-.015:-.0035:-.038)';
-    %hbL(1:7, :) = nan; % ALL
+%     myCmap = colormap(brewermap(18,'RdPu'));
+%     myCmap = myCmap([6 8 10 12 14 16 18],:)
+%     x = (-.015:-.0035:-.038)';
+%     hbL(1:7, :) = nan; % ALL
     %hbL([1:4 7], :) = nan; % VVS THETA
     %hbL(6, 1:20) = nan; % VVS THETA
     %hbL([1:4], 1:20) = nan; % VVS ALPHA
@@ -651,10 +672,10 @@ if strcmp(cfg.period(1), 'M')
 
 
     % % % % cornet
-    x = (-.015:-.0035:-.028)';
-    myCmap = colormap(brewermap(18,'RdPu'));
-    myCmap = myCmap([6 10 14 18],:)
-    hbL(1:4, 1:37) = nan; % ALL
+    %x = (-.015:-.0035:-.028)';
+    %myCmap = colormap(brewermap(18,'RdPu'));
+    %myCmap = myCmap([6 10 14 18],:)
+    %hbL(1:4, 1:37) = nan; % ALL
     %hbL(1, 1:37) = nan; % VVS ALPHA
     %hbL(1:4, 1:25) = nan; % VVS ALPHA
     %hbL(1:4, 1:25) = nan; % PFC BETA
@@ -676,19 +697,18 @@ elseif strcmp(cfg.period(1), 'E')
     plot(times, mART, 'Linewidth', 3); hold on; 
     
     % ALEXNET
-    %myCmap = colormap(brewermap(20,'RdPu'));
-    %myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-    %x = (-.012:-.0035:-.038)';
-    %hbL([1:8], :) = nan; % ALL
-    %hbL([2 3], :) = nan; % VVS HIGH GAMMA ALEX
+    myCmap = colormap(brewermap(20,'RdPu'));
+    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+    x = (-.012:-.002:-.027)';
+    hbL([1:8], :) = nan; % ALL
     %hbL([3 5:8], :) = nan; % PFC GAMMA ALEX
     
 
     % BLNET
-    %myCmap = colormap(brewermap(18,'RdPu'));
-    %myCmap = myCmap([6 8 10 12 14 16 18],:)
-    %x = (-.015:-.0035:-.038)';
-    %hbL([1:7],:) = nan; % ALL 
+%     myCmap = colormap(brewermap(18,'RdPu'));
+%     myCmap = myCmap([6 8 10 12 14 16 18],:)
+%     x = (-.012:-.002:-.025)';
+%     hbL([1:7],:) = nan; % ALL 
     %hbL([4], 1:5) = nan; % VVS HIG GAMMA
     %hbL([5:6], :) = nan; % VVS HIG GAMMA
     %hbL([1:2 5:6 ], :) = nan; % PFC THETA
@@ -696,10 +716,10 @@ elseif strcmp(cfg.period(1), 'E')
     
 
     %CorNET
-    x = (-.015:-.0035:-.028)';
-    myCmap = colormap(brewermap(18,'RdPu'));
-    myCmap = myCmap([6 10 14 18],:)
-    %hbL(1:4, 1:11) = nan; % ALL
+%     x = (-.015:-.0035:-.028)';
+%     myCmap = colormap(brewermap(18,'RdPu'));
+%     myCmap = myCmap([6 10 14 18],:)
+%     %hbL(1:4, 1:11) = nan; % ALL
     %hbL(1, 10:11) = nan; % VVS ALPHA
     
     
@@ -707,9 +727,8 @@ elseif strcmp(cfg.period(1), 'E')
     hbL = hbL+x;
     plot (times, hbL, 'Linewidth', 4); hold on; 
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 11]); 
-    set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
-    %set(gca, 'FontSize', 12, 'ylim', [-.025 .035]);
-    %set(gca, 'FontSize', 12, 'ylim', [-.0275 .035]);
+    %set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
+    set(gca, 'FontSize', 12, 'ylim', [-.0275 .035]);
     plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
     
@@ -741,9 +760,9 @@ exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 %f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
 %f2sav = 'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1_1000p.mat'; 
+f2sav = 'BLNETi_vvs_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1_1000p.mat'; 
 %f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p.mat';
-f2sav = 'CORrt_pfc_M123_[2-2-8]_13-29_1_0_0_0_.1_5_1_1000p.mat';
+%f2sav = 'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1_1000p.mat';
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
