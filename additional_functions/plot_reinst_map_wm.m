@@ -69,6 +69,7 @@ if dupSym
     meanReal_cond2 = triu(meanReal_cond2.',1) + tril(meanReal_cond2);
     sigMT_real = triu(sigMT_real.',1) + tril(sigMT_real);
     sigMH_thres = triu(sigMH_real.',1) + tril(sigMH_real);
+    sigMH_real = triu(sigMH_real.',1) + tril(sigMH_real);
 end
 
 
@@ -94,6 +95,9 @@ ax3 = subplot (133);
 if plot1clust
     sigMH_real = zeros(size(sigMH_real)); 
     sigMH_real(out_real.clustInfoReal.PixelIdxList{clust2plot}) = 1;
+    if dupSym
+        sigMH_real = triu(sigMH_real.',1) + tril(sigMH_real);
+    end
 end
 imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; 
 if cfg_plot.plotClust

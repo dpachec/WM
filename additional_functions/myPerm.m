@@ -25,8 +25,9 @@ function [out_perm] = myPerm (cfg_perm)
         
     end
     
-    out_perm.m_fakeH= zeros (cfg_perm.n_perm, length(meanReal_cond1), length(meanReal_cond1));
-    out_perm.m_fakeT= zeros (cfg_perm.n_perm, length(meanReal_cond1), length(meanReal_cond1));
+    sizeM = size(meanReal_cond1, 2); 
+    out_perm.m_fakeH= zeros (cfg_perm.n_perm, sizeM, sizeM);
+    out_perm.m_fakeT= zeros (cfg_perm.n_perm, sizeM, sizeM);
     
     for permi = 1:cfg_perm.n_perm
         rsa_all_1 = rsa_perm(permi, :,1,:,:); 
@@ -36,6 +37,9 @@ function [out_perm] = myPerm (cfg_perm)
 
         [sigMH_permi sigMP_permi sigMCI_permi sigMT_permi] = ttest (rsa1_perm, rsa2_perm, 'alpha', cfg_perm.pval);
         sigMT_permi = squeeze (sigMT_permi.tstat);
+
+        out_perm.m_fakeH(permi, : ,:) = sigMH_permi; 
+        out_perm.m_fakeT(permi, : ,:) = sigMT_permi; 
         
         % get number of elements in largest supra-threshold cluster
         sigMH_permi(isnan(sigMH_permi)) = 0; %for the half-matrix analysis
