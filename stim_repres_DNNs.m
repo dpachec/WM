@@ -147,9 +147,9 @@ end
 CCI2 = [CCI_FR; CCI_CH]; 
 CCI = mean(CCI2); 
 
-figure()
+figure(); set(gcf, 'Position', [100 100 500 400])
 plot (CCI, 'Linewidth', 3); %axis square
-set(gca, 'FontSize', 25, 'xlim', [0 9], 'ylim', [0 .75])
+set(gca, 'FontSize', 22, 'xlim', [0 9], 'ylim', [0 .75])
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 

@@ -1,8 +1,8 @@
 function [cfg_contrasts] = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline)
 % 
-% if isfield(cfg_contrasts, 'oneListIds_c')
-%     cfg_contrasts.oneListIds = cfg_contrasts.oneListIds_c; 
-% end
+ if isfield(cfg_contrasts, 'oneListIds_c')
+     cfg_contrasts.oneListIds = cfg_contrasts.oneListIds_c; 
+ end
 
 oneListPow = cfg_contrasts.oneListPow;
 oneListIds = cfg_contrasts.oneListIds;
@@ -45,7 +45,7 @@ end
 %disp ('done')
 
 cfg_contrasts.oneListPow = oneListPow;
-cfg_contrasts.oneListIds = cfg_contrasts.oneListIds;
+
 
 
 

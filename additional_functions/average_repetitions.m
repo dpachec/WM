@@ -183,7 +183,11 @@ end
 if isfield(cfg_contrasts, 'oneListIds_c')
     cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_c'); 
 end
-cfg_contrasts = rmfield(cfg_contrasts, 'oneListTraces'); 
+
+if isfield(cfg_contrasts, 'oneListTraces')
+    cfg_contrasts = rmfield(cfg_contrasts, 'oneListTraces'); 
+end 
+
 
 end
 

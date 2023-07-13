@@ -8,7 +8,7 @@ tic
  
 %global parameters % no ; for log
 subjfir = 1;
-subjend = 83;
+subjend = 1;
 
 
 %%power parameters

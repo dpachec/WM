@@ -23,7 +23,7 @@ batch_bin           = 1000;
 n2s                 = 20000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
-
+aVTime              = 0; % Average or not in time the feature vectors
  
 %diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
  
@@ -39,9 +39,10 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
-    % % check the normalizatoin across trials works 
-    %d2p = squeeze(mean(cfg_contrasts.oneListPow(cfg_contrasts.oneListIds(:, 1) ==1, :, :, :)));
-    %imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
+% %     % % check the normalizatoin across trials works 
+% %     ids = str2num(cell2mat(cfg_contrasts.oneListIds));
+% %     d2p = squeeze(mean(cfg_contrasts.oneListPow(ids(:, 1) ==1, :, :, :)));
+% %     imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
 
  
     cfg_contrasts.contr2save = contr2save';
@@ -63,7 +64,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         cd ([paths.results.bands fname]);
         f           = frequncies2test{freqi}; 
         % % the rsa_WM function saves the similarity matrices (TG=1) or diagonals (TG = 0)
-        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, sessi, TG, 0)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, sessi, TG, aVTime)
         cd ..
     end
  
