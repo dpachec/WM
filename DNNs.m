@@ -31,6 +31,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
 
     cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+
     if (cfg.avRep)
         cfg_contrasts               = average_repetitions(cfg_contrasts);
     end
@@ -139,39 +140,6 @@ nPerm = 1000;
 
 listF2sav = {
                 
-                'Alex_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1';
-                'Alex_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1';
-
-                'BLNETi_vvs_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
-                'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_E123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
-                'BLNETi_vvs_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
-                'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
-                'CORrt_vvs_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_30-38_1_0_0_0_.1_5_1';
-                'CORrt_vvs_E123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
-
                 'CORrt_pfc_E123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
                 'CORrt_pfc_E123_[2-2-8]_9-12_1_0_0_0_.1_5_1';
                 'CORrt_pfc_E123_[2-2-8]_13-29_1_0_0_0_.1_5_1';
@@ -945,26 +913,26 @@ end
 clear, clc 
 
 listF2sav = {       
-    
-                    'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1.mat';
-                    'CAT_pfc_E123_[1]_9-12_1_0_0_0_.1_5_1.mat';
-                    'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1.mat';
-                    'CAT_pfc_E123_[1]_30-38_1_0_0_0_.1_5_1.mat';
-                    'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1.mat';
+%     
+%                     'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1.mat';
+%                     'CAT_pfc_E123_[1]_9-12_1_0_0_0_.1_5_1.mat';
+%                     'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1.mat';
+%                     'CAT_pfc_E123_[1]_30-38_1_0_0_0_.1_5_1.mat';
+%                     'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1.mat';
 
 
-%                     'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1.mat';
-%                     'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1.mat';
-%                     'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1.mat';
-%                     'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1.mat';
-%                     'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1.mat';
+                    'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1.mat';
+                    'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1.mat';
+                    'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1.mat';
+                    'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1.mat';
+                    'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1.mat';
 
 
-%                     'CAT_vvs_E123_[1]_3-8_1_0_0_0_.1_5_1.mat';
-%                     'CAT_vvs_E123_[1]_9-12_1_0_0_0_.1_5_1.mat';
-%                     'CAT_vvs_E123_[1]_13-29_1_0_0_0_.1_5_1.mat';
-%                     'CAT_vvs_E123_[1]_30-38_1_0_0_0_.1_5_1.mat';
-%                     'CAT_vvs_E123_[1]_39-54_1_0_0_0_.1_5_1.mat';
+% %                     'CAT_vvs_E123_[1]_3-8_1_0_0_0_.1_5_1.mat';
+% %                     'CAT_vvs_E123_[1]_9-12_1_0_0_0_.1_5_1.mat';
+% %                     'CAT_vvs_E123_[1]_13-29_1_0_0_0_.1_5_1.mat';
+% %                     'CAT_vvs_E123_[1]_30-38_1_0_0_0_.1_5_1.mat';
+% %                     'CAT_vvs_E123_[1]_39-54_1_0_0_0_.1_5_1.mat';
 
 %                     'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1.mat';
 %                     'CAT_vvs_M123_[1]_9-12_1_0_0_0_.1_5_1.mat';
@@ -981,7 +949,7 @@ for listi = 1:length(listF2sav)
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
-    paths = load_paths_WM(cfg.brainROI);
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFiles(paths.results.DNNs);
     
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
@@ -1009,9 +977,9 @@ allFnnH(:, sub2exc, :) = [];
 %% 
 for freqi = 1:size(allFnnH, 1)
     if strcmp(cfg.period(1), 'M')
-        nnH = allFnnH(freqi, :, 1:37);
+        nnH = allFnnH(freqi, :, 1:39);
     else
-        nnH = allFnnH(freqi, :, 1:11);
+        nnH = allFnnH(freqi, :, 1:15);
     end
     nnH = squeeze(nnH);
 
@@ -1042,19 +1010,20 @@ end
 
 
 if strcmp(cfg.period(1), 'M')
-    set(gcf, 'Position', [100 100 500/1.5 300/1.7])
+    %set(gcf, 'Position', [100 100 405 163])
+    set(gcf, 'Position', [100 100 400 260])
     myCmap = colormap(brewermap(14,'RdPu'));
     myCmap = myCmap([6 8 10 12 14],:)
-    times = 1:37;
+    times = 1:39;
     x = (-.015:-.003:-.028)';
     hbL([1:5], :) = nan;     
     hbL = hbL+x;
     plot (times, hbL, 'Linewidth', 4); hold on; 
     plot(times, mART, 'Linewidth', 3); hold on; 
-    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
-    set(gca, 'FontSize', 12, 'ylim', [-.0375 .0375]);
-    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',2);
-    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 39]); 
+    set(gca, 'FontSize', 12, 'ylim', [-.04 .04]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',3);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',3);
 
 elseif strcmp(cfg.period(1), 'E')
     
@@ -1063,16 +1032,20 @@ elseif strcmp(cfg.period(1), 'E')
     myCmap = colormap(brewermap(14,'RdPu'));
     myCmap = myCmap([6 8 10 12 14],:)
     %colormap(jet(5));
-    times = 1:11;
+    times = 1:15;
     plot(times, mART, 'Linewidth', 5); hold on; 
-    x = (-.015:-.0053:-.039)';
-    hbL(4, 1:3) = nan; 
+    %x = (-.018:-.0025:-.030)';%PFC
+    %hbL([1 2], :) = nan; %PFC
+
+    x = (-.012:-.0050:-.032)';%VVS
+    hbL(:, 1:4) = nan; %VVS
 
     hbL = hbL+x;
     plot (times, hbL, 'Linewidth', 5); hold on; 
-    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 11]); 
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 15]); 
     set(gca, 'FontSize', 12, 'ylim', [-.04 .15]);
-    plot([3 3],get(gca,'ylim'), 'k:','lineWidth',3);
+    %set(gca, 'FontSize', 12, 'ylim', [-.03 .04]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',3);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',3);
     %legend
 

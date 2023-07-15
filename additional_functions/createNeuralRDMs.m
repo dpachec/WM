@@ -16,7 +16,7 @@ if fR
         ALLER = reshape (pow, [nTrials, nChans*nFreq, nTimes]);
         bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 
-        parfor timei = 1:bins %parfor possible
+        parfor timei = 1:bins 
             %timeBins(timei,:) = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
             timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
             if avTFV
@@ -37,7 +37,7 @@ else
         ALLER = reshape (pow, [nTrials, nChans*nFreq, nTimes]);
         bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 
-        parfor timei = 1:bins %parfor possible
+        parfor timei = 1:bins 
             %timeBins(timei,:) = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
             timeBins = (timei*mf) - (mf-1):(timei*mf - (mf-1) )+win_width-1;
             if avTFV
