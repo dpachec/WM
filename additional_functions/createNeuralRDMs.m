@@ -12,8 +12,8 @@ if fR
     for freqi = 1:length(freqs2test)
         f  = freqs2test(freqi);
         pow = oneListPow(:, :, f, :);
-        nTrials = size(pow, 1); nChans = size(pow, 2); nFreq = size(pow, 3); nTimes = size(pow, 4); 
-        ALLER = reshape (pow, [nTrials, nChans*nFreq, nTimes]);
+        nTrials = size(pow, 1); nChans = size(pow, 2); nTimes = size(pow, 4); 
+        ALLER = pow;
         bins  =  floor ( (nTimes/mf)- win_width/mf+1 );
 
         parfor timei = 1:bins 

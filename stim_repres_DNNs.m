@@ -15,7 +15,7 @@ ACT_CH = load_alex_activ(cfg, sessi, subj_ch_fr, paths);%load network if not loa
 
 %% Plot all layers Alexnet one line horizontal
 
-ACT = ACT_FR; 
+ACT = ACT_CH; 
 
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 myCmap = brewermap([], '*Spectral') 

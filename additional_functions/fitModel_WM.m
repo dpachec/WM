@@ -22,9 +22,8 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
                 end
             end
         end
-
+        
     else
-
         nTrials = size(neuralRDMs, 1);
         all_r_Times = zeros(nLays,nTrials, nFreqs, nTimes);
 
