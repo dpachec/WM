@@ -35,7 +35,8 @@ if ~isempty(intersect(c2c, 'EE'))
             trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
             trlij = [trli trlj];
             
-            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
                   it_id_Enc = evei(3); it_id_Ret = evej(3); 
                   cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
 
@@ -44,25 +45,36 @@ if ~isempty(intersect(c2c, 'EE'))
                     countALL_EE = countALL_EE+1;
                   end
                   if strcmp(it_id_Enc,it_id_Ret) 
-                     disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
+                     %disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
                      if exist('countSISC_EE')
                         new_sisc_ee{countSISC_EE} = [i, j];
                         countSISC_EE = countSISC_EE+1;
                      end
                   elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['DISC_EE > ' trlij]);    
+                     %disp(['DISC_EE > ' trlij]);    
                      if exist('countDISC_EE')
                          new_disc_ee{countDISC_EE} = [i, j];
                          countDISC_EE = countDISC_EE+1;
                      end
                   elseif ~strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                     %disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
                      if exist('countDIDC_EE')
                         new_didc_ee{countDIDC_EE} = [i, j];
                         countDIDC_EE = countDIDC_EE+1;
                      end
                    end
+            else
+                it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 if ~strcmp(cat_id_Enc,cat_id_Ret)
+                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 end 
             end
+
+
         end
         end
     end

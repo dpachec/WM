@@ -58,7 +58,11 @@ clear, clc
     
 listF2sav = {
 
-                'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_1_0_.1_5_1';
+                'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
+                'BLNETi_vvs_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
+
+
 
 
              };   
@@ -192,8 +196,8 @@ etime(datevec(t2), datevec(t1))
 clear , clc
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -289,10 +293,11 @@ times = 1:150;
 freqs = 1:520; 
 h = zeros(52, 15); 
 
+%h(clustinfo.PixelIdxList{5}) = 1; % BLNETi PFC
 %h(clustinfo.PixelIdxList{1}) = 1; % BLNETi VVS
 
-%h(clustinfo.PixelIdxList{3}) = 1; % Ecoset 
-%h(clustinfo.PixelIdxList{4}) = 1; % Ecoset cluster 2
+%h(clustinfo.PixelIdxList{1}) = 1; % BLNETe cluster 1
+%h(clustinfo.PixelIdxList{2}) = 1; % BLNETe cluster 2
 
 %h(clustinfo.PixelIdxList{2}) = 1; %Cornet
 %h(clustinfo.PixelIdxList{4}) = 1; %Cornet cluster 2
@@ -352,7 +357,7 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 %% COMPUTE CLUSTERS in each permutation FREQUENCY RESOLVED
 clc
-clearvars -except allTObs
+clearvars -except allTObs f2sav
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p'; 
 %f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p'; 
@@ -362,15 +367,15 @@ clearvars -except allTObs
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p'; 
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p';
-f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p';
+%f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p_V2';
 
-
+f2sav = [f2sav '_1000p.mat'];
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 
 cd ([paths.results.DNNs])
-load([f2sav '.mat']);
+load(f2sav);
 
 if strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
@@ -385,12 +390,14 @@ nLays = size(nnFitPerm, 3);
 for permi = 1:nPerm
     
     for layi = 1:nLays
-        dataP = squeeze(nnFitPerm(permi, :,layi, :,:));
+        
+        dataP = atanh(squeeze(nnFitPerm(permi, :,layi, :,:)));
+        %dataP = squeeze(nnFitPerm(permi, :,layi, :,:));
         dataP(sub2exc, :, :) = []; 
         [h p ci ts] = ttest(dataP);
-        %[h p ci ts] = ttest(dataP, 0, "Tail","right");
         h = squeeze(h); t = squeeze(ts.tstat);
         h(:, 1:5) = 0; % only sum t-values in cluster after the baseline
+        
         
         clear allSTs  
         clustinfo = bwconncomp(h);
@@ -399,8 +406,12 @@ for permi = 1:nPerm
         end
         
         %sort all clusters 
-        %[max2u id] = max(abs(allSTs));
-        [max2u id] = max(allSTs);
+        if exist('allSTs')
+            [max2u id] = max(allSTs);
+        else
+            allSTs = 0; 
+            id = 1;
+        end
         
         max_clust_sum_perm(permi,layi,:) = allSTs(id); 
     end
@@ -433,7 +444,8 @@ end
 
 p (p==1.0010 | p == 1) = 0; 
 p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
-p_ranked = sort(p_ranked(:))
+p_ranked = sort(p_ranked(:));
+p
 
 %% p last layer only
 p = p (end,:);
@@ -450,10 +462,8 @@ x = sort(x)
 %% load file to plot BANDS (ALL LAYERS RNN and Alex) THIS IS NOT THE FINAL FIGURE PLOTS (CODE BELOW)
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear, clc 
-%f2sav = 'RNN_vvs_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1'; 
-%f2sav = 'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1';
-%f2sav = 'CORrt_vvs_M123_[2-2-8]_3-8_1_0_0_0_.1_5_1';
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'; 
+
+f2sav = 'BLNETi_pfc_E123_[8-8-56]_9-12_1_0_0_0_.1_5_1'; 
 
 
 cfg = getParams(f2sav);
@@ -482,9 +492,9 @@ for layi = 1:size(nnFit{1}, 1)
     clear nnH
     for subji = 1:length(nnFit)
         if strcmp (cfg.period(1), 'M')
-            nnH(subji, : ,:) = nnFit{subji, 1}(layi,1:39);
+            nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:39));
         else
-            nnH(subji, : ,:) = nnFit{subji, 1}(layi,1:11);       
+            nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
         end
     end
     
@@ -544,11 +554,11 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 %% load file to plot BANDS (ALL LAYERS RNN and Alex) -- IN one PLOT ONLY 
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear, clc 
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'; 
-f2sav = 'Alex_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
-%f2sav = 'Alex_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1';
+clear %, clc
+%f2sav = 'BLNETi_vvs_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1'; 
+f2sav = 'Alex_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1';
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1';
+%f2sav = 'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -556,27 +566,19 @@ if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
-elseif strcmp(cfg.brainROI, 'hipp')
-    sub2exc = [2]
 end
 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav '.mat']);
-
-% % % % % only for BLNETi NETWORK (this has to be computed properly)
-% for subji = 1:length(nnFit)
-%     nnH = nnFit{subji, 1}([8:8:56],:);
-%     nnFit{subji, 1} = nnH; 
-% end
 
 clear hbL
 for layi = 1:size(nnFit{1}, 1)
     clear nnH
     for subji = 1:length(nnFit)
         if strcmp (cfg.period(1), 'M')
-            nnH(subji, : ,:) = nnFit{subji, 1}(layi,1:39);
+            nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:39));
         else
-            nnH(subji, : ,:) = nnFit{subji, 1}(layi,1:15);       
+            nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
         end
     end
     
@@ -584,26 +586,20 @@ for layi = 1:size(nnFit{1}, 1)
     nnH = squeeze(nnH);
 
     [h p ci ts] = ttest(nnH);
-    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     h = squeeze(h); t = squeeze(ts.tstat);
+    %h(1:5) = 0; 
     clustinfo = bwconncomp(h);
     
     if ~isempty(clustinfo.PixelIdxList)
         for pixi = 1:length(clustinfo.PixelIdxList)
-             %if length(clustinfo.PixelIdxList{pixi}) > 1
-                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
-             %end        
+             allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
         end
     else
         allTObs(layi, :, :) = 0;
     end
-    %tObs = sum(t(clustinfo.PixelIdxList{2}))
+    
     d2p = squeeze(mean(nnH, 'omitnan'));
     
-    %times = -1.75:.1:6.849; 
-     
-    [h p ci ts] = ttest(nnH);
-    h = squeeze(h); t = squeeze(ts.tstat);
     hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
     hbL(layi, :) = hb; 
     
@@ -615,7 +611,89 @@ for layi = 1:size(nnFit{1}, 1)
 end
 
 
-if strcmp(cfg.period(1), 'M')
+if strcmp(cfg.period(1), 'E')
+
+     figure()
+    set(gcf, 'Position', [100 100 150 300])
+    times = 1:15;
+    plot(times, mART, 'Linewidth', 3); hold on; 
+    
+    % ALEXNET
+    if strcmp(cfg.net2load, 'Alex')%ALEXNET
+        myCmap = colormap(brewermap(20,'RdPu'));
+        myCmap = myCmap([6 8 10 12 14 16 18 20],:);
+        
+        if strcmp(cfg.brainROI, 'pfc') 
+            x = (-.010:-.0022:-.026)';
+        elseif strcmp(cfg.brainROI, 'vvs') 
+            x = (-.010:-.0035:-.035)';
+        end
+        
+        %hbL([1:8], :) = nan; % ALL
+       
+
+    elseif strcmp(cfg.net2load, 'BLNETi')%BLNET% BLNET
+         myCmap = colormap(brewermap(18,'RdPu'));
+         myCmap = myCmap([6 8 10 12 14 16 18],:);
+         if strcmp(cfg.brainROI, 'pfc') 
+            x = (-.012:-.002:-.025)'; % if PFC 
+        elseif strcmp(cfg.brainROI, 'vvs') 
+            x = (-.012:-.0034:-.035)'; % if VVS
+        end
+     
+      if strcmp(cfg.brainROI, 'vvs') & cfg.freqs(1) == 39 %VVS HIGH GAMMA
+            
+            hbL([4], 1:5) = nan; % VVS HIG GAMMA
+            %hbL([5:6], :) = nan; % VVS HIG GAMMA
+            %hbL(7, 12:15) = nan; % VVS HIG GAMMA
+      end
+
+     %hbL([1:7],:) = nan; % ALL 
+    
+    %hbL([1:2 5:6 ], :) = nan; % PFC THETA
+    %hbL([7], 13:15) = nan; % PFC THETA
+    %hbL([1:7], :) = nan; % PFC GAMNMA = ALL 
+    
+
+      elseif strcmp(cfg.net2load, 'CORrt')%BLNET%CorNET
+            x = (-.015:-.0035:-.028)';
+            myCmap = colormap(brewermap(18,'RdPu'));
+            myCmap = myCmap([6 10 14 18],:);
+            if strcmp(cfg.brainROI, 'pfc') & cfg.freqs(1) == 9 %VVS THETA
+                hbL(1:4, :) = nan; % ALL
+            end
+            if strcmp(cfg.brainROI, 'pfc') & cfg.freqs(1) == 9 %VVS ALPHA
+                hbL(2, :) = nan; % ALL
+            end
+            %hbL(1, 10:15) = nan; % VVS ALPHA
+            %hbL([1:2 4], 10:15) = nan; % VVS HIGH GAMMA
+    
+        elseif strcmp(cfg.net2load, 'CAT') % CATEGORY MODEL
+            x = -.025;
+            myCmap = colormap(brewermap(18,'RdPu'));
+            myCmap = myCmap([6 10 14 18],:);
+            %hbL(1, :) = nan; % ALL
+
+    end
+    
+    
+    hbL = hbL+x;
+    plot (times, hbL, 'Linewidth', 4); hold on; 
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 15]); 
+    if strcmp(cfg.brainROI, 'vvs')
+        set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
+    elseif strcmp(cfg.brainROI, 'pfc')
+        set(gca, 'FontSize', 12, 'ylim', [-.0275 .0375]);
+    end
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',2);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+    
+    %legend
+
+    
+% % % % % % MAINTENANCE
+elseif strcmp(cfg.period(1), 'M')
+    
     set(gcf, 'Position', [100 100 405 163])
     times = 1:39;
     plot(times, mART, 'Linewidth', 3); hold on; 
@@ -624,35 +702,57 @@ if strcmp(cfg.period(1), 'M')
     if strcmp(cfg.net2load, 'Alex')%ALEXNET
 
         myCmap = colormap(brewermap(20,'RdPu'));
-        myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-        x = (-.012:-.0035:-.038)';
-        hbL(1:8, :) = nan; % ALL
-        hbL([1:5 8], :) = nan; % VVS THETA
-        hbL(1, :) = nan; % VVS ALPHA
-        hbL(:, 1:10) = nan; % VVS ALPHA
-        hbL(8, 1:20) = nan; % VVS ALPHA
+        myCmap = myCmap([6 8 10 12 14 16 18 20],:);
 
+        x = (-.012:-.0035:-.038)';
+
+        
+        if strcmp(cfg.brainROI, 'vvs') & cfg.freqs(1) == 3 %VVS THETA
+            hbL(8, 37:39) = nan; 
+        elseif strcmp(cfg.brainROI, 'vvs') & cfg.freqs(1) == 9 %VVS ALPHA
+            %hbL([1 4], :) = nan; 
+            hbL(8, 1:20) = nan; 
+        elseif strcmp(cfg.brainROI, 'pfc') & cfg.freqs(1) == 13 %VVS ALPHA
+            %hbL([1 4], :) = nan; 
+            hbL([3], 25:32) = nan;  
+            hbL([1:2 5:7], :) = nan;  
+            
+        else
+            %hbL(1:8, :) = nan; % ALL
+        end
+        
     elseif strcmp(cfg.net2load, 'BLNETi')%BLNET
 
         myCmap = colormap(brewermap(18,'RdPu'));
-        myCmap = myCmap([6 8 10 12 14 16 18],:)
+        myCmap = myCmap([6 8 10 12 14 16 18],:);
         x = (-.015:-.0035:-.038)';
-        %hbL(1:7, :) = nan; % ALL
+        %
         %hbL([1:4 7], :) = nan; % VVS THETA
         %hbL(6, 1:20) = nan; % VVS THETA
         %hbL([1:4], 1:20) = nan; % VVS ALPHA
         %hbL([7], 21:end) = nan; % VVS ALPHA
-        %hbL(1:6, :) = nan; % PFC BETA
+        if strcmp(cfg.brainROI, 'pfc') & cfg.freqs(1) == 13 % PFC BETA
+            hbL(1:6, :) = nan; 
+        else %% all 
+            %hbL(1:7, :) = nan; % ALL
+        end
 
     elseif strcmp(cfg.net2load, 'CORrt')%BLNET
 
         x = (-.015:-.0035:-.028)';
         myCmap = colormap(brewermap(18,'RdPu'));
-        myCmap = myCmap([6 10 14 18],:)
-        hbL(1:4, 1:39) = nan; % ALL
-        hbL(1, 1:37) = nan; % VVS ALPHA
-        hbL(1:4, 1:25) = nan; % VVS ALPHA
-        hbL(1:4, 1:25) = nan; % PFC BETA
+        myCmap = myCmap([6 10 14 18],:);
+        if strcmp(cfg.brainROI, 'vvs') & cfg.freqs(1) == 9 % VVS THETA
+            hbL(1:2, 1:25) = nan; 
+            hbL(3, 1:10) = nan; 
+        elseif strcmp(cfg.brainROI, 'pfc') & cfg.freqs(1) == 13 % VVS THETA %% all 
+            hbL(1:3, 1:39) = nan; % ALL
+        else 
+            hbL(1:4, 1:39) = nan; % ALL
+        end
+        %hbL(1, 1:37) = nan; % VVS ALPHA
+        %hbL(1:4, 1:25) = nan; % VVS ALPHA
+        %hbL(1:4, 1:25) = nan; % PFC BETA
 
     end
 
@@ -664,60 +764,7 @@ if strcmp(cfg.period(1), 'M')
     set(gca, 'FontSize', 12, 'ylim', [-.0375 .0375]);
     plot([5 5],get(gca,'ylim'), 'k:','lineWidth',2);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
-
-elseif strcmp(cfg.period(1), 'E')
-    
-    figure()
-    set(gcf, 'Position', [100 100 150 300])
-    times = 1:15;
-    plot(times, mART, 'Linewidth', 3); hold on; 
-    
-    % ALEXNET
-
-    myCmap = colormap(brewermap(20,'RdPu'));
-    myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-    x = (-.010:-.0034:-.035)';
-    %hbL([1:8], :) = nan; % ALL
-    %hbL([2:3],:) = nan; % VVS HIG GAMMA
-    %hbL([4:end],12:end) = nan; % VVS HIG GAMMA
-    %hbL([3 5:8], :) = nan; % PFC GAMMA ALEX
-    
-
-    % BLNET
-     %myCmap = colormap(brewermap(18,'RdPu'));
-     %myCmap = myCmap([6 8 10 12 14 16 18],:)
-     %x = (-.012:-.0034:-.035)'; % if VVS
-     %x = (-.012:-.002:-.025)'; % if PFC 
-
-     %hbL([1:7],:) = nan; % ALL 
-    %hbL([1], 12:15) = nan; % VVS HIG GAMMA
-    %hbL([4], 1:5) = nan; % VVS HIG GAMMA
-    %hbL([5:6], :) = nan; % VVS HIG GAMMA
-    %hbL(7, 12:15) = nan; % VVS HIG GAMMA
-    %hbL([1:2 5:6 ], :) = nan; % PFC THETA
-    %hbL([7], 13:15) = nan; % PFC THETA
-    %hbL([1:7], :) = nan; % PFC GAMNMA = ALL 
-    
-
-    %CorNET
-% %      x = (-.015:-.0035:-.028)';
-% %      myCmap = colormap(brewermap(18,'RdPu'));
-% %      myCmap = myCmap([6 10 14 18],:)
-% %     % hbL(1:4, :) = nan; % ALL
-% %     %hbL(1, 10:15) = nan; % VVS ALPHA
-% %     hbL([1:2 4], 10:15) = nan; % VVS HIGH GAMMA
-    
-    
-
-    hbL = hbL+x;
-    plot (times, hbL, 'Linewidth', 4); hold on; 
-    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 15]); 
-    set(gca, 'FontSize', 12, 'ylim', [-.0375 .1]);
-    %set(gca, 'FontSize', 12, 'ylim', [-.0275 .0375]);
-    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',2);
-    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
-    
-    %legend
+   
 
 end
 
@@ -727,27 +774,20 @@ set(gca, 'ColorOrder', myCmap)
 
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
-%% 
-myCmap = colormap(brewermap(20,'RdPu'));
-myCmap = myCmap([6 8 10 12 14 16 18 20],:)
-%figure(); set(gcf, 'Position', [100 100 800 100]) % for blnet and alexnet 
-figure(); set(gcf, 'Position', [100 100 500 100]) % for Cornet
-imagesc(1:4)
-colormap(myCmap)
-set(gca, 'xtick', [], 'ytick', [])
-exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
 
 
 %% compute clusters in each permutation BANDS for all layers
+
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 %f2sav =  'RNN_pfc_M123_[8-8-56]_13-29_1_1_0_0_.1_5_1_1000p'; 
 %f2sav = 'CORrt_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1_1000p';
-%f2sav = 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1_1000p';
-%f2sav = 'Alex_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1_1000p';
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1_1000p'; 
+%f2sav = 'Alex_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1_1000p';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1_1000p'; 
 %f2sav = 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1_1000p';
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_9-12_1_0_0_0_.1_5_1_1000p';
+%f2sav = 'CORrt_vvs_M123_[2-2-8]_39-54_1_0_0_0_.1_5_1_1000p';
+
+f2sav = [f2sav '_1000p'];
 
 cfg = getParams(f2sav);
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -761,7 +801,7 @@ elseif strcmp(cfg.brainROI, 'vvs')
 end
 
 f2t = strsplit(f2sav, '_');
-nPerm = double(string((f2t{13}(1:end-5))));
+nPerm = double(string((f2t{13}(1:end-1))));
 if ndims (nnFitPerm) == 3
     nnFitPerm1(:, :, 1,:) = nnFitPerm;
     nnFitPerm = nnFitPerm1;
@@ -772,10 +812,9 @@ end
 for layi = 1:size(nnFitPerm, 3)
     for permi = 1:nPerm
         
-        dataP = squeeze(nnFitPerm(permi, :,layi, :));
+        dataP = atanh(squeeze(nnFitPerm(permi, :,layi, :)));
         dataP(sub2exc, :,:) = []; 
         [h p ci ts] = ttest(dataP);
-        %[h p ci ts] = ttest(dataP, 0, "Tail","right");
         h = squeeze(h); t = squeeze(ts.tstat);
     
         
@@ -822,10 +861,11 @@ for layi = 1:size(allTObs, 1)
     end
 end
 
-p (p==1.0010 | p == 1) = 0; 
+p (p==1.001 | p == 1) = 0; 
 p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
-p_ranked = sort(p_ranked(:))
+p_ranked = sort(p_ranked(:));
 
+p
 
 
 %%
@@ -855,18 +895,18 @@ clear, clc
 
 listF2sav = {       
 %     
-%                     'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1';
-%                     'CAT_pfc_E123_[1]_9-12_1_0_0_0_.1_5_1';
-%                     'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1';
-%                     'CAT_pfc_E123_[1]_30-38_1_0_0_0_.1_5_1';
-%                     'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_9-12_1_0_0_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_30-38_1_0_0_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1';
 
 
-                    'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1';
-                    'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1';
-                    'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1';
-                    'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1';
-                    'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1';
+%                     'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1';
+%                     'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1';
+%                     'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1';
+%                     'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1';
+%                     'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1';
 
 
 % %                     'CAT_vvs_E123_[1]_3-8_1_0_0_0_.1_5_1';
@@ -900,7 +940,7 @@ for listi = 1:length(listF2sav)
         
     end
 
-    allFnnH(listi, :, :) = nnH; 
+    allFnnH(listi, :, :) = atanh(nnH);
 
 
 end
@@ -926,6 +966,7 @@ for freqi = 1:size(allFnnH, 1)
 
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat);
+    %h(1:5) = 0; 
     clustinfo = bwconncomp(h);
     
     if ~isempty(clustinfo.PixelIdxList)
@@ -975,17 +1016,23 @@ elseif strcmp(cfg.period(1), 'E')
     %colormap(jet(5));
     times = 1:15;
     plot(times, mART, 'Linewidth', 5); hold on; 
-    %x = (-.018:-.0025:-.030)';%PFC
-    %hbL([1 2], :) = nan; %PFC
 
-    x = (-.012:-.0050:-.032)';%VVS
-    hbL(:, 1:4) = nan; %VVS
+    if strcmp(cfg.brainROI, 'pfc')
+        x = (-.018:-.0025:-.030)';%PFC
+        hbL([2], :) = nan; %PFC
+    else
+        x = (-.012:-.0050:-.032)';%VVS
+        hbL(:, 1:4) = nan; %VVS
+    end
 
     hbL = hbL+x;
     plot (times, hbL, 'Linewidth', 5); hold on; 
     set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 15]); 
-    set(gca, 'FontSize', 12, 'ylim', [-.04 .15]);
-    %set(gca, 'FontSize', 12, 'ylim', [-.03 .04]);
+    if strcmp(cfg.brainROI, 'pfc')
+        set(gca, 'FontSize', 12, 'ylim', [-.03 .04]);
+    elseif strcmp(cfg.brainROI, 'vvs')
+        set(gca, 'FontSize', 12, 'ylim', [-.04 .15]);
+    end
     plot([5 5],get(gca,'ylim'), 'k:','lineWidth',3);
     plot(get(gca,'xlim'), [0 0],'k:','lineWidth',3);
     %legend
@@ -1000,54 +1047,9 @@ set(gca, 'ColorOrder', myCmap)
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 
-%% 
-
-figure()
-for layi = 1:56
-    d2p = squeeze(mean(nnH(:, layi,:), 'omitnan'));
-    plot(d2p); hold on; 
-end
-%h(h==0) = nan; h(h==1) = .02;
-%plot(h, 'lineWidth', 2)
 
 
 
-
-
-
-
-
-
-
-
-
-
-%% compute clusters in each permutation BANDS
-sub2exc = [2]; 
-nPerm = 200; 
-for permi = 1:nPerm
-    
-    dataP = squeeze(nnFitPerm(permi, :,:)); %maintenance
-    %dataP = squeeze(nnFitPerm(permi, :,1:10)); %encoding
-    
-    dataP(sub2exc, :) = []; 
-    [h p ci ts] = ttest(dataP);
-    h = squeeze(h); t = squeeze(ts.tstat);
-    
-    clear allSTs  
-    clustinfo = bwconncomp(h);
-    if length(clustinfo.PixelIdxList) > 0
-        for pxi = 1:length(clustinfo.PixelIdxList)
-           allSTs(permi, pxi) = sum(t(clustinfo.PixelIdxList{pxi}));% 
-        end
-    else
-        allSTs(permi, :) = 0;
-    end
-
-    [maxh id] = max(abs(allSTs(permi)));
-    max_clust_sum_perm(permi,:) = allSTs(permi,id); 
-
-end
 
 
 

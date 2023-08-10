@@ -1,3 +1,14 @@
+%% plot colorbar for network layers
+myCmap = colormap(brewermap(20,'RdPu'));
+myCmap = myCmap([6 8 10 12 14 16 18 20],:)
+%figure(); set(gcf, 'Position', [100 100 800 100]) % for blnet and alexnet 
+figure(); set(gcf, 'Position', [100 100 500 100]) % for Cornet
+imagesc(1:4)
+colormap(myCmap)
+set(gca, 'xtick', [], 'ytick', [])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
 %% Plot all trials
 %% load cfg_contrasts
 clear
