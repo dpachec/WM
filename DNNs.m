@@ -61,6 +61,7 @@ clear, clc
 listF2sav = {
                     'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1'
                     'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1'
+                    'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1'
              };   
 
 for listi = 1:length(listF2sav)
@@ -109,6 +110,7 @@ listF2sav = {
 
                 
                     'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+                    'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
                     'BLNETe_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
                     'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
                     'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
@@ -191,13 +193,13 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
