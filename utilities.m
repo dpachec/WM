@@ -1977,7 +1977,13 @@ figure
 imagesc(d2p)
 
 
+%% 
 
+chanNames_all([18 22]) = []; 
+clen = cell2mat(cellfun(@(x) size(x, 1), chanNames_all, 'un', 0))
+sum(clen)
+mean(clen)
+std(clen)
 
 
 

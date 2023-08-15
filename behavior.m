@@ -75,11 +75,11 @@ m_corr_123 = mean(corr_123) ; std_corr_123 = std(corr_123); se_corr_123 = std_co
 m_corr_all_pos = mean(corr_all_pos) ; std_corr_all_pos = std(corr_all_pos); se_corr_all_pos = std_corr_all_pos / sqrt ( size(corr_all_pos, 1));
 m_corr_123_pos = mean(corr_123_pos) ; std_corr_123_pos = std(corr_123_pos); se_corr_123_pos = std_corr_123_pos / sqrt ( size(corr_123_pos, 1));
 
-
+allPerf = [corr_123 corr_all]
 
 %% 2Bar 
 clear data
-data.data = [corr_all] 
+data.data = [allPerf(:, [1 3])] 
 
 diff = data.data(:,1)- data.data(:,2);
 

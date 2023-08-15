@@ -3,7 +3,7 @@
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 
-f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CORrtRELU_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
@@ -14,6 +14,8 @@ f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'BLNETe_pfc_M123NC_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+
 
 
 cfg = getParams(f2sav);
@@ -57,14 +59,8 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-
-                'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_vvs_E123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
-
-
-
+                    'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1'
+                    'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1'
              };   
 
 for listi = 1:length(listF2sav)
@@ -103,7 +99,7 @@ end
 
 
 
-%% PERMUTATIONS IN LOOP
+%%PERMUTATIONS IN LOOP
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
@@ -112,12 +108,13 @@ nPerm = 1000;
 listF2sav = {
 
                 
-                'BLNETi_pfc_M123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_9-12_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_30-38_1_0_0_0_.1_5_1';
-                'BLNETi_pfc_M123_[8-8-56]_39-54_1_0_0_0_.1_5_1';
-
+                    'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+                    'BLNETe_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                    'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                    'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
+                    'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
+                    'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
+                    'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
                
              };
     
@@ -196,8 +193,11 @@ etime(datevec(t2), datevec(t1))
 clear , clc
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -359,16 +359,8 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 clc
 clearvars -except allTObs f2sav
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-%f2sav = 'RNN_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p'; 
-%f2sav =  'RNN_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p'; 
-%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p'; 
-%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p';
-%f2sav =  'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1_1000p';
-%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_1000p';
-%f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_1000p'; 
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_1000p';
-%f2sav = 'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_1000p_V2';
 
+% use the same name as the previously plotted file
 f2sav = [f2sav '_1000p.mat'];
 
 cfg = getParams(f2sav);

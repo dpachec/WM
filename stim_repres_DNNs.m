@@ -1157,3 +1157,68 @@ plot (allRs(49:56), 'Linewidth', lw, 'Color', cols(7, :)); hold on;
 set(gca, 'FontSize', 16, 'xlim', [1 8])
 xlabel('Time')
 ylabel('Rho')
+
+
+%% load RDMS 2
+
+clear 
+load rdms
+
+for layi = 1:8
+
+    for layj = 1:56
+
+        x = vectorizeRDM(squeeze(ACT_CH_Alex(layi, :, :))); 
+        y = vectorizeRDM(squeeze(ACT_CH_BLNET(layj, :, :))); 
+        allR(layi, layj) = corr(x, y, 'type', 's');
+        
+    end
+
+end
+
+%% 
+clear 
+
+lay2load = 8:8:56;
+load rdms
+
+for layi = 1:8
+
+    for layj = 1:length(lay2load)
+
+        x = vectorizeRDM(squeeze(ACT_CH_Alex(layi, :, :))); 
+        y = vectorizeRDM(squeeze(ACT_CH_BLNET(lay2load(layj), :, :))); 
+        [allR(layi, layj) allP(layi, layj)]= corr(x, y, 'type', 's');
+        
+    end
+
+end
+
+
+
+%% 
+figure
+imagesc(allR); axis square; colorbar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
+
