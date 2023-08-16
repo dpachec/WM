@@ -100,7 +100,7 @@ end
 
 
 
-%%PERMUTATIONS IN LOOP
+%% PERMUTATIONS IN LOOP
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
 clear
@@ -108,16 +108,10 @@ nPerm = 1000;
 
 listF2sav = {
 
-                
-                    'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
-                    'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
-                    'BLNETe_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-                    'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-                    'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
-                    'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
-                    'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
-                    'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
-               
+                    'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
+                    'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+                    'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+                    
              };
     
 
@@ -193,12 +187,12 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
@@ -265,23 +259,13 @@ for layi = 1:size(nnFit{1}, 1)
     contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
     if strcmp(cfg.period(1), 'M')
-        if layi == 49
-            set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'});
-            set(gca, 'xtick', [5  39], 'xticklabels', {'0' '3.5'});
-        else
-            set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        end
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         set(gca, 'xlim', [1 39], 'clim', [-5 5], 'FontSize', 10);
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
     else
-        if layi == 49
-            set(gca, 'ytick', [1 29 52], 'yticklabels', {'3' '30' '150'}); 
-            set(gca, 'xtick', [1 5.5 15], 'xticklabels', {'-.5' '0' '1'})
-        else
-            set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        end
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         set(gca, 'FontSize', 8, 'clim', [-5 5]);
-        plot([3 3],get(gca,'ylim'), 'k:','lineWidth', 2);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
         
     end
     
@@ -294,6 +278,8 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 times = 1:150;
 freqs = 1:520; 
 h = zeros(52, 15); 
+
+h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 1
 
 %h(clustinfo.PixelIdxList{5}) = 1; % BLNETi PFC
 %h(clustinfo.PixelIdxList{1}) = 1; % BLNETi VVS
@@ -436,8 +422,8 @@ for layi = 1:size(allTObs, 1)
     end
 end
 
-p (p==1.0010 | p == 1) = 0; 
-p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
+p (p==1.0010 | p == 1) = nan; 
+p_ranked = p; p_ranked(isnan(p_ranked)) = []; 
 p_ranked = sort(p_ranked(:));
 p
 
