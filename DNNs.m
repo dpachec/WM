@@ -108,8 +108,9 @@ nPerm = 1000;
 
 listF2sav = {
 
-                    'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
-                    'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+                    'BLNETe_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                    'BLNETe_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+                    'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
                     
              };
     
@@ -188,11 +189,10 @@ etime(datevec(t2), datevec(t1))
 clear , clc
 %f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETe_vvs_E123_[56]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -217,7 +217,7 @@ for layi = 1:size(nnFit{1}, 1)
     clear nnH
     for subji = 1:length(nnFit)
        if strcmp(cfg.period(1), 'M')
-         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:39));
+         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
        else
          nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
        end
@@ -227,7 +227,7 @@ for layi = 1:size(nnFit{1}, 1)
     nnH = squeeze(nnH);
     %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     [h p ci ts] = ttest(nnH);
-    h = squeeze(h); t = squeeze(ts.tstat);
+    h = squeeze(h); t = squeeze(ts.tstat); 
     h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
     
     d2p = squeeze(mean(nnH, 'omitnan'));
@@ -259,7 +259,7 @@ for layi = 1:size(nnFit{1}, 1)
     
     if strcmp(cfg.period(1), 'M')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 39], 'clim', [-5 5], 'FontSize', 10);
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
     else
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
@@ -273,12 +273,184 @@ end
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
+
+
+%%  plot all layers FREQUENCY RESOLVED FANCY PLOT
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'BLNETe_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,8, 'TileSpacing', 'compact', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1800 1300])
+else
+    set(gcf, 'Position', [100 100 670 1300])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if strcmp(cfg.period(1), 'M')
+         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
+       else
+         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
+       end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:520; 
+    clustinfo = bwconncomp(h);
+    
+    % % % % % % 
+    if strcmp(cfg.period(1), 'M')
+        h = zeros(52, 40); 
+        %h(clustinfo.PixelIdxList{1}) = 1;
+        
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 4
+            h(clustinfo.PixelIdxList{14}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 5
+            h(clustinfo.PixelIdxList{25}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 6
+            h(clustinfo.PixelIdxList{17}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'pfc') & layi == 7
+            h(clustinfo.PixelIdxList{2}) = 1;
+        end
+        
+        if strcmp(cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 4
+            h(clustinfo.PixelIdxList{15}) = 1;
+        end
+        if strcmp(cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'pfc') & layi == 1
+            h(clustinfo.PixelIdxList{1}) = 1;
+        end
+        if strcmp(cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'pfc') & layi == 4
+            h(clustinfo.PixelIdxList{3}) = 1;
+        end
+
+    else
+        h = zeros(52, 15); 
+        if strcmp (cfg.net2load, 'Alex') & strcmp(cfg.brainROI, 'vvs') 
+            h(clustinfo.PixelIdxList{1}) = 1;
+            if layi == 4
+                h(clustinfo.PixelIdxList{2}) = 1;
+            end
+            if layi == 6
+                h(clustinfo.PixelIdxList{2}) = 1;
+            end
+        end
+        if strcmp (cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 1
+            h(clustinfo.PixelIdxList{1}) = 1;
+            h(clustinfo.PixelIdxList{2}) = 1;
+            h(clustinfo.PixelIdxList{3}) = 1;
+            h(clustinfo.PixelIdxList{4}) = 1;
+        end
+        if strcmp (cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 2
+            h(clustinfo.PixelIdxList{1}) = 1;
+        end
+        if strcmp (cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 3
+            h(clustinfo.PixelIdxList{1}) = 1;
+        end
+        if strcmp (cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 4
+            h(clustinfo.PixelIdxList{1}) = 1;
+        end
+        if strcmp (cfg.net2load, 'CAT') & strcmp(cfg.brainROI, 'vvs')
+            h(clustinfo.PixelIdxList{1}) = 1;
+        end
+        if strcmp (cfg.net2load, 'CAT') & strcmp(cfg.brainROI, 'pfc')
+            h(clustinfo.PixelIdxList{2}) = 1;
+            h(clustinfo.PixelIdxList{3}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETe') & strcmp(cfg.brainROI, 'vvs') 
+            h(clustinfo.PixelIdxList{1}) = 1;
+            if layi ==4
+                h(clustinfo.PixelIdxList{2}) = 1;
+            end
+            if layi == 7 
+                h(clustinfo.PixelIdxList{2}) = 1;
+            end
+        end
+
+    
+    
+    end
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2)*10; 
+    else
+        times = 1:150; 
+    end
+    myCmap = colormap(brewermap([],'*spectral'));
+    colormap(myCmap)
+    contourf(times, freqs,myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 400], 'clim', [-5 5], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
+        
+    end
+    
+
+end
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+close all; 
+
 %% plot final figure only last layer / time point ENCODING
 times = 1:150;
 freqs = 1:520; 
-h = zeros(52, 15); 
+%h = zeros(52, 15); 
 
-h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 1
+%h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 1-3, 5
+
+%h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 4 and 6
+%h(clustinfo.PixelIdxList{2}) = 1; % Alexnet VVS Layer 4 and 6
+
 
 %h(clustinfo.PixelIdxList{5}) = 1; % BLNETi PFC
 %h(clustinfo.PixelIdxList{1}) = 1; % BLNETi VVS
@@ -340,6 +512,7 @@ plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5);
 %colorbar
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+
 
 
 %% COMPUTE CLUSTERS in each permutation FREQUENCY RESOLVED
