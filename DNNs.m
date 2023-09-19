@@ -14,7 +14,7 @@ clear
 %f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'BLNETe_pfc_M123NC_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'BLNETi_pfc_M123NC_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
 
 
@@ -187,9 +187,9 @@ etime(datevec(t2), datevec(t1))
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
@@ -233,6 +233,7 @@ for layi = 1:size(nnFit{1}, 1)
     d2p = squeeze(mean(nnH, 'omitnan'));
     freqs = 1:52; 
     clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
 
     % store allTOBS
     if ~isempty(clustinfo.PixelIdxList)
@@ -275,14 +276,162 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 
 
+%%  Save BL-NET eco activations only in clusters DURING MAINTENANCE
+
+f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+clear nnHClust_pfc7 nnHClust_vvs4 nnHClust_vvs5 nnHClust_vvs6
+for layi = 1:size(nnFit{1}, 1)
+    clear nnH
+    for subji = 1:length(nnFit)
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
+           end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+
+
+    for subji = 1:size(nnH, 1)
+        nnHSubj = squeeze(nnH(subji, :, :)); 
+        if strcmp(cfg.period(1), 'M')
+            %if layi == 4 & strcmp(cfg.brainROI, 'vvs')
+            %    nnHClust_vvs4(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
+            %end 
+            %if layi == 5 & strcmp(cfg.brainROI, 'vvs')
+            %    nnHClust_vvs5(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
+            %end 
+            %if layi == 6 & strcmp(cfg.brainROI, 'vvs')
+            %    nnHClust_vvs6(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
+            %end
+            if layi == 7 & strcmp(cfg.brainROI, 'pfc')
+                nnHClust_pfc7(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{2})); 
+            end
+            %if layi == 4 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
+            %    nnHClust_vvs4(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
+            %end 
+            %if layi == 5 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
+                %nnHClust_vvs5(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
+            %end 
+            %if layi == 6 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
+            %    nnHClust_vvs6(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
+            %end
+            if layi == 8 & strcmp(cfg.brainROI, 'pfc') & strcmp(cfg.net2load, 'AlexEco')
+                nnHClust_pfc7(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{2})); 
+            end
+        elseif strcmp(cfg.period(1), 'E')
+            nnHClust_vvsE1(subji, :) = mean(nnHSubj(allClustInfo{1}.PixelIdxList{1})); 
+            nnHClust_vvsE2(subji, :) = mean(nnHSubj(allClustInfo{2}.PixelIdxList{1})); 
+            nnHClust_vvsE3(subji, :) = mean(nnHSubj(allClustInfo{3}.PixelIdxList{1})); 
+            nnHClust_vvsE4(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{1})); 
+            nnHClust_vvsE5(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{1})); 
+            nnHClust_vvsE6(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{1})); 
+            nnHClust_vvsE7(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{1})); 
+        end
+    end
+
+    
+   
+end
+
+%% 
+%[h p ci ts] = ttest(nnHClust_vvs6);
+[h p ci ts] = ttest(nnHClust_pfc7);
+%[h p ci ts] = ttest(nnHClust_vvsE7);
+h = squeeze(h); t = squeeze(ts.tstat); 
+
+disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+%% plot 7 bar
+clear data
+data.data = [nnHClust_vvsE1 nnHClust_vvsE2 nnHClust_vvsE3 nnHClust_vvsE4 ...
+             nnHClust_vvsE5 nnHClust_vvsE6 nnHClust_vvsE7]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1 2 3 4 5 6 7], data.data, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1 2 3 4 5 6 7],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 8] );
+set(gca, 'ylim', [-.1 .3])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+%% plot 3 bar
+clear data
+data.data = [nnHClust_vvs4 nnHClust_vvs5 nnHClust_vvs6]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1 2 3], data.data, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1 2 3],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 4] );
+set(gca, 'ylim', [-.05 .1])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+%% plot 1 bar
+clear data
+data.data = [nnHClust_pfc7]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.05 .1])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
 %%  plot all layers FREQUENCY RESOLVED FANCY PLOT
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETe_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
 
@@ -379,6 +528,7 @@ for layi = 1:size(nnFit{1}, 1)
         end
         if strcmp (cfg.net2load, 'CORrt') & strcmp(cfg.brainROI, 'vvs') & layi == 4
             h(clustinfo.PixelIdxList{1}) = 1;
+            h(clustinfo.PixelIdxList{2}) = 1;
         end
         if strcmp (cfg.net2load, 'CAT') & strcmp(cfg.brainROI, 'vvs')
             h(clustinfo.PixelIdxList{1}) = 1;
@@ -478,11 +628,11 @@ colormap(myCmap)
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 %% plot final figure only last layer MAINTENANCE
-times = 1:390;
+times = 1:400;
 freqs = 1:520; 
 %h = zeros(52, 39); 
 
-%h(clustinfo.PixelIdxList{2}) = 1; %BLNETi PFC
+h(clustinfo.PixelIdxList{2}) = 1; %BLNETi PFC
 
 %h(clustinfo.PixelIdxList{3}) = 1; %CORNET PFC
 %h(clustinfo.PixelIdxList{15}) = 1; %CORNET VVS
