@@ -123,33 +123,148 @@ M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(3
 ACT = ACT_FR;
 for layi = 1:size(ACT, 1)
     d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
+    %d2p = 1- d2p;
     rdmMDS = d2p; 
     rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
     mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
     mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
-    CCI_FR(layi) = (mAcross - mWithin) ;
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_FR(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_FR(:, layi) = tmp;
+    CCW_FR(layi) = mWithin;
+    CCB_FR(layi) = mAcross;
+    CCI_FR(layi) = mWithin-mAcross ;
 end
 
 %china
 ACT = ACT_CH;
 for layi = 1:size(ACT, 1)
     d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
+    %d2p = 1- d2p;
     rdmMDS = d2p; 
     rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
     mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
     mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    CCI_CH(layi) = (mAcross - mWithin) ;
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+    CCW_CH(layi) = mWithin;
+    CCB_CH(layi) = mAcross;
+    CCI_CH(layi) = mWithin-mAcross ;
+    %CCI_CH(layi) = (mAcross - mWithin) ;
 end
 
-CCI2 = [CCI_FR; CCI_CH]; 
-CCI = mean(CCI2); 
+
+aW = squeeze(mean(cat(3, aW_CH, aW_FR), 3)); 
+aB = squeeze(mean(cat(3, aB_CH, aB_FR), 3)); 
+
+
+CCI2 = [CCI_FR; CCI_CH]; CCW2 = [CCW_FR; CCW_CH]; CCB2 = [CCB_FR; CCB_CH]; 
+CCI = mean(CCI2); CCW = mean(CCW2); CCB = mean(CCB2);
 
 figure(); set(gcf, 'Position', [100 100 500 400])
-plot (CCI, 'Linewidth', 3); %axis square
-set(gca, 'FontSize', 22, 'xlim', [0 9], 'ylim', [0 .75])
+plot (CCW, 'Linewidth', 3); hold on; %axis square
+plot (CCB, 'Linewidth', 3); %axis square
+plot (CCI, 'Linewidth', 3); hold on; %axis square
+set(gca, 'FontSize', 28, 'xlim', [0 9], 'ylim', [0 1.1])
+%legend({'Within category', 'Between category', 'Within - between'})
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%
+close all
+clear bCMR wCMR
+
+
+x0 = 1:8;
+for i = 1:1500
+    
+    y0 = aB(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    bCMR(i,:) = b; 
+
+    %y = b(1) + x0*b(2)
+    %figure()
+    %plot(x0,y0,'o')
+    %hold on
+    %plot(x0,y,'--r')
+    %h1 = lsline
+    
+end
+
+for i = 1:270
+
+    y0 = aW(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    wCMR(i,:) = b; 
+
+end
+
+%%
+[h p ci ts] = ttest(bCMR(:, 2))
+%t = ts.tstat 
+%disp([num2str(p) ' // ' num2str(t)])
+
+%% 
+[h p ci ts] = ttest(wCMR(:, 2))
+%t = ts.tstat; 
+%disp([num2str(p) ' // ' num2str(t)])
+
+
+
+%%
+
+%%
+
+x = repelem(1:8, 270);
+y = aW(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 8.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+x = repelem(1:8, 1500);
+y = aB(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 8.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%
+
+x = repelem(1:8, 270);
+y = aW(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 8.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
@@ -201,7 +316,7 @@ for layi = 1:8
 end
 
 
-%% % RNN 
+%% % % % % % %% % % % % %% % % % % %% % % % % %% % % % % %% % % % % %% % % % % %% % RNN 
 % % % 
 clear, clc
 f2sav = 'BLNETi_pfc_E123_[1-56]_3-54_0_0_0_1_.1_5_1.mat'; 
@@ -293,6 +408,247 @@ for rowi = 1:7
 end
 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer (final timepoint only)
+
+clc
+clearvars -except ACT_FR ACT_CH 
+
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR(8:8:56, :, :);
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW_FR(layi) = mWithin;
+    CCB_FR(layi) = mAcross;
+    CCI_FR(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+%china
+ACT = ACT_CH(8:8:56, :, :);;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    CCW_CH(layi) = mWithin;
+    CCB_CH(layi) = mAcross;
+    CCI_CH(layi) = mWithin-mAcross ;
+    %CCI_CH(layi) = (mAcross - mWithin) ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_FR(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_FR(:, layi) = tmp;
+
+end
+
+CCI2 = [CCI_FR; CCI_CH]; CCW2 = [CCW_FR; CCW_CH]; CCB2 = [CCB_FR; CCB_CH]; 
+CCI = mean(CCI2); CCW = mean(CCW2); CCB = mean(CCB2);
+
+aW = squeeze(mean(cat(3, aW_CH, aW_FR), 3)); 
+aB = squeeze(mean(cat(3, aB_CH, aB_FR), 3)); 
+
+
+figure(); set(gcf, 'Position', [100 100 500 400])
+plot (CCW, 'Linewidth', 3); hold on; %axis square
+plot (CCB, 'Linewidth', 3); %axis square
+plot (CCI, 'Linewidth', 3); hold on; %axis square
+set(gca, 'FontSize', 28, 'xlim', [0 8], 'ylim', [0 1])
+legend({'Within category', 'Between category', 'Within - between'})
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%
+
+x = repelem(1:7, 270);
+y = aW(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+x = repelem(1:7, 1500);
+y = aB(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+
+
+%%
+close all
+clear bCMR wCMR
+
+
+x0 = 1:7;
+for i = 1:1500
+    
+    y0 = aB(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    bCMR(i,:) = b; 
+
+    %y = b(1) + x0*b(2)
+    %figure()
+    %plot(x0,y0,'o')
+    %hold on
+    %plot(x0,y,'--r')
+    %h1 = lsline
+    
+end
+
+for i = 1:270
+
+    y0 = aW(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    wCMR(i,:) = b; 
+
+end
+
+%%
+[h p ci ts] = ttest(bCMR(:, 2))
+
+%% 
+[h p ci ts] = ttest(wCMR(:, 2))
+
+
+
+%% compute CCI for each layer ALL TIME POINTS
+
+clc
+clearvars -except ACT_FR ACT_CH 
+
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW_FR(layi) = mWithin;
+    CCB_FR(layi) = mAcross;
+    CCI_FR(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+%china
+ACT = ACT_CH;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    CCW_CH(layi) = mWithin;
+    CCB_CH(layi) = mAcross;
+    CCI_CH(layi) = mWithin-mAcross ;
+    %CCI_CH(layi) = (mAcross - mWithin) ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_FR(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_FR(:, layi) = tmp;
+
+end
+
+CCI2 = [CCI_FR; CCI_CH]; CCW2 = [CCW_FR; CCW_CH]; CCB2 = [CCB_FR; CCB_CH]; 
+CCI = mean(CCI2); CCW = mean(CCW2); CCB = mean(CCB2);
+
+aW = squeeze(mean(cat(3, aW_CH, aW_FR), 3)); 
+aB = squeeze(mean(cat(3, aB_CH, aB_FR), 3)); 
+
+
+%%
+
+x = repelem(1:7, 270);
+%y = aW(:,1:8); y = (:);
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+%x = repelem(1:7, 1500);
+%y = aB(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
 
 %% compute CCI for each layer / timepoint
 
@@ -436,7 +792,7 @@ for layi = 1:7
    subplot (1, 7, layi)
    d2p = squeeze(ACT(lois(layi), :,:)); 
    imagesc(d2p); axis square; 
-   set(gca,'cLim', [0 .8])
+   set(gca,'cLim', [0 1])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 end
  ha=get(gcf,'children');
@@ -756,15 +1112,14 @@ plot(d2p2)
 
 
 
-
 %% 
 % % CORNET 
 % % % 
 clear, clc
 %cfg = getParams(f2sav);
-cfg.lays2load = 1:34;
+cfg.lays2load = 1:20;
 sessi = 1; 
-paths = load_paths_WM('pfc', 'EXAMPLE');
+paths = load_paths_WM('pfc', 'CORrt');
 
 subj_ch_fr = 1; 
 [ACT_FR] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
@@ -780,7 +1135,7 @@ subj_ch_fr = 20;
 ACT = ACT_FR;
 
 figure()
-for layi = 1:34
+for layi = 1:20
    subplot (7, 8, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    imagesc(d2p); axis square; 
@@ -800,13 +1155,13 @@ myCmap = brewermap([], '*Spectral')
 colormap(myCmap)
 
 %l2l = [5 10 14 18 22 26 30 34];
-l2l = [10 18 26 34];
+l2l = [5 10 15 20];
 
 for layi = 1:4
    subplot (1, 4, layi)
    d2p = squeeze(ACT(l2l(layi), :,:)); 
    imagesc(d2p); axis square; 
-   set(gca,'cLim', [0 .8])
+   set(gca,'cLim', [0 1])
    set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
 end
  ha=get(gcf,'children');
@@ -825,6 +1180,8 @@ cols = repelem(cols, 10, 1);
 %plot(1,1,'.','color',cols(11,:), 'Markersize', 2000) % check the color
 % also nice palette here: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/a64ed616-e9ce-4b1d-8d18-5118cc03f8d2/images/screenshot.png
 
+ACT = ACT_FR;
+l2l = [5 10 15 20];
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 for layi = 1:4
    subplot (1, 4, layi)
@@ -851,7 +1208,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 clearvars -except ACT_CH ACT_FR
 
 %l2l = [5 14 22 30]; % first time-point
-l2l = [10 18 26 34]; % last time-point
+l2l = [5 10 15 20]; % last time-point
 
 
 ACT = ACT_CH; 
@@ -891,6 +1248,213 @@ set(gca, 'clim', [0.5 1], 'xtick',  (1:4) +.5, 'ytick', (1:4) +.5, 'xticklabels'
 colormap(myCmap)
 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+
+
+
+
+
+%% MDS all layers (pink and blue triangle-circles plot) only for INPUT AND OUTPUT CORNET
+
+clearvars -except ACT_FR ACT_CH
+
+
+act = ACT_FR; 
+act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 20, []); act3 = act2(:,any(~isnan(act2)));  
+allM_FR = corr(act3', 'type', 's');
+
+act = ACT_CH; 
+act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 20, []); act3 = act2(:,any(~isnan(act2)));  
+allM_CH = corr(act3', 'type', 's');
+
+allM2 = cat(3, allM_FR, allM_CH);
+
+allM = squeeze(mean(allM2, 3));
+
+%allM(isnan(allM(:, 1)), :) = [];
+%allM = allM(:,all(~isnan(allM)));   % for nan - columns
+
+
+l2l = [1 5 7 10 13 15 19 20 ]; 
+allM = allM(l2l, l2l);
+
+
+d2p = 1- allM;
+[rdmMDS] = cmdscale(d2p);
+
+rdmMDS = rdmMDS*2; % for visualization
+
+figure()
+plot(rdmMDS([1 2],1),rdmMDS([1 2],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([3 4],1),rdmMDS([3 4],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([5 6],1),rdmMDS([5 6],2),'k', 'linewidth', 2);hold on; 
+plot(rdmMDS([7 8],1),rdmMDS([7 8],2),'k', 'linewidth', 2);hold on; 
+
+fmt = {'o'; '^'};
+fmt = repelem(fmt, 1, 8);
+
+clear c1 c2 c3 cols
+c1 = (1:4)/4'; c2 = repmat(zeros(1), 4, 1)';c3 = repmat(ones(1), 4, 1)';
+cols = [c1 ; c2 ; c3]';
+cols = repelem(cols,2, 1)
+
+for i = 1:8
+    scatter(rdmMDS(i,1),rdmMDS(i,2),300,cols(i, :),fmt{i}, 'Markerfacecolor', cols(i,:)); 
+    set(gcf, 'Position', [100 100 500 400])
+    set(gca,'FontSize', 28, 'xlim', [-1 1], 'ylim', [-1 1]); 
+end
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+
+
+
+
+
+
+
+%% compute CCI for each layer and timepoint Cornet 
+
+clearvars -except ACT_FR ACT_CH 
+
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCI_FR(layi) = (mAcross - mWithin) ;
+end
+
+%china
+ACT = ACT_CH;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    CCI_CH(layi) = (mAcross - mWithin) ;
+end
+
+CCI2 = [CCI_FR; CCI_CH]; 
+CCI = mean(CCI2); 
+
+% % % mds
+clear c1 c2 c3 cols
+c1 = (1:4)/4'; % sorted by time point
+c2 = repmat(zeros(1), 4, 1)';
+c3 = repmat(ones(1), 4, 1)';
+cols = [c1 ; c2 ; c3]';
+
+
+figure(); set(gcf, 'Position', [100 100 500 400])
+plot (1:5, CCI(1:5), 'Linewidth', 3, 'Color', [cols(1,:)]); hold on; %axis square
+plot (2:5,CCI(7:10), 'Linewidth', 3, 'Color', [cols(2,:)]); %axis square
+plot (3:5,CCI(13:15), 'Linewidth', 3, 'Color', [cols(3,:)]); %axis square
+plot (4:5,CCI(19:20), 'Linewidth', 3, 'Color', [cols(4,:)]); %axis square
+set(gca, 'FontSize', 22, 'xlim', [0 6], 'ylim', [0 .5])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+
+
+
+
+%% compute CCI for each layer FINAL TIME POINT
+
+clearvars -except ACT_FR ACT_CH 
+
+l2l = [5 10 15 20];
+
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR;
+for layi = 1:size(l2l, 2)
+    d2p = squeeze(ACT(l2l(layi), :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    
+    CCW_FR(layi) = mWithin;
+    CCB_FR(layi) = mAcross;
+    CCI_FR(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+%china
+ACT = ACT_CH;
+for layi = 1:size(l2l, 2)
+    d2p = squeeze(ACT(l2l(layi), :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    CCW_CH(layi) = mWithin;
+    CCB_CH(layi) = mAcross;
+    CCI_CH(layi) = mWithin-mAcross ;
+    %CCI_CH(layi) = (mAcross - mWithin) ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_FR(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_FR(:, layi) = tmp;
+
+end
+
+CCI2 = [CCI_FR; CCI_CH]; CCW2 = [CCW_FR; CCW_CH]; CCB2 = [CCB_FR; CCB_CH]; 
+CCI = mean(CCI2); CCW = mean(CCW2); CCB = mean(CCB2);
+
+aW = squeeze(mean(cat(3, aW_CH, aW_FR), 3)); 
+aB = squeeze(mean(cat(3, aB_CH, aB_FR), 3)); 
+
+figure(); set(gcf, 'Position', [100 100 500 400])
+plot (CCW, 'Linewidth', 3); hold on; %axis square
+plot (CCB, 'Linewidth', 3); %axis square
+plot (CCI, 'Linewidth', 3); hold on; %axis square
+set(gca, 'FontSize', 28, 'xlim', [0 5], 'ylim', [0 1.1])
+%legend({'Within category', 'Between category', 'Within - between'})
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+
+
+
+
+
 
 
 
@@ -938,167 +1502,28 @@ figure
 histogram(permT); hold on; 
 scatter(obsT,0, 'filled','r');
 
-
-
-%% MDS all layers (pink and blue triangle-circles plot) only for INPUT AND OUTPUT CORNET
-
-clearvars -except ACT_FR ACT_CH
-
-
-act = ACT_FR; 
-act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
-act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 34, []); act3 = act2(:,all(~isnan(act2)));  
-allM_FR = corr(act3', 'type', 'p');%allMS = allM.^2;
-
-act = ACT_CH; 
-act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
-act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 34, []); act3 = act2(:,all(~isnan(act2)));  
-allM_CH = corr(act3', 'type', 'p');%allMS = allM.^2;
-
-allM2 = cat(3, allM_FR, allM_CH);
-
-allM = squeeze(mean(allM2, 3));
-
-%allM(isnan(allM(:, 1)), :) = [];
-%allM = allM(:,all(~isnan(allM)));   % for nan - columns
-
-l2l = [5 10 14 18 22 26 30 34]; % first time-point
-allM = allM(l2l, l2l);
-
-
-d2p = 1- allM;
-[rdmMDS] = cmdscale(d2p);
-
-rdmMDS = rdmMDS*2.5; % for visualization
-
-figure()
-plot(rdmMDS([1 2],1),rdmMDS([1 2],2),'k', 'linewidth', 2);hold on; 
-plot(rdmMDS([3 4],1),rdmMDS([3 4],2),'k', 'linewidth', 2);hold on; 
-plot(rdmMDS([5 6],1),rdmMDS([5 6],2),'k', 'linewidth', 2);hold on; 
-plot(rdmMDS([7 8],1),rdmMDS([7 8],2),'k', 'linewidth', 2);hold on; 
-
-fmt = {'o'; '^'};
-fmt = repelem(fmt, 1, 8);
-
-clear c1 c2 c3 cols
-c1 = (1:4)/4'; c2 = repmat(zeros(1), 4, 1)';c3 = repmat(ones(1), 4, 1)';
-cols = [c1 ; c2 ; c3]';
-cols = repelem(cols,2, 1)
-
-for i = 1:8
-    scatter(rdmMDS(i,1),rdmMDS(i,2),300,cols(i, :),fmt{i}, 'Markerfacecolor', cols(i,:)); 
-    set(gcf, 'Position', [100 100 500 400])
-    set(gca,'FontSize', 22, 'xlim', [-1 1], 'ylim', [-1 1]); 
-end
-
-
-exportgraphics(gcf, 'allM.png', 'Resolution', 300);
-
-
-
-
-
-
-
-
-%% compute CCI for each layer and timepoint Cornet 
-
-clearvars -except ACT_FR ACT_CH 
-
-l2l = [5 10 14 18 22 26 30 34];
-
-%create cateogy model
-M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
-
-% freiburg
-ACT = ACT_FR;
-for layi = 1:size(ACT, 1)
-    d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
-    rdmMDS = d2p; 
-    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
-    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
-    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
-    CCI_FR(layi) = (mAcross - mWithin) ;
-end
-
-%china
-ACT = ACT_CH;
-for layi = 1:size(ACT, 1)
-    d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
-    rdmMDS = d2p; 
-    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
-    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
-    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    CCI_CH(layi) = (mAcross - mWithin) ;
-end
-
-CCI2 = [CCI_FR; CCI_CH]; 
-CCI = mean(CCI2); 
-
-% % % mds
-clear c1 c2 c3 cols
-c1 = (1:4)/4'; % sorted by time point
-c2 = repmat(zeros(1), 4, 1)';
-c3 = repmat(ones(1), 4, 1)';
-cols = [c1 ; c2 ; c3]';
-
-
-figure(); set(gcf, 'Position', [100 100 500 400])
-plot (1:5, CCI(6:10), 'Linewidth', 3, 'Color', [cols(1,:)]); hold on; %axis square
-plot (1:4,CCI(15:18), 'Linewidth', 3, 'Color', [cols(2,:)]); %axis square
-plot (1:3,CCI(24:26), 'Linewidth', 3, 'Color', [cols(3,:)]); %axis square
-plot (1:2,CCI(33:34), 'Linewidth', 3, 'Color', [cols(4,:)]); %axis square
-set(gca, 'FontSize', 22, 'xlim', [0 6], 'ylim', [0 .5])
-exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
-
-
-
-
-
-
-
-
-
-
-
 %% Changes in representational consistency CORNET
 
 clearvars -except ACT_FR ACT_CH
 
-layerNames = {'V1.conv_input:1'; 'V1.conv_input:2'; 'V1.conv_input:3'; 'V1.conv_input:4'; 'V1.conv_input:5';
-    'V1.conv1:1'; 'V1.conv1:2'; 'V1.conv1:3'; 'V1.conv1:4'; 'V1.conv1:5';
-    'V2.conv_input:1'; 'V2.conv_input:2'; 'V2.conv_input:3'; 'V2.conv_input:4';
-    'V2.conv1:2'; 'V2.conv1:3'; 'V2.conv1:4'; 'V2.conv1:5';
-    'V4.conv_input:1'; 'V4.conv_input:2'; 'V4.conv_input:3'; 'V4.conv_input:4';
-    'V4.conv1:2'; 'V4.conv1:3'; 'V4.conv1:4'; 'V4.conv1:5';
-    'IT.conv_input:1'; 'IT.conv_input:2'; 'IT.conv_input:3'; 'IT.conv_input:4';
-    'IT.conv1:2'; 'IT.conv1:3'; 'IT.conv1:4'; 'IT.conv1:5'}
-
 act = ACT_FR; 
 act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
-act2 = cat(3, act1{:});act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 34, []); 
-act3 = act2(:,all(~isnan(act2)));  
-
-m = squeeze(act2(28,:,:));
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, 20, []); act3 = act2(:,any(~isnan(act2)));  
+m = squeeze(act2(20,:,:));
 act2_1 = reshape(m, 1, []); 
 
 clear allM2_FR
-for tlyi = 1:33
+for tlyi = 1:19
     allM2_FR(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');
 end
 
 act = ACT_CH; 
 act1 = arrayfun(@(i)tril(squeeze(act(i,:,:)), -1), 1:size(act,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 34, []); act3 = act2(:,all(~isnan(act2)));   
+act2 = reshape(act2, 20, []); act3 = act2(:,any(~isnan(act2)));  
 clear allM2_CH
-for tlyi = 1:33
+for tlyi = 1:19
     allM2_CH(tlyi,:) = corr(act3(tlyi,:)',act3(tlyi+1,:)', 'type', 's');
 end
 
@@ -1109,14 +1534,88 @@ c1 = (1:4)/4'; c2 = repmat(zeros(1), 4, 1)';c3 = repmat(ones(1), 4, 1)';cols = [
 
 figure(); set(gcf, 'Position', [100 100 500 400])
 lw = 3;
-plot(abs(allM2(6:9)), 'Linewidth', lw, 'Color', [cols(1,:)]); hold on; 
-plot(abs(allM2(15:18)), 'Linewidth', lw, 'Color', [cols(2,:)])
-plot(abs(allM2(24:25)), 'Linewidth', lw, 'Color', [cols(3,:)])
-scatter (1, allM2(33), 1000, [cols(4,:)], '.')
+plot(1:4, abs(allM2(1:4)), 'Linewidth', lw, 'Color', [cols(1,:)]); hold on; 
+plot(2:4, abs(allM2(7:9)), 'Linewidth', lw, 'Color', [cols(2,:)])
+plot(3:4, abs(allM2(13:14)), 'Linewidth', lw, 'Color', [cols(3,:)])
+scatter (4, allM2(19), 1000, [cols(4,:)], '.')
 
 
-set(gca, 'ylim', [0.75 1], 'xlim', [0.5 4.5], 'xtick', [1:4], 'xticklabels', {'1' '2' '3' '4'}, 'FontSize', 22)
+set(gca, 'ylim', [0.75 1], 'xlim', [0.5 4.5], 'xtick', [1:4], 'xticklabels', ...
+            {'1' '2' '3' '4'}, 'FontSize', 28)
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+%%
+close all
+clear bCMR wCMR
+
+
+x0 = 1:4;
+for i = 1:1500
+    
+    y0 = aB(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    bCMR(i,:) = b; 
+
+    %y = b(1) + x0*b(2)
+    %figure()
+    %plot(x0,y0,'o')
+    %hold on
+    %plot(x0,y,'--r')
+    %h1 = lsline
+    
+end
+
+for i = 1:270
+
+    y0 = aW(i,:); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    wCMR(i,:) = b; 
+
+end
+
+%%
+[h p ci ts] = ttest(bCMR(:, 2))
+
+%% 
+[h p ci ts] = ttest(wCMR(:, 2))
+
+
+
+
+%%
+
+x = repelem(1:4, 270);
+y = aW(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 4.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%
+
+x = repelem(1:4, 1500);
+y = aB(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 4.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+
 
 
 %% correlate imagenet and ecoset activations 
@@ -1202,6 +1701,106 @@ imagesc(allR); axis square; colorbar
 
 
 
+%% LOAD WITHIN AND BETWEEN CORRELATIONS IN ALL LAYERS 3 MODELS
+clear 
+load all_wb_corr
+
+
+%% COMPARE MEAN SLOPES 
+x = mean(alexnet_wCMR(:, 2));fprintf(1, '\n\n\n');
+disp (['Alexnet within-category:   ' num2str(x)]);
+x = mean(blnet_wCMR(:, 2));
+disp (['BLNET within-category:   ' num2str(x)]);
+x = mean(cornet_wCMR(:, 2));
+disp (['cornet within-category:   ' num2str(x)]);
+x = mean(alexnet_bCMR(:, 2));
+disp (['Alexnet between-category:   ' num2str(x)]);
+x = mean(blnet_bCMR(:, 2));
+disp (['BLNET between-category:   ' num2str(x)]);
+x = mean(cornet_bCMR(:, 2));
+disp (['cornet between-category:   ' num2str(x)]);
+
+%% COMPARE MEAN SLOPES 
+x = mean(alexnet_wCMR(:, 2));fprintf(1, '\n\n\n');
+disp (['Alexnet between-category:   ' num2str(x)]);
+y = mean(blnet_bCMR(:, 2));
+disp (['BLNET between-category:   ' num2str(y)]);
+x-y
+
+
+%% COMPARE SLOPES WITHIN EACH MODE
+[h p ci ts] = ttest(alexnet_wCMR(:, 2)); fprintf(1, '\n\n\n');
+disp (['Alexnet within-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+[h p ci ts] = ttest(blnet_wCMR(:, 2)); disp(''); 
+disp (['BLNET within-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+[h p ci ts] = ttest(cornet_wCMR(:, 2)); disp(''); 
+disp (['corNET-RT within-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+fprintf(1, '\n\n\n');
+[h p ci ts] = ttest(alexnet_bCMR(:, 2)); fprintf(1, '\n\n\n');
+disp (['Alexnet between-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+[h p ci ts] = ttest(blnet_bCMR(:, 2)); disp(''); 
+disp (['BLNET between-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+[h p ci ts] = ttest(cornet_bCMR(:, 2)); disp(''); 
+disp (['corNET-RT between-category:   t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+
+%% COMPARE CORRELATIONS ACROSS THREE MODELS BETWEEN
+clear 
+load all_wb_corr
+
+fprintf(1, '\n\n\n');
+[h p ci ts] = ttest(alexnet_bCMR(:, 2), blnet_bCMR(:, 2));
+disp (['BETWEEN (ALEXNET vs BLNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci ts] = ttest(alexnet_bCMR(:, 2), cornet_bCMR(:, 2));
+disp (['BETWEEN (ALEXNET vs CORNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci ts] = ttest(blnet_bCMR(:, 2), cornet_bCMR(:, 2));
+disp (['BETWEEN (BLNET vs CORNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+
+%% COMPARE CORRELATIONS ACROSS THREE MODELS WITHIN
+clear , clc
+load all_wb_corr
+
+fprintf(1, '\n\n\n');
+[h p ci ts] = ttest(alexnet_wCMR(:, 2), blnet_wCMR(:, 2));fprintf(1, '\n');
+disp (['WITHIN (ALEXNET vs BLNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci ts] = ttest(alexnet_wCMR(:, 2), cornet_wCMR(:, 2));fprintf(1, '\n');
+disp (['WITHIN (ALEXNET vs CORNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci ts] = ttest(blnet_wCMR(:, 2), cornet_wCMR(:, 2));
+disp (['WITHIN (BLNET vs CORNET):  t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+
+%% plot 2 bars
+clear data
+%data.data = [alexnet_wCMR(:, 2)  blnet_wCMR(:, 2)]; 
+%data.data = [alexnet_wCMR(:, 2)  cornet_wCMR(:, 2)]; 
+%data.data = [blnet_wCMR(:, 2)  cornet_wCMR(:, 2)]; 
+%data.data = [alexnet_bCMR(:, 2)  blnet_bCMR(:, 2)]; 
+%data.data = [alexnet_bCMR(:, 2)  cornet_bCMR(:, 2)]; 
+data.data = [blnet_bCMR(:, 2)  cornet_bCMR(:, 2)]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1 2], data.data, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1 2],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 3] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1), data.data(:,2));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
