@@ -31,10 +31,18 @@ elseif strcmp (cfg.net2load , 'CORrtRELU')
     [ACT] = load_CORrtRELU_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORs')
     [ACT] = load_CORs_TV(cfg, sessi, subj_ch_fr, paths);
-elseif strcmp (cfg.net2load , 'Res18-2') | strcmp (cfg.net2load , 'Res18-4') | strcmp (cfg.net2load , 'Res18-6') | strcmp (cfg.net2load , 'Res18-8') 
+elseif length(cfg.net2load) > 6 & ( strcmp (cfg.net2load(1:7), 'Res18-2') | strcmp (cfg.net2load(1:7), 'Res18-4') | strcmp (cfg.net2load(1:7), 'Res18-6') | ...
+        strcmp (cfg.net2load(1:7), 'Res18-8') )
     [ACT] = load_Res18_activ(cfg, sessi, paths, oneListIDs);
+elseif length(cfg.net2load) > 6 & (strcmp (cfg.net2load(1:7), 'Res34-2') | strcmp (cfg.net2load(1:7), 'Res34-4') | strcmp (cfg.net2load(1:7), 'Res34-6') | ...
+        strcmp (cfg.net2load(1:7), 'Res34-8') )
+    [ACT] = load_Res34_activ(cfg, sessi, paths, oneListIDs);
 elseif strcmp (cfg.net2load , 'CAT')
     [ACT] = load_CATMODEL_activ(cfg, sessi, paths, oneListIDs);
+elseif strcmp (cfg.net2load, 'AE-t00')  | strcmp (cfg.net2load, 'AE-t06') | strcmp (cfg.net2load, 'AE-t10')
+    net2load = strsplit(cfg.net2load, '-'); 
+    net2load = net2load{2};
+    [ACT] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
 else
     %disp ('loading BLnext'); 
     [ACT] = load_blnext(cfg, sessi, paths, oneListIDs);
@@ -92,7 +100,7 @@ end
 
 if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'CORrt') ...
         | strcmp (cfg.net2load , 'CORs')  | strcmp (cfg.net2load , 'CORrtRELU')  | strcmp (cfg.net2load , 'BLNETeBatchNorm') ...
-        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') 
+        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE-t00')  | strcmp (cfg.net2load , 'AE-t10') 
 
     networkRDMs = ACT(:, ids4, ids4);
 else

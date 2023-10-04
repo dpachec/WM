@@ -4,6 +4,8 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & ~strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
     elseif strcmp(period, 'E123')
         ids = cell2mat(cellfun(@(x) strcmp(x(1), '1') | strcmp(x(1), '3') | strcmp(x(1), '5'), cfg_contrasts.oneListIds_c, 'un', 0));
+    elseif strcmp(period, 'MALL')
+         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
     end
 
     cfg_contrasts.oneListTraces   = cfg_contrasts.oneListTraces(:,:,ids);
@@ -12,8 +14,7 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
         cfg_contrasts = rmfield(cfg_contrasts, 'oneListIds_c'); 
     end
 
-%     elseif strcmp(period, 'MALL')
-%         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
+     
 %     elseif strcmp(period, 'MALL1') | strcmp(period, 'MALL2') | strcmp(period, 'MALL3') 
 %         ids = cell2mat(cellfun(@(x) strcmp(x(1), '7') & strcmp(x(6), '4'), cfg_contrasts.oneListIds_c, 'un', 0));
 %     elseif strcmp(period, 'M1')
