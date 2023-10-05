@@ -7,7 +7,6 @@ function [ACT] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
     gPath = [paths.activations.AE net2load]; 
     
     if sessi < subj_ch_fr
-        [gPath '\freiburg']
         cd ([gPath '\freiburg'])
         f2load = dir('*.csv*'); f2load= {f2load.name}';
         count = 1; 
@@ -17,7 +16,6 @@ function [ACT] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
             count = count+1; 
         end    
     else
-        [gPath '\china']
         cd ([gPath '\china'])
         f2load = dir('*.csv*'); f2load= {f2load.name}';
         count = 1; 

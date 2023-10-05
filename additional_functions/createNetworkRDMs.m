@@ -100,7 +100,8 @@ end
 
 if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'CORrt') ...
         | strcmp (cfg.net2load , 'CORs')  | strcmp (cfg.net2load , 'CORrtRELU')  | strcmp (cfg.net2load , 'BLNETeBatchNorm') ...
-        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE-t00')  | strcmp (cfg.net2load , 'AE-t10') 
+        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE-t00')  | strcmp (cfg.net2load , 'AE-t10') ...
+        | strcmp (cfg.net2load , 'AE-t06') 
 
     networkRDMs = ACT(:, ids4, ids4);
 else
