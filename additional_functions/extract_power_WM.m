@@ -42,6 +42,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     cfg.keeptrials   = 'yes'; % keep individual trials or average
     cfg.showcallinfo = 'no';% no log console
     cfg.feedback     = 'none'; 
+    ft_warning('off')
     tf_data_L          = ft_freqanalysis(cfg, data_ft);
     dataL = tf_data_L.powspctrm;
 
@@ -60,6 +61,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     cfg.showcallinfo = 'no';% no log console
     cfg.feedback     = 'none'; 
     cfg.keeptrials   = 'yes'; % keep individual trials, if not, it makes an average 
+    ft_warning('off')
     tf_data_H          = ft_freqanalysis(cfg, data_ft);
     dataH = tf_data_H.powspctrm;
 

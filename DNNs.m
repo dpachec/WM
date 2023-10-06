@@ -64,9 +64,7 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-                    'AE-t10_pfc_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
-
-                    'Res18-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1';
+                    
                     'Res18-2-3-1_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1';
                     'Res18-2-4-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1';
                     'Res18-2-4-1_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1';
