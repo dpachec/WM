@@ -17,7 +17,7 @@ clear
 
 %f2sav = 'BLNETe_pfc_M123NC_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res34-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-f2sav =  'AE-t06_hipp_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 
 
 
@@ -47,7 +47,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
     networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
 
-    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+    %nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+    nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
     nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
     
 end
@@ -279,7 +280,7 @@ clear , clc
 
 %f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
@@ -288,13 +289,24 @@ f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
 
 
-%f2sav = 'AE-t00_hipp_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% f2sav = 'AE-t00_hipp_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t00_vvs_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t00_pfc_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % 
 % f2sav = 'AE-t00_hipp_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t00_vvs_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t00_pfc_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+
+
+
+% f2sav = 'AE-t06_hipp_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% f2sav = 'AE-t06_vvs_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% f2sav = 'AE-t06_pfc_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% 
+% f2sav = 'AE-t06_hipp_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% f2sav = 'AE-t06_vvs_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+% f2sav = 'AE-t06_pfc_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+
 % 
 % f2sav = 'AE-t10_hipp_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t10_vvs_E123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
@@ -302,7 +314,7 @@ f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 % 
 % f2sav = 'AE-t10_hipp_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
 % f2sav = 'AE-t10_vvs_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
- f2sav = 'AE-t10_pfc_M123_[1-66]_3-54_1_0_1_0_.1_5_1'; 
+ f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')

@@ -10,6 +10,18 @@ allTrlInfo = allTrlInfo(~cellfun('isempty',allTrlInfo));
 allTrlInfo = allTrlInfo';
 
 
+%% check number of single and multi item trials for every session
+
+for sessi = 1:length(allTrlInfo)
+    
+    trlinfo = allTrlInfo{sessi};
+    nSITR(sessi, :) = length(trlinfo(trlinfo(:, 10) ~= 4));
+    nMITR(sessi, :) = length(trlinfo(trlinfo(:, 10) == 4));
+
+
+end
+
+nSITR
 %% correct item-cat and by pos
 
 clearvars -except allTrlInfo
