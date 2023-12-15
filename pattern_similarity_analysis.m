@@ -2,7 +2,7 @@
 %% 
 clearvars
 region              = 'vvs';
-paths = load_paths_WM(region, []);
+paths = load_paths_WM(region, 'none');
 filelistSess = getFiles(paths.out_contrasts);
 
 
@@ -13,10 +13,10 @@ win_width           = 5;
 mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
-avMeth              = 'pow';  % average across image repetitions or not
+avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
-contr2save          = {'DISC_EE' 'DIDC_EE'}; %{};
+contr2save          = {'DISC_M1A' 'DIDC_M1A'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
@@ -39,7 +39,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         
     
     cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
-% %     % % check the normalizatoin across trials works 
+% %     % % check the normalization across trials works 
 % %     ids = str2num(cell2mat(cfg_contrasts.oneListIds));
 % %     d2p = squeeze(mean(cfg_contrasts.oneListPow(ids(:, 1) ==1, :, :, :)));
 % %     imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials

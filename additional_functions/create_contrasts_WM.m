@@ -129,6 +129,37 @@ if ~isempty(intersect(c2c, 'EE'))
    % end
     end
    end
+
+   if ~isempty(intersect(c2c, 'M1A'))
+      if strcmp(evei(1), '5')
+        allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
+        for j = 1:length(oneListIds)
+           evej = strsplit(oneListIds{j});
+           if ~strcmp(evei(12), evej(12)) %not same trial
+               if strcmp(evej(1), '5')
+                    allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
+                    allItIJ = [allIt_I ; allIt_J]; 
+                    allCatIJ = [allCat_I ; allCat_J]; 
+                    if length(unique(allCatIJ)) == 3 & length(unique(allItIJ)) == 6
+                        %disp (['M2M2 DISC > '  string(trlijIt)]);     % oneListIds{i} '//' oneListIds{j}]);     
+                       if exist('countDISC_M1A')
+                            new_disc_m1a{countDISC_M1A} = [i, j];
+                            countDISC_M1A = countDISC_M1A+1;
+                       end
+                    end
+                    if length(unique(allCatIJ)) == 6 
+                        %disp (['All different categories > ' string(trlijIt)]);     
+                        if exist('countDIDC_M1A')
+                            new_didc_m1a{countDIDC_M1A} = [i, j];
+                            countDIDC_M1A = countDIDC_M1A+1;
+                        end
+                    end
+               end
+           end
+        end
+      end
+   end
+      
     
     
     
