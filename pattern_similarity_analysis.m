@@ -1,7 +1,7 @@
 %% load cfg_contrasts
 %% 
 clearvars
-region              = 'vvs';
+region              = 'pfc';
 paths = load_paths_WM(region, 'none');
 filelistSess = getFiles(paths.out_contrasts);
 
@@ -76,7 +76,7 @@ cd ..
 %% process Folders and create one file per condition including all subjects
 
 clearvars -except region
-paths = load_paths_WM(region); 
+paths = load_paths_WM(region, 'none');
 currentDir = pwd; 
 mkdir(paths.results.bands)
 cd (paths.results.bands)
