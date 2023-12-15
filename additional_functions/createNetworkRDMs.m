@@ -13,6 +13,14 @@ if strcmp(cfg.brainROI, 'hipp') subj_ch_fr = 8; end %%HIPP
 
 if strcmp (cfg.net2load , 'BLNETi')
     [ACT] = load_BLNETi(cfg, sessi, subj_ch_fr, paths);
+elseif strcmp (cfg.net2load , 'BNETi')
+    [ACT] = load_BNETi(cfg, sessi, subj_ch_fr, paths);    
+elseif strcmp (cfg.net2load , 'BFNETi')
+    [ACT] = load_BFNETi(cfg, sessi, subj_ch_fr, paths);    
+elseif strcmp (cfg.net2load , 'BKNETi')
+    [ACT] = load_BKNETi(cfg, sessi, subj_ch_fr, paths);    
+elseif strcmp (cfg.net2load , 'BDNETi')
+    [ACT] = load_BDNETi(cfg, sessi, subj_ch_fr, paths);        
 elseif strcmp (cfg.net2load , 'BLNETe')
     [ACT] = load_BLNETe(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'BLNETeBatchNorm')
@@ -21,6 +29,8 @@ elseif strcmp (cfg.net2load , 'Alex')
     [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'AlexEco')
     [ACT] = load_alexECO_activ(cfg, sessi, subj_ch_fr, paths);
+elseif strcmp (cfg.net2load , 'CORz')
+    [ACT] = load_CORz(cfg, sessi, subj_ch_fr, paths);
 elseif strcmp (cfg.net2load , 'CORrt')
     [ACT] = load_CORrt_TV(cfg, sessi, subj_ch_fr, paths);
     %[ACT] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);
@@ -101,7 +111,9 @@ end
 if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'CORrt') ...
         | strcmp (cfg.net2load , 'CORs')  | strcmp (cfg.net2load , 'CORrtRELU')  | strcmp (cfg.net2load , 'BLNETeBatchNorm') ...
         | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE-t00')  | strcmp (cfg.net2load , 'AE-t10') ...
-        | strcmp (cfg.net2load , 'AE-t06') 
+        | strcmp (cfg.net2load , 'AE-t06') | strcmp (cfg.net2load , 'BKNETi') | strcmp (cfg.net2load , 'BNETi') | strcmp (cfg.net2load , 'BDNETi') ...
+        | strcmp (cfg.net2load , 'BFNETi') | strcmp (cfg.net2load , 'CORz') 
+
 
     networkRDMs = ACT(:, ids4, ids4);
 else

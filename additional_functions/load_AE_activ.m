@@ -1,7 +1,7 @@
 function [ACT layerNames] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
 
     %lays2load = cfg.lays2load;
-    lays2load = [1 5 10 14 19 23 27 32 37 42 44 46 48 50 52 54 56 58];
+    lays2load = [1 5 10 14 19 23 27 32 37 42 44 46 48 50 52 54 56 58 60 66];
     
     currentFolder = pwd; 
     

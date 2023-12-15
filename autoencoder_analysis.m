@@ -1,7 +1,7 @@
 %% AUTOENCODER 
 % % % 
 clear, clc
-f2sav =  'AE-t06_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+f2sav =  'AE-t10N_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 cfg = getParams(f2sav);
 sessi = 1; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -14,22 +14,23 @@ subj_ch_fr = 20;
 ACT_CH = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
 
     
-%% Representational consistency all layers / time points Alexnet
+%% Representational consistency all layers / time points 
 
 ACT = ACT_FR; 
+nLays = size(ACT, 1); 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 18, []); act3 = act2(:,all(~isnan(act2)));  
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
 allMS_FR = corr(act3', 'type', 's'); %allMS = allM.^2;
-allMS_FR(19,:) = nan; allMS_FR(:,19) = nan; %need this for the pColor below
+allMS_FR(nLays+1,:) = nan; allMS_FR(:,nLays+1) = nan; %need this for the pColor below
 allMS_FR = tril(allMS_FR, -1); allMS_FR(allMS_FR==0) = nan; 
 
 ACT = ACT_CH; 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 18, []); act3 = act2(:,all(~isnan(act2)));  
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
 allMS_CH = corr(act3', 'type', 's'); %allMS = allM.^2;
-allMS_CH(19,:) = nan; allMS_CH(:,19) = nan; %need this for the pColor below
+allMS_CH(nLays+1,:) = nan; allMS_CH(:,nLays+1) = nan; %need this for the pColor below
 allMS_CH = tril(allMS_CH, -1); allMS_CH(allMS_CH==0) = nan; 
 
 allMS2 = cat(3, allMS_FR, allMS_CH);
@@ -42,7 +43,7 @@ myCmap = brewermap([], '*Spectral')
 s = pcolor(allMS); axis square; colorbar
 set(s, 'edgecolor', 'none'); 
 set(gca, 'ydir', 'reverse', 'FontSize', 20);
-set(gca, 'clim', [0 1], 'xtick',  (1:18) +.5, 'ytick', (1:18) +.5, ...
+set(gca, 'clim', [0.4 1], 'xtick',  (1:nLays) +.5, 'ytick', (1:nLays) +.5, ...
                 'xticklabels', layNames, ...
                 'yticklabels', layNames, 'TickLabelInterpreter','none')
 colormap(myCmap)
@@ -54,15 +55,16 @@ exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
 ACT = ACT_FR; 
+nLays = size(ACT, 1); 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 18, []); act3 = act2(:,all(~isnan(act2)));  
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
 allMS_FR = corr(act3', 'type', 's'); %allMS = allM.^2;
 
 ACT = ACT_CH; 
 act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
 act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
-act2 = reshape(act2, 18, []); act3 = act2(:,all(~isnan(act2)));  
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
 allMS_CH = corr(act3', 'type', 's'); %allMS = allM.^2;
 
 allMS2 = cat(3, allMS_FR, allMS_CH);
@@ -71,7 +73,7 @@ allMS = squeeze(mean(allMS2, 3))
 figure()
 
 d2p = 1- allMS;
-cols = zeros(18, 3); cols(1:9, 1) = 1; cols(10:18, 3) = 1; 
+cols = zeros(nLays, 3); cols(1:nLays/2, 1) = 1; cols(nLays/2+1:nLays, 3) = 1; 
 [rdmMDS] = cmdscale(d2p);
 scatter(rdmMDS(:,1),rdmMDS(:,2),35, cols); axis square
 
@@ -79,9 +81,9 @@ scatter(rdmMDS(:,1),rdmMDS(:,2),35, cols); axis square
 %% RNN all RDMS
 
 ACT = ACT_FR; 
-
+nLays = size(ACT, 1); 
 figure()
-for layi = 1:18
+for layi = 1:nLays
    subplot (4, 5, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    imagesc(d2p); axis square; 
@@ -93,7 +95,7 @@ end
 set(gcf, 'Position', [100 100 700 700]); 
 ha=get(gcf,'children');
 n = .1;
-count = 19;
+count = nLays+1;
 for rowi = 1:4
     for coli = 1:5
         %set(ha(count),'position',[0+coli/6 0+rowi/6 n n ])
@@ -108,12 +110,12 @@ exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 %% RNN all MDS
 
 ACT = ACT_FR; 
-
+nLays = size(ACT, 1); 
 cols = brewermap(6, 'Dark2') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
 cols = repelem(cols, 10, 1);
 
 figure()
-for layi = 1:18
+for layi = 1:nLays
    subplot (4, 5, layi)
    d2p = squeeze(ACT(layi, :,:)); 
    d2p = 1- d2p;
@@ -127,7 +129,7 @@ end
 set(gcf, 'Position', [100 100 700 700]); 
 ha=get(gcf,'children');
 n = .1;
-count = 19;
+count = nLays+1;
 for rowi = 1:4
     for coli = 1:5
         %set(ha(count),'position',[0+coli/6 0+rowi/6 n n ])
@@ -137,7 +139,7 @@ end
 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
-%% compute CCI for each layer (final timepoint only)
+%% compute CCI for each layer 
 
 clc
 clearvars -except ACT_FR ACT_CH 
@@ -210,9 +212,94 @@ plot ([11:19], CCB([10:18]), 'r', 'Linewidth', 3);
 plot ([1:9], CCI([1:9]), 'k', 'Linewidth', 3); 
 plot ([11:19], CCI([10:18]), 'k', 'Linewidth', 3); 
 plot([10 10], get(gca, 'ylim'), 'k:', LineWidth=2)
-set(gca, 'FontSize', 28, 'xlim', [0 20], 'ylim', [0 1])
+set(gca, 'FontSize', 28, 'xlim', [0 20], 'ylim', [-.2 1])
 %legend({'Within category', 'Between category', 'Within - between'},   'Location','northwest', 'FontSize',16); 
 exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%% compute CCI for each layer INCLUDING CLASSIFICATION HEAD
+
+clc
+clearvars -except ACT_FR ACT_CH 
+
+%create cateogy model
+M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+
+% freiburg
+ACT = ACT_FR;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW_FR(layi) = mWithin;
+    CCB_FR(layi) = mAcross;
+    CCI_FR(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+%china
+ACT = ACT_CH;
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    CCW_CH(layi) = mWithin;
+    CCB_CH(layi) = mAcross;
+    CCI_CH(layi) = mWithin-mAcross ;
+    %CCI_CH(layi) = (mAcross - mWithin) ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_FR(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_FR(:, layi) = tmp;
+
+end
+
+CCI2 = [CCI_FR; CCI_CH]; CCW2 = [CCW_FR; CCW_CH]; CCB2 = [CCB_FR; CCB_CH]; 
+CCI = mean(CCI2); CCW = mean(CCW2); CCB = mean(CCB2);
+
+aW = squeeze(mean(cat(3, aW_CH, aW_FR), 3)); 
+aB = squeeze(mean(cat(3, aB_CH, aB_FR), 3)); 
+
+
+figure(); set(gcf, 'Position', [100 100 800 800])
+plot ([1:9], CCW([1:9]),'b', 'Linewidth', 3); hold on; %axis square
+plot ([11:19], CCW([10:18]), 'b', 'Linewidth', 3); 
+plot ([1:9], CCB([1:9]), 'r', 'Linewidth', 3); 
+plot ([11:19], CCB([10:18]), 'r', 'Linewidth', 3); 
+plot ([1:9], CCI([1:9]), 'k', 'Linewidth', 3); 
+plot ([11:19], CCI([10:18]), 'k', 'Linewidth', 3); 
+plot ([21:22], CCW([19:20]), 'b', 'Linewidth', 3); 
+plot ([21:22], CCB([19:20]), 'r', 'Linewidth', 3); 
+plot ([21:22], CCI([19:20]), 'k', 'Linewidth', 3); 
+
+set(gca, 'FontSize', 28, 'xlim', [0 24], 'ylim', [-.2 1], 'xtick', [5 15 22], ...
+    'xticklabels', [{'Enc', 'Dec', 'Class'}] )
+plot([10 10], get(gca, 'ylim'), 'k:', LineWidth=2)
+plot([20 20], get(gca, 'ylim'), 'k:', LineWidth=2)
+%legend({'Within category', 'Between category', 'Within - between'},   'Location','northwest', 'FontSize',16); 
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
 
 
 %%
@@ -1410,6 +1497,341 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
+%% AUTOENCODER load network trained on ecoset
+% % % 
+clear, clc
+f2sav =  'AE-t00EdetN_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+cfg = getParams(f2sav);
+sessi = 1; 
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+net2load = strsplit(cfg.net2load, '-'); 
+net2load = net2load{2};
+
+[ACT layNames] = load_AE_ECO_activ(cfg, sessi, paths, net2load);
+
+
+%% compute CCI for each layer INCLUDING CLASSIFICATION HEAD
+
+clc
+clearvars -except ACT layNames
+
+%create cateogy model
+M = zeros (80); 
+M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; M(51:60, 51:60) = 1;  M(61:70, 61:70) = 1;  M(71:80, 71:80) = 1; 
+
+
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW(layi) = mWithin;
+    CCB(layi) = mAcross;
+    CCI(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+
+
+figure(); set(gcf, 'Position', [100 100 800 800])
+plot ([1:9], CCW([1:9]),'b', 'Linewidth', 3); hold on; %axis square
+plot ([11:19], CCW([10:18]), 'b', 'Linewidth', 3); 
+plot ([1:9], CCB([1:9]), 'r', 'Linewidth', 3); 
+plot ([11:19], CCB([10:18]), 'r', 'Linewidth', 3); 
+plot ([1:9], CCI([1:9]), 'k', 'Linewidth', 3); 
+plot ([11:19], CCI([10:18]), 'k', 'Linewidth', 3); 
+plot ([21:22], CCW([19:20]), 'b', 'Linewidth', 3); 
+plot ([21:22], CCB([19:20]), 'r', 'Linewidth', 3); 
+plot ([21:22], CCI([19:20]), 'k', 'Linewidth', 3); 
+
+set(gca, 'FontSize', 28, 'xlim', [0 24], 'ylim', [-.2 1], 'xtick', [5 15 22], ...
+    'xticklabels', [{'Enc', 'Dec', 'Class'}] )
+plot([10 10], get(gca, 'ylim'), 'k:', LineWidth=2)
+plot([20 20], get(gca, 'ylim'), 'k:', LineWidth=2)
+%legend({'Within category', 'Between category', 'Within - between'},   'Location','northwest', 'FontSize',16); 
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+
+%% Representational consistency all layers / time points 
+
+
+nLays = size(ACT, 1); 
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
+allMS2 = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS2(nLays+1,:) = nan; allMS2(:,nLays+1) = nan; %need this for the pColor below
+allMS2 = tril(allMS2, -1); allMS2(allMS2==0) = nan; 
+
+
+allMS = squeeze(mean(allMS2, 3))
+
+% % % plot matrix
+figure()
+myCmap = brewermap([], '*Spectral') 
+%imagesc(allMS); axis square; colorbar
+s = pcolor(allMS); axis square; colorbar
+set(s, 'edgecolor', 'none'); 
+set(gca, 'ydir', 'reverse', 'FontSize', 20);
+set(gca, 'clim', [0 1], 'xtick',  (1:nLays) +.5, 'ytick', (1:nLays) +.5, ...
+                'xticklabels', layNames, ...
+                'yticklabels', layNames, 'TickLabelInterpreter','none')
+colormap(myCmap)
+
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+    
+
+%%
+act1 = arrayfun(@(i)tril(squeeze(ACT(i,:,:)), -1), 1:size(ACT,1), 'un', 0);
+act2 = cat(3, act1{:}); act2(act2==0) = nan; act2 = permute(act2, [3, 1, 2]);
+act2 = reshape(act2, nLays, []); act3 = act2(:,all(~isnan(act2)));  
+allMS2 = corr(act3', 'type', 's'); %allMS = allM.^2;
+allMS = squeeze(mean(allMS2, 3))
+
+figure()
+
+d2p = 1- allMS;
+cols = zeros(nLays, 3); cols(1:nLays/2, 1) = 1; cols(nLays/2+1:nLays, 3) = 1; 
+[rdmMDS] = cmdscale(d2p);
+scatter(rdmMDS(:,1),rdmMDS(:,2),35, cols); axis square
+
+
+%% All layer RDMS
+
+figure()
+for layi = 1:20
+   subplot (4, 5, layi)
+   d2p = squeeze(ACT(layi, :,:)); 
+   imagesc(d2p); axis square; 
+   set(gca,'cLim', [-1 1])
+   set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+   title(layNames(layi), 'Interpreter','none')
+end
+
+set(gcf, 'Position', [100 100 700 700]); 
+ha=get(gcf,'children');
+n = .1;
+count = nLays;
+for rowi = 1:4
+    for coli = 1:5
+        %set(ha(count),'position',[0+coli/6 0+rowi/6 n n ])
+        count = count+-1;
+        
+    end
+end
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%% RNN all MDS
+
+
+cols = brewermap(8, 'Dark2') % % Scheme|'Accent'|'Dark2'|'Paired'|'Pastel1'|'Pastel2'|'Set1'|'Set2'|'Set3'|
+cols = repelem(cols, 10, 1);
+
+figure()
+for layi = 1:20
+   subplot (4, 5, layi)
+   d2p = squeeze(ACT(layi, :,:)); 
+   d2p = 1- d2p;
+   [rdmMDS] = cmdscale(d2p);
+   scatter(rdmMDS(:,1),rdmMDS(:,2),350, cols, '.'); axis square
+   title(layNames(layi), 'Interpreter','none')
+   set(gca,'XTick',[], 'YTick', [], 'xticklabel',[])
+   box on
+end
+
+set(gcf, 'Position', [100 100 700 700]); 
+ha=get(gcf,'children');
+n = .1;
+count = 19;
+for rowi = 1:4
+    for coli = 1:5
+        %set(ha(count),'position',[0+coli/6 0+rowi/6 n n ])
+        count = count-1;
+    end
+end
+
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%% compute CCI for each layer 
+
+clc
+clearvars -except ACT
+
+%create cateogy model
+M = zeros (80); 
+M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; M(51:60, 51:60) = 1;  M(61:70, 61:70) = 1;  M(71:80, 71:80) = 1; 
+
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW(layi) = mWithin;
+    CCB(layi) = mAcross;
+    CCI(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB(:, layi) = tmp;
+
+end
+
+
+figure(); set(gcf, 'Position', [100 100 800 800])
+plot ([1:9], CCW([1:9]),'b', 'Linewidth', 3); hold on; %axis square
+plot ([11:19], CCW([10:18]), 'b', 'Linewidth', 3); 
+plot ([1:9], CCB([1:9]), 'r', 'Linewidth', 3); 
+plot ([11:19], CCB([10:18]), 'r', 'Linewidth', 3); 
+plot ([1:9], CCI([1:9]), 'k', 'Linewidth', 3); 
+plot ([11:19], CCI([10:18]), 'k', 'Linewidth', 3); 
+plot([10 10], get(gca, 'ylim'), 'k:', LineWidth=2)
+set(gca, 'FontSize', 28, 'xlim', [0 20], 'ylim', [0 1])
+%legend({'Within category', 'Between category', 'Within - between'},   'Location','northwest', 'FontSize',16); 
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%% compute CCI for each layer INCLUDING CLASSIFICATION HEAD
+
+clc
+clearvars -except ACT
+
+%create cateogy model
+M = zeros (80); 
+M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; 
+M(41:50, 41:50) = 1; M(51:60, 51:60) = 1;  M(61:70, 61:70) = 1;  M(71:80, 71:80) = 1; 
+
+
+for layi = 1:size(ACT, 1)
+    d2p = squeeze(ACT(layi, :,:)); 
+    %d2p = 1- d2p;
+    rdmMDS = d2p; 
+    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
+    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
+    rdmMDS = tril(rdmMDS, -1); rdmMDS(rdmMDS==0) = nan; 
+    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
+    CCW(layi) = mWithin;
+    CCB(layi) = mAcross;
+    CCI(layi) = mWithin-mAcross ;
+
+    tmp = rdmMDS(M == 1);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aW_CH(:, layi) = tmp
+    tmp = rdmMDS(M == 0);
+    tmp(any(isnan(tmp), 2), :) = [];
+    aB_CH(:, layi) = tmp;
+
+end
+
+
+
+figure(); set(gcf, 'Position', [100 100 800 800])
+plot ([1:9], CCW([1:9]),'b', 'Linewidth', 3); hold on; %axis square
+plot ([11:19], CCW([10:18]), 'b', 'Linewidth', 3); 
+plot ([1:9], CCB([1:9]), 'r', 'Linewidth', 3); 
+plot ([11:19], CCB([10:18]), 'r', 'Linewidth', 3); 
+plot ([1:9], CCI([1:9]), 'k', 'Linewidth', 3); 
+plot ([11:19], CCI([10:18]), 'k', 'Linewidth', 3); 
+plot ([21:22], CCW([19:20]), 'b', 'Linewidth', 3); 
+plot ([21:22], CCB([19:20]), 'r', 'Linewidth', 3); 
+plot ([21:22], CCI([19:20]), 'k', 'Linewidth', 3); 
+
+set(gca, 'FontSize', 28, 'xlim', [0 24], 'ylim', [-.2 1], 'xtick', [5 15 22], ...
+    'xticklabels', [{'Enc', 'Dec', 'Class'}] )
+plot([10 10], get(gca, 'ylim'), 'k:', LineWidth=2)
+plot([20 20], get(gca, 'ylim'), 'k:', LineWidth=2)
+%legend({'Within category', 'Between category', 'Within - between'},   'Location','northwest', 'FontSize',16); 
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+
+%%
+
+x = repelem(1:9, 270);
+aWH = aW(:, 1:9)
+y = aWH(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 9.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+x = repelem(1:9, 270);
+aWH = aW(:, 10:18)
+y = aWH(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 9.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+x = repelem(1:9, 1500);
+aBH = aB(:, 1:9); 
+y = aBH(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
+
+%%
+
+x = repelem(1:9, 1500);
+aBH = aB(:, 10:18); 
+y = aBH(:); 
+
+figure()
+scatter(x, y, '+')
+l1 = lsline
+l1.LineWidth = 3; l1.Color = 'black';
+set(gca, 'xlim', [0.5 7.5], 'FontSize', 22)
+[rho, pval] = corr(x', y, 'type', 's')
+ylabel('Rho'); xlabel('Layer'); title(['Rho = ' num2str(rho) '  p = ' num2str(pval)])
+exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
 
 
 
@@ -1417,8 +1839,79 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
+%% ENCODER
+
+close all
+clear bCMR wCMR
 
 
+x0 = 1:9;
+for i = 1:1500
+    
+    y0 = aB(i,1:9); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    bCMR(i,:) = b; 
+
+    %y = b(1) + x0*b(2)
+    %figure()
+    %plot(x0,y0,'o')
+    %hold on
+    %plot(x0,y,'--r')
+    %h1 = lsline
+    
+end
+
+for i = 1:270
+
+    y0 = aW(i,1:9); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    wCMR(i,:) = b; 
+
+end
+
+%%
+[h p ci ts] = ttest(wCMR(:, 2));
+t = ts.tstat;
+disp(['t = ' num2str(t) ' // p = ' num2str(p)])
+
+
+%% DECODER 
+close all
+clear bCMR wCMR
+
+
+x0 = 1:9;
+for i = 1:1500
+    
+    y0 = aB(i,10:18); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    bCMR(i,:) = b; 
+
+    %y = b(1) + x0*b(2)
+    %figure()
+    %plot(x0,y0,'o')
+    %hold on
+    %plot(x0,y,'--r')
+    %h1 = lsline
+    
+end
+
+for i = 1:270
+
+    y0 = aW(i,10:18); 
+    X1 = [ones(length(x0),1)  x0'];
+    b = X1\y0';
+    wCMR(i,:) = b; 
+
+end
+
+%%
+[h p ci ts] = ttest(bCMR(:, 2));
+t = ts.tstat;
+disp(['t = ' num2str(t) ' // p = ' num2str(p)])
 
 
 
