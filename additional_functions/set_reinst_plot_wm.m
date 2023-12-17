@@ -383,6 +383,12 @@ if strcmp(cfg.cond1, 'DISC_EM2UV2') & strcmp(cfg.cond2,'DIDC_EM2UV2')
     cfg_plot.imageName = ['_DISC_EM2UV2-DIDC_EM2UV2-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM2UV2-DIDC_EM2UV2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
+if strcmp(cfg.cond1, 'DISC_M1A') & strcmp(cfg.cond2,'DIDC_M1A')
+    cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['DISC vs.' newline 'DIDC']};
+    cfg_plot.imageName = ['_DISC_M1A-DIDC_M1A-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DISC_M1A-DIDC_M1A-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+
 
 
 

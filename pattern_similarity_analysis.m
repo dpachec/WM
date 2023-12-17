@@ -105,13 +105,11 @@ disp ('done')
 clearvars
 
 region = 'vvs'; 
-paths = load_paths_WM(region, []);
+paths = load_paths_WM(region, 'none');
 
 contrasts = {
-              'DISC_EE' 'DIDC_EE';
-              %'DISC_M2M2' 'DIDC_M2M2';
-              %'DISC_EM2' 'DIDC_EM2';
-              %'DISC_M2A' 'DIDC_M2A';
+              'DISC_M1A' 'DIDC_M1A';
+              
              };
 
 c = unique (contrasts);
@@ -131,8 +129,8 @@ clc
 tic; 
 
 %define conditions 
-cond1 = 'DISC_EE';
-cond2 = 'DIDC_EE';
+cond1 = 'DISC_M1A';
+cond2 = 'DIDC_M1A';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
@@ -144,7 +142,7 @@ cfg.clim        =       [-.01 .0115];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
 cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %1-1 1-4 4-4
+cfg.cut2        =       '4-4'; %1-1 1-4 4-4
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.lwd1        =       2; %baseline 
