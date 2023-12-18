@@ -1806,18 +1806,3 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-

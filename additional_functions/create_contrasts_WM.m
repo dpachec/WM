@@ -207,6 +207,50 @@ if ~isempty(intersect(c2c, 'EE'))
         end
       end
     end
+
+
+
+    % % % % % 1) M2M2 for SCSP SCDP
+    if ~isempty(intersect(c2c, 'M2M2'))
+      if ( strcmp(evei(1), '7') | strcmp(evei(1), '7*') | strcmp(evei(1), '-7') | strcmp(evei(1), '9'))  & ~strcmp(evei(2), '4')
+        cueRetI = str2double(evei{2});
+        idx = 12 + cueRetI;
+        idRet_I = double(string(evei(idx)));
+        cuedCI = floor(idRet_I / 100);
+        
+        for j = i:length(oneListIds)
+           evej = strsplit(oneListIds{j});
+           trli = string(evei(12)); trlj = string(evej(12));
+           trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+           trlij = [trli trlj];
+            
+           if length(trlij) == length(unique(trlij)) % all averaged instances are from different trials
+            if ( strcmp(evej(1), '7') | strcmp(evej(1), '7*') | strcmp(evej(1), '-7') | strcmp(evei(1), '9')  )  & ~strcmp(evei(2), '4')
+                  cueRetJ = str2double(evej{2});idx = 12 + cueRetJ;
+                  idRet_J = double(string(evej(idx)));
+                  cuedCJ = floor(idRet_J / 100);
+                  
+                  if cuedCI == cuedCJ & cueRetI == cueRetJ
+                    if exist('countSCSP_M2M2')
+                        %disp(['SCSP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_scsp_m2m2{countSCSP_M2M2} = [i, j];
+                        countSCSP_M2M2 = countSCSP_M2M2+1;
+                    end
+                  else
+                    if cuedCI ~= cuedCJ & cueRetI == cueRetJ
+                        %disp(['DIDC_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_scdp_m2m2{countSCDP_M2M2} = [i, j];
+                        countSCDP_M2M2 = countSCDP_M2M2+1;
+                    end
+                end
+              end 
+           end
+        end
+      end
+    end
+
+
+
     
 end
 

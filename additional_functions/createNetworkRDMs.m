@@ -49,6 +49,8 @@ elseif length(cfg.net2load) > 6 & (strcmp (cfg.net2load(1:7), 'Res34-2') | strcm
     [ACT] = load_Res34_activ(cfg, sessi, paths, oneListIDs);
 elseif strcmp (cfg.net2load , 'CAT')
     [ACT] = load_CATMODEL_activ(cfg, sessi, paths, oneListIDs);
+elseif strcmp (cfg.net2load , 'ITM')
+    [ACT] = load_ITMODEL_activ(cfg, sessi, paths, oneListIDs);    
 elseif strcmp (cfg.net2load, 'AE-t00')  | strcmp (cfg.net2load, 'AE-t06') | strcmp (cfg.net2load, 'AE-t10')
     net2load = strsplit(cfg.net2load, '-'); 
     net2load = net2load{2};
