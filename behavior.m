@@ -60,7 +60,6 @@ end
 toc
 
 
-
 %% average subjects not sessions
 
 corr_all = gData.corr_all;
@@ -87,7 +86,33 @@ m_corr_123 = mean(corr_123) ; std_corr_123 = std(corr_123); se_corr_123 = std_co
 m_corr_all_pos = mean(corr_all_pos) ; std_corr_all_pos = std(corr_all_pos); se_corr_all_pos = std_corr_all_pos / sqrt ( size(corr_all_pos, 1));
 m_corr_123_pos = mean(corr_123_pos) ; std_corr_123_pos = std(corr_123_pos); se_corr_123_pos = std_corr_123_pos / sqrt ( size(corr_123_pos, 1));
 
-allPerf = [corr_123 corr_all]
+allPerf = [corr_123 corr_all];
+allPerfPos = [corr_123_pos corr_all_pos];
+
+
+
+%% 12 Bar 
+clear data
+data.data = [allPerfPos'] 
+
+
+figure(1); set(gcf,'Position', [0 0 550 650]); 
+mean_S = mean(data.data, 2);
+hb = plot ( data.data); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(hb,'linestyle','none', 'lineWidth', 3);
+set(gca,'XTick',[1 12],'XTickLabel',{'', ''}, ...
+    'FontSize', 30, 'linew',2, 'xlim', [0.25 12.75], 'ylim', [0 1.3] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);hold on;
+%set(gca, 'LineWidth', 3);
+
+[h p ci t] = ttest(data.data); % for the 123 trials
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+exportgraphics(gcf, '_21.png','Resolution', '150');
 
 %% 2Bar 
 clear data

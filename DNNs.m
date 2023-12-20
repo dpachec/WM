@@ -65,6 +65,8 @@ clear, clc
 listF2sav = {
 
 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_E123C_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_E123I_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
 
 
@@ -115,11 +117,14 @@ nPerm = 1000;
 
 listF2sav = {
 
-'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
-'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
+'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
+
+% 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+% 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
+% 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+% 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+% 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
                     
              };
     
@@ -199,7 +204,6 @@ clear , clc
 
 %f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-
 %f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
@@ -209,11 +213,15 @@ clear , clc
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
+
+f2sav = 'Alex_vvs_E123C_[1-8]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -451,7 +459,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 %%  plot all layers FREQUENCY RESOLVED FANCY PLOT
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
-f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
@@ -459,6 +467,7 @@ f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -799,30 +808,6 @@ listF2sav = {
 'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 
-
-'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-
-'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-
-
-'CORrt_pfc_E123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-'CORrt_vvs_E123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-'CORrt_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-'CORrt_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-
-'CORrt_pfc_E123_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_vvs_E123_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_pfc_M123_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_vvs_M123_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-
-
-
 };   
 
 
@@ -849,12 +834,272 @@ for listi = 1:length(listF2sav)
         
     end
     
-    save([paths.results.neuralRDMs f2sav '.mat'], 'allNeuralRDMS');
+    save([paths.results.neuralRDMS f2sav '.mat'], 'allNeuralRDMS');
+
+end
+
+%% Process neural RDMs and compute CCI for CATEGORIES
+
+clear
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS.CAT);
+
+
+
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    clearvars -except paths filelistSess sessi
+
+    load([paths.results.neuralRDMS.CAT filelistSess{sessi}]);   
+    nSubjs = size(allNeuralRDMS, 1); 
+    nFreqs = size(allNeuralRDMS{1}, 3); 
+    nTimes = size(allNeuralRDMS{1}, 4); 
+
+    clear CCI
+    for subji = 1:nSubjs
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        CM = squeeze(load_CATMODEL_activ(ids));
+        CM(CM==0) = 2; CM = tril(CM, -1); CM(CM==0) = 3; CM(CM==2) = 0; 
+
+        for freqi  = 1:nFreqs
+            for timei = 1:nTimes
+                neuralRDM = neuralRDMs(:, :, freqi, timei); 
+                %neuralRDM(neuralRDM==0) = 9999; neuralRDM = tril(neuralRDM, -1); neuralRDM(neuralRDM==0) = nan; neuralRDM(neuralRDM==9999) = 0; 
+                W = neuralRDM(CM==1); 
+                B = neuralRDM(CM==0); 
+                CCI(subji, freqi, timei,:) = mean(W) - mean(B); 
+            end
+        end
+    end
+
+
+    save([paths.results.neuralRDMS.CAT filelistSess{sessi}(1:end-4) '_CCI.mat'], 'CCI');
+
+end
+
+%% plot mean CCI 
+
+
+clear
+paths = load_paths_WM('vvs', 'none');
+cd(paths.results.neuralRDMS.CATPlts);
+
+filelistSess = dir('*mat'); filelistSess = [{filelistSess.name}'];
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    
+    disp(['File > ' num2str(sessi)]);
+
+    clearvars -except paths filelistSess sessi
+    load(filelistSess{sessi});   
+    
+    mCCI = squeeze(mean(CCI)); 
+    
+    [h p ci ts] = ttest(CCI); 
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    
+    if size(mCCI, 2) == 21
+        times = 1:210;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [100 100 200 400])
+        contourf(times, freqs, myresizem(mCCI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        %contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 150], 'FontSize', 10); 
+        %set(gca, 'clim', [-.5 .5], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+    else
+        times = 1:460;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [1000 918 560 420])
+        myCmap = colormap(brewermap([],'*Spectral'));
+        colormap(myCmap)
+        contourf(times, freqs, myresizem(mCCI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        %contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 390], 'FontSize', 10);
+        %set(gca, 'clim', [-4 4], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+
+
+    end
+    myCmap = colormap(brewermap([],'*Spectral'));
+    colormap(myCmap)
+    
+    exportgraphics(gcf, [num2str(sessi) '_myP.png'], 'Resolution', 300); 
+
 
 end
 
 
 
+
+
+%% COMPUTE PERMUTATIONS
+
+clear
+
+nPerm = 100; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS.CAT);
+
+for sessi= 2 %1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    clearvars -except paths filelistSess sessi nPerm
+
+    load([paths.results.neuralRDMS.CAT filelistSess{sessi}]);   
+    nSubjs = size(allNeuralRDMS, 1); 
+    nFreqs = size(allNeuralRDMS{1}, 3); 
+    nTimes = size(allNeuralRDMS{1}, 4); 
+    
+    clear CCIPerm
+    for subji = 1:nSubjs
+        subji
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+
+        for permi = 1:nPerm
+            id4perm = randperm(length(ids)); 
+            idsPERM = ids(id4perm);
+            
+            CM = squeeze(load_CATMODEL_activ(idsPERM));
+            CM(CM==0) = 2; CM = tril(CM, -1); CM(CM==0) = 3; CM(CM==2) = 0; 
+            for freqi  = 1:nFreqs
+                for timei = 1:nTimes
+                    neuralRDM = neuralRDMs(:, :, freqi, timei); 
+                    W = neuralRDM(CM==1); 
+                    B = neuralRDM(CM==0); 
+                    CCIPerm(permi, subji, freqi, timei,:) = mean(W) - mean(B); 
+                end
+            end
+        end
+    end
+
+
+    save([paths.results.neuralRDMS.CAT filelistSess{sessi}(1:end-4) '_CCI_' num2str(nPerm) 'p.mat'], 'CCIPerm');
+
+end
+
+
+%% plot with OUTLINE FROM PERM
+
+
+clear
+nPerm = 100;
+paths = load_paths_WM('vvs', 'none');
+cd(paths.results.neuralRDMS.CATPlts);
+
+filelistSess = dir('*mat'); filelistSess = [{filelistSess.name}'];
+for sessi= 3 %:length(filelistSess) %this one starts at 1 and not at 3
+    
+    disp(['File > ' num2str(sessi)]);
+
+    clearvars -except paths filelistSess sessi nPerm
+    load(filelistSess{sessi});   
+    load(filelistSess{sessi+1});   
+    
+    mCCI = squeeze(mean(CCI)); 
+    mCCIPERM = squeeze(mean(CCIPerm, 2)); 
+    
+    nFreq = size(mCCI,1); nTimes = size(mCCI, 2); 
+    clear p
+    for freqi = 1:nFreq
+        for timei = 1:nTimes
+            allCCIPerm = mCCIPERM(:, freqi, timei); 
+            obsCCI = mCCI(freqi, timei); 
+            allAB = allCCIPerm(allCCIPerm > obsCCI);
+            p(freqi, timei) = 1 - ((nPerm-1) - (length (allAB)))  / nPerm;
+
+        end
+    end
+    h = p<.05; 
+    
+    
+
+    
+    if size(mCCI, 2) == 21
+        times = 1:210;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [100 100 200 400])
+        contourf(times, freqs, myresizem(mCCI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 150], 'FontSize', 10); 
+        set(gca, 'clim', [-.015 .015], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+    else
+        times = 1:460;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [1000 918 560 420])
+        myCmap = colormap(brewermap([],'*Spectral'));
+        colormap(myCmap)
+        contourf(times, freqs, myresizem(mCCI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 390], 'FontSize', 10);
+        set(gca, 'clim', [-.015 .015], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+
+
+    end
+    myCmap = colormap(brewermap([],'*Spectral'));
+    colormap(myCmap)
+    
+    exportgraphics(gcf, [num2str(sessi) '_myP.png'], 'Resolution', 300); 
+
+
+end
+
+
+
+
+
+%% Process neural RDMs and compute CCI for ITEMS
+
+clear
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS.IT);
+
+t1 = datetime; 
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.results.neuralRDMS.IT filelistSess{sessi}]);   
+    nSubjs = size(allNeuralRDMS, 1); 
+    nFreqs = size(allNeuralRDMS{1}, 3); 
+    nTimes = size(allNeuralRDMS{1}, 4); 
+
+    clear ICI
+    for subji = 1:nSubjs
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        ITM = squeeze(load_ITMODEL_activ(ids));
+        for freqi  = 1:nFreqs
+            for timei = 1:nTimes
+                neuralRDM = neuralRDMs(:, :, freqi, timei); 
+                W = neuralRDM(ITM==1); 
+                B = neuralRDM(ITM==0); 
+                ICI(subji, freqi, timei,:) = mean(W) - mean(B); 
+            end
+        end
+    end
+
+
+    save([paths.results.neuralRDMS.IT filelistSess{sessi}(1:end-4) '_ICI'], 'ICI');
+
+
+
+end
 
 
 

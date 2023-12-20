@@ -1,5 +1,5 @@
 
-function [ACT] = load_CATMODEL_activ(cfg, sessi, paths, oneListIDs)
+function [ACT] = load_CATMODEL_activ(oneListIDs)
 
     ids = cellfun(@(x) strsplit(string(x)), oneListIDs, 'UniformOutput', false);
     ids0 = cellfun(@(x) x(3), ids, 'UniformOutput', false);
