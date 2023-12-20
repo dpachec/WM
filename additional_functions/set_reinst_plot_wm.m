@@ -388,7 +388,11 @@ if strcmp(cfg.cond1, 'DISC_M1A') & strcmp(cfg.cond2,'DIDC_M1A')
     cfg_plot.imageName = ['_DISC_M1A-DIDC_M1A-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_DISC_M1A-DIDC_M1A-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
-
+if strcmp(cfg.cond1, 'SCSP_M2M2') & strcmp(cfg.cond2,'SCDP_M2M2')
+    cfg_plot.lbls3plot = {['SCSP'] ['SCDP'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_SCSP_M2M2-SCDP_M2M2-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_SCSP_M2M2-SCDP_M2M2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
 
 
 

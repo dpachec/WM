@@ -2,6 +2,12 @@
 
 function [out_real] = plot_reinst_map_wm (cfg)
 
+runPerm = strsplit(cfg.res, '_'); 
+if strcmp(runPerm{2}, 'perm')
+    cfg.runperm = 1;
+else
+    cfg.runperm = 0;
+end
  
 %exclude subjects
 if cfg.subj2exc > 0

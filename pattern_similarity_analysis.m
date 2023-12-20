@@ -104,10 +104,11 @@ disp ('done')
 %% LOAD all conditions
 clearvars
 
-region = 'vvs'; 
+region = 'pfc'; 
 paths = load_paths_WM(region, 'none');
 
 contrasts = {
+              %'SCSP_M2M2' 'SCDP_M2M2';
               'DISC_M1A' 'DIDC_M1A';
               
              };
@@ -138,7 +139,7 @@ cond2B = eval(cond2);
 cfg             =       [];
 %cfg.subj2exc    =       [18 22];% vvs;
 cfg.subj2exc   =       [1]; % pfc
-cfg.clim        =       [-.01 .0115];
+cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
 cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
@@ -150,10 +151,10 @@ cfg.lwd2        =       2; %significant outline
 cfg.remClust    =       0; 
 cfg.plot1clust  =       0;  
 cfg.clust2plot  =       3;  
-cfg.runperm     =       0;  
 cfg.all_cond1   =       cond1B; 
 cfg.all_cond2   =       cond2B; 
 cfg.alpha       =       0.05; 
+
 
 
 [out_real]   = plot_reinst_map_wm(cfg);
@@ -167,6 +168,7 @@ toc
 
 %%perm
 cfg_perm                    =       [];
+cfg.runperm                 =       1;  
 cfg_perm.n_perm             =       1000; 
 cfg_perm.savePerm           =       1;
 cfg_perm.out_real           =       out_real;
