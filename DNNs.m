@@ -19,7 +19,7 @@ clear
 %f2sav = 'Res34-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 
-f2sav = 'ITM_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'ITM_pfc_M123IC_[1]_3-54_0_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -35,7 +35,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
 
     cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
 
-    if ~isempty(cfg_contrasts.oneListIds)
+    if length(cfg_contrasts.oneListIds) > 1
         cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
     
         cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
