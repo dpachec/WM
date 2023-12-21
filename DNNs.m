@@ -64,15 +64,6 @@ clear, clc
     
 listF2sav = {
 
-'Alex_vvs_E123C_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_E123I_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_M123C_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_M123I_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_E123C_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_E123I_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_M123C_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-
 
 };   
 
@@ -121,14 +112,38 @@ nPerm = 1000;
 
 listF2sav = {
 
-'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
-'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
 
-% 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-% 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
-% 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-% 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-% 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_vvs_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+
+'BLNETi_vvs_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_vvs_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_pfc_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_pfc_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+
+'CORrt_vvs_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_vvs_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_pfc_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_pfc_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+
+
+'Alex_vvs_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_vvs_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+
+'BLNETi_vvs_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_vvs_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_pfc_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+'BLNETi_pfc_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+
+'CORrt_vvs_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_vvs_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_pfc_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+'CORrt_pfc_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+
                     
              };
     
@@ -217,15 +232,15 @@ clear , clc
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
 
-f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -701,6 +716,114 @@ plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5);
 
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
+
+
+%%  plot all layers FREQUENCY RESOLVED
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'BNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BDNETi_vvs_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BFNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+f2sav = 'CORz_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+
+
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if strcmp(cfg.period(1), 'M')
+         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
+       else
+         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
+       end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:52; 
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        
+    end
+    
+
+end
+
+exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 
 
 %% COMPUTE CLUSTERS in each permutation FREQUENCY RESOLVED
