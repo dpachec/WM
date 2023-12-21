@@ -179,12 +179,12 @@ for listi = 1:length(listF2sav)
     filelistSess = getFiles(paths.traces);
     
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-        disp(['File > ' num2str(sessi)]);
+        %disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
     
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
-        if ~isempty(cfg_contrasts.oneListIds)
+        if length(cfg_contrasts.oneListIds) > 1
             cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
         
             cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
