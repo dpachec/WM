@@ -2,20 +2,31 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
 
     oneListIds = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds_c, 'un', 0);
     oneListIds = double(string(cat(1, oneListIds{:})));
+
+    isCued = ((oneListIds(:, 1) == 1 & oneListIds(:, 2) == 1) | (oneListIds(:, 1) == 3 & oneListIds(:, 2) == 2) | (oneListIds(:, 1) == 5 & oneListIds(:, 2) == 3) ); 
+
     if strcmp(period, 'M123')
         ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) ~= 4; 
     elseif strcmp(period, 'MALL')
         ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) == 4; 
-    elseif strcmp(period, 'M123C')
-        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) == 4 & oneListIds(:, 8) == 1;
-    elseif strcmp(period, 'M123I')
-        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) == 4 & oneListIds(:, 8) == 0;
+    elseif strcmp(period, 'M123CI')
+        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) ~= 4 & oneListIds(:, 8) == 1;
+    elseif strcmp(period, 'M123II')
+        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) ~= 4 & oneListIds(:, 8) == 0;
+    elseif strcmp(period, 'M123CC')
+        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) ~= 4 & oneListIds(:, 9) == 1;
+    elseif strcmp(period, 'M123IC')
+        ids = oneListIds(:, 1) == 7 & oneListIds(:, 2) ~= 4 & oneListIds(:, 9) == 0;        
     elseif strcmp(period, 'E123')
         ids = oneListIds(:, 1) == 1 | oneListIds(:, 1) == 3 | oneListIds(:, 1) == 5; 
-    elseif strcmp(period, 'E123C')
-        ids = (oneListIds(:, 1) == 1 | oneListIds(:, 1) == 3 | oneListIds(:, 1) == 5) & oneListIds(:, 8) == 1; 
-    elseif strcmp(period, 'E123I')
-        ids = (oneListIds(:, 1) == 1 | oneListIds(:, 1) == 3 | oneListIds(:, 1) == 5) & oneListIds(:, 8) == 0; 
+    elseif strcmp(period, 'E123CI')
+        ids = isCued & oneListIds(:, 8) == 1; 
+    elseif strcmp(period, 'E123II')
+        ids = isCued & oneListIds(:, 8) == 0; 
+    elseif strcmp(period, 'E123CC')
+        ids = isCued & oneListIds(:, 9) == 1; 
+    elseif strcmp(period, 'E123IC')
+        ids = isCued & oneListIds(:, 9) == 0;         
     elseif strcmp(period, 'M11') | strcmp(period, 'M12') | strcmp(period, 'M13')
         ids = oneListIds(:, 1) == 5; 
     end

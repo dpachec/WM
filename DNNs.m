@@ -19,9 +19,7 @@ clear
 %f2sav = 'Res34-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 
-f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-
-
+f2sav = 'ITM_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -35,20 +33,22 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
 
-    [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+    cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
 
-    cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-
-    cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+    if ~isempty(cfg_contrasts.oneListIds)
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
     
-    neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-    networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-
-    nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-    %nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
-    nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+        cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
     
+        cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+        
+        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+    
+        nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+        %nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
+        nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+    end
 end
 
 mkdir ([paths.results.DNNs]);
@@ -63,6 +63,106 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
+
+'CAT_vvs_M123CI_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_vvs_M123II_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_vvs_M123CC_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_vvs_M123IC_[1]_3-54_0_0_1_0_.1_5_1';
+
+'CAT_pfc_M123CI_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_pfc_M123II_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_pfc_M123CC_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_pfc_M123IC_[1]_3-54_0_0_1_0_.1_5_1';
+
+'ITM_vvs_M123CI_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_M123II_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_M123CC_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_M123IC_[1]_3-54_0_0_1_0_.1_5_1';
+
+'ITM_pfc_M123CI_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_pfc_M123II_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_pfc_M123CC_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_pfc_M123IC_[1]_3-54_0_0_1_0_.1_5_1';
+
+
+'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_M123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_pfc_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_pfc_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_pfc_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_pfc_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CAT_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
+'CAT_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
+
+'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
+'ITM_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
 
 
 };   
@@ -79,21 +179,28 @@ for listi = 1:length(listF2sav)
     filelistSess = getFiles(paths.traces);
     
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+        disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
-       
-        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
-        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-        
-        cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-        cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
     
-        neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-        networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+    
+        if ~isempty(cfg_contrasts.oneListIds)
+            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
         
-        nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-        nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+            cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
         
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+        
+            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+            %nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
+            nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+        end
+
     end
+
     
     save([paths.results.DNNs f2sav '.mat'], 'nnFit');
 
@@ -112,37 +219,40 @@ nPerm = 1000;
 
 listF2sav = {
 
+ 
+% 'Alex_vvs_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_vvs_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_pfc_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_pfc_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 
+% 'BLNETi_vvs_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_vvs_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_pfc_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_pfc_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 
+% 'CORrt_vvs_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_vvs_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_pfc_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_pfc_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 
+% 
+% 'Alex_vvs_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_vvs_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_pfc_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 'Alex_pfc_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+% 
+% 'BLNETi_vvs_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_vvs_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_pfc_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 'BLNETi_pfc_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
+% 
+% 'CORrt_vvs_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_vvs_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_pfc_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% 'CORrt_pfc_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
 
-'Alex_vvs_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_vvs_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_pfc_E123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_pfc_M123I_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-
-'BLNETi_vvs_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_pfc_E123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M123I_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-
-'CORrt_vvs_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_vvs_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_pfc_E123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_pfc_M123I_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-
-
-'Alex_vvs_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_vvs_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_pfc_E123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_pfc_M123C_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-
-'BLNETi_vvs_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_pfc_E123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M123C_[8-8-56]_3-54_0_0_1_0_.1_5_1'; 
-
-'CORrt_vvs_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_vvs_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_pfc_E123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
-'CORrt_pfc_M123C_[1-4]_3-54_0_0_1_0_.1_5_1'; 
+% % include all analyses without averaging repetitions
+%'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1';
 
                     
              };
@@ -232,14 +342,17 @@ clear , clc
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'CORrt_pfc_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+f2sav = 'ITM_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
+
 
 
 cfg = getParams(f2sav);
@@ -486,7 +599,7 @@ clear , clc
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
+f2sav = 'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -735,11 +848,11 @@ clear , clc
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-%f2sav = 'BNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BDNETi_vvs_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BFNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-f2sav = 'CORz_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'CORz_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
 
 
 
@@ -1191,7 +1304,7 @@ end
 
 
 
-%% Process neural RDMs and compute CCI for ITEMS
+%% Process neural RDMs and compute ICI (ITEMS)
 
 clear
 paths = load_paths_WM('vvs', 'none');
@@ -1199,7 +1312,7 @@ filelistSess = getFilesWM(paths.results.neuralRDMS.IT);
 
 t1 = datetime; 
 
-for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+for sessi= 2%1:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.results.neuralRDMS.IT filelistSess{sessi}]);   
     nSubjs = size(allNeuralRDMS, 1); 
@@ -1210,7 +1323,10 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     for subji = 1:nSubjs
         neuralRDMs  = allNeuralRDMS{subji, 1}; 
         ids         = allNeuralRDMS{subji, 2};
+        [ids neuralRDMs]         = sortMaintenance(ids, neuralRDMs);
+
         ITM = squeeze(load_ITMODEL_activ(ids));
+        ITM(ITM==0) = 2; ITM = tril(ITM, -1); ITM(ITM==0) = 3; ITM(ITM==2) = 0; 
         for freqi  = 1:nFreqs
             for timei = 1:nTimes
                 neuralRDM = neuralRDMs(:, :, freqi, timei); 
@@ -1222,7 +1338,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     end
 
 
-    save([paths.results.neuralRDMS.IT filelistSess{sessi}(1:end-4) '_ICI'], 'ICI');
+    save([paths.results.neuralRDMS.IT filelistSess{sessi}(1:end-4) '_ICI.mat'], 'ICI');
 
 
 
@@ -1231,10 +1347,130 @@ end
 
 
 
+%% COMPUTE PERMUTATIONS
+
+clear
+
+nPerm = 100; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS.IT);
+
+for sessi= 2 %1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    clearvars -except paths filelistSess sessi nPerm
+
+    load([paths.results.neuralRDMS.IT filelistSess{sessi}]);   
+    nSubjs = size(allNeuralRDMS, 1); 
+    nFreqs = size(allNeuralRDMS{1}, 3); 
+    nTimes = size(allNeuralRDMS{1}, 4); 
+    
+    clear ICIPerm
+    for subji = 1:nSubjs
+        subji
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+
+        [ids neuralRDMs]         = sortMaintenance(ids, neuralRDMs);
+
+        for permi = 1:nPerm
+            id4perm = randperm(length(ids)); 
+            idsPERM = ids(id4perm);
+            
+            %ITM = squeeze(load_ITMODEL_activ(ids));
+            ITM = squeeze(load_ITMODEL_activ(idsPERM));
+            ITM(ITM==0) = 2; ITM = tril(ITM, -1); ITM(ITM==0) = 3; ITM(ITM==2) = 0; 
+            for freqi  = 1:nFreqs
+                for timei = 1:nTimes
+                    neuralRDM = neuralRDMs(:, :, freqi, timei); 
+                    W = neuralRDM(ITM==1); 
+                    B = neuralRDM(ITM==0); 
+                    ICIPerm(permi, subji, freqi, timei,:) = mean(W, 'omitnan') - mean(B, 'omitnan'); 
+                end
+            end
+        end
+    end
+
+
+    save([paths.results.neuralRDMS.IT filelistSess{sessi}(1:end-4) '_ICI_' num2str(nPerm) 'p.mat'], 'ICIPerm');
+
+end
 
 
 
-%%
+%% plot with OUTLINE FROM PERM
+
+
+clear
+nPerm = 100;
+paths = load_paths_WM('vvs', 'none');
+cd(paths.results.neuralRDMS.ITPlts);
+
+filelistSess = dir('*mat'); filelistSess = [{filelistSess.name}'];
+for sessi= 1 %:length(filelistSess) %this one starts at 1 and not at 3
+    
+    disp(['File > ' num2str(sessi)]);
+
+    clearvars -except paths filelistSess sessi nPerm
+    load(filelistSess{sessi});   
+    load(filelistSess{sessi+1});   
+    
+    mICI = squeeze(mean(ICI, 'omitnan')); 
+    mICIPERM = squeeze(mean(ICIPerm, 2, 'omitnan')); 
+    
+    nFreq = size(mICI,1); nTimes = size(mICI, 2); 
+    clear p
+    for freqi = 1:nFreq
+        for timei = 1:nTimes
+            allICIPerm = mICIPERM(:, freqi, timei); 
+            obsICI = mICI(freqi, timei); 
+            allAB = allICIPerm(allICIPerm > obsICI);
+            p(freqi, timei) = 1 - ((nPerm-1) - (length (allAB)))  / nPerm;
+
+        end
+    end
+    h = p<.05; 
+    
+    
+
+    
+    if size(mICI, 2) == 21
+        times = 1:210;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [100 100 200 400])
+        contourf(times, freqs, myresizem(mICI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 150], 'FontSize', 10); 
+        set(gca, 'clim', [-.015 .015], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+    else
+        times = 1:460;
+        freqs = 1:520; 
+        figure; set(gcf, 'Position', [1000 918 560 420])
+        myCmap = colormap(brewermap([],'*Spectral'));
+        colormap(myCmap)
+        contourf(times, freqs, myresizem(mICI, 10), 100, 'linecolor', 'none'); hold on; colorbar
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
+        
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 390], 'FontSize', 10);
+        set(gca, 'clim', [-.045 .045], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
+        %colorbar
+
+
+    end
+    myCmap = colormap(brewermap([],'*Spectral'));
+    colormap(myCmap)
+    
+    %exportgraphics(gcf, [num2str(sessi) '_myP.png'], 'Resolution', 300); 
+
+
+end
+
+
 
 
 

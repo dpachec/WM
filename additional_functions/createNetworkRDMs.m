@@ -61,7 +61,7 @@ else
 end
 
 
-if strcmp(cfg.period, 'M123') | strcmp(cfg.period, 'M123C') | strcmp(cfg.period, 'M123I') 
+if strcmp(cfg.period, 'M123') | strcmp(cfg.period, 'M123CI') | strcmp(cfg.period, 'M123II') | strcmp(cfg.period, 'M123CC') | strcmp(cfg.period, 'M123IC') 
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});
         toSum = double(string(idh(2)));

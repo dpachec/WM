@@ -192,15 +192,55 @@ if cfg.avRep
 
 else % % % % % sort items if not averaging as well
 
-    oneListIDs = cfg_contrasts.oneListIds; 
+        
+    if ~strcmp(cfg_contrasts.oneListIds{1}(1), '7')
 
-    ids = cellfun(@(x) strsplit(string(x)), oneListIDs, 'UniformOutput', false);
-    ids0 = double(string(cellfun(@(x) x(3), ids, 'UniformOutput', false)));
+        oneListIDs = cfg_contrasts.oneListIds; 
 
-    [si1 si2] = sort(ids0);
+        ids = cellfun(@(x) strsplit(string(x)), oneListIDs, 'UniformOutput', false);
+        ids0 = double(string(cellfun(@(x) x(3), ids, 'UniformOutput', false)));
 
-    cfg_contrasts.oneListIds =  cfg_contrasts.oneListIds(si2);
-    cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(si2, :, :, :);
+    
+        [si1 si2] = sort(ids0);
+    
+        cfg_contrasts.oneListIds =  cfg_contrasts.oneListIds(si2);
+        cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(si2, :, :, :);
+    
+    
+    
+        oneListIds = cfg_contrasts.oneListIds;
+            
+
+
+    else
+        oneListIDs = cfg_contrasts.oneListIds; 
+    
+        ids = cellfun(@(x) strsplit(string(x)), oneListIDs, 'UniformOutput', false);
+        cues = double(string(cellfun(@(x) x(2), ids, 'UniformOutput', false)));
+     
+    
+    
+        clear idsF ids23
+        for cuei = 1:length(cues)
+            %idsF(cuei,:) = double(string(ids{cuei}(12+cues(cuei))));
+            ids{cuei}(3) = double(string(ids{cuei}(12+cues(cuei))));
+            ids23{cuei,:} = char(join(ids{cuei}, '  '));
+        end
+    
+        ids0 = double(string(cellfun(@(x) x(3), ids, 'UniformOutput', false)));
+        [si1 si2] = sort(ids0);
+    
+        cfg_contrasts.oneListIds =  ids23(si2);
+        cfg_contrasts.oneListPow = cfg_contrasts.oneListPow(si2, :, :, :);
+    
+    
+    
+        oneListIds = cfg_contrasts.oneListIds;
+
+    end
+                  
+
+            
 
 
 end
