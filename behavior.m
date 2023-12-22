@@ -51,8 +51,11 @@ for vp=1:length(allTrlInfo)
     corr_all_pos(2,:)=nansum(trialInfo(indall,37:39))./numel(indall);
     gData.corr_all_pos{vp} = corr_all_pos;
     %123 trials in each position 
-    corr_123_pos(1,:)=nansum(trialInfo(ind123,34:36))./(numel(ind123)./3);
-    corr_123_pos(2,:)=nansum(trialInfo(ind123,37:39))./(numel(ind123)./3);
+    %corr_123_pos(1,:)=nansum(trialInfo(ind123,34:36))./(numel(ind123)./3);
+    %corr_123_pos(2,:)=nansum(trialInfo(ind123,37:39))./(numel(ind123)./3);
+    den2use = sum(~isnan(trialInfo(ind123,37:39))); 
+    corr_123_pos(1,:)=nansum(trialInfo(ind123,34:36))./den2use;
+    corr_123_pos(2,:)=nansum(trialInfo(ind123,37:39))./den2use;
     gData.corr_123_pos{vp} = corr_123_pos;
     
 end
@@ -67,11 +70,13 @@ corr_123 = gData.corr_123;
 corr_all_pos = cell2mat (gData.corr_all_pos); 
 corr_all_pos_it  = corr_all_pos(1,:); corr_all_pos_it1 = reshape(corr_all_pos_it', 3, [])';
 corr_all_pos_cat = corr_all_pos(2,:); corr_all_pos_cat1 = reshape(corr_all_pos_cat', 3, [])';
-corr_all_pos1(:, 1:3) = corr_all_pos_it1; corr_all_pos1(:, 4:6) = corr_all_pos_cat1;
+corr_all_pos1(:, 1:3) = corr_all_pos_it1; 
+corr_all_pos1(:, 4:6) = corr_all_pos_cat1;
 corr_123_pos = cell2mat (gData.corr_123_pos); 
 corr_123_pos_it  = corr_123_pos(1,:); corr_123_pos_it1 = reshape(corr_123_pos_it', 3, [])';
 corr_123_pos_cat = corr_123_pos(2,:); corr_123_pos_cat1 = reshape(corr_123_pos_cat', 3, [])';
-corr_123_pos1(:, 1:3) = corr_123_pos_it1; corr_123_pos1(:, 4:6) = corr_123_pos_cat1;
+corr_123_pos1(:, 1:3) = corr_123_pos_it1; 
+corr_123_pos1(:, 4:6) = corr_123_pos_cat1;
 
 
 region = 'all';
@@ -90,6 +95,31 @@ allPerf = [corr_123 corr_all];
 allPerfPos = [corr_123_pos corr_all_pos];
 
 
+
+
+
+%% 6 Bar 
+clear data
+data.data = [corr_123_pos'] 
+
+
+figure(1); set(gcf,'Position', [0 0 550 650]); 
+mean_S = mean(data.data, 2);
+hb = plot ( data.data); hold on;
+set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(hb,'linestyle','none', 'lineWidth', 3);
+set(gca,'XTick',[1 6],'XTickLabel',{'', ''}, ...
+    'FontSize', 30, 'linew',2, 'xlim', [0.25 6.75], 'ylim', [0 1.3] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);hold on;
+%set(gca, 'LineWidth', 3);
+
+[h p ci t] = ttest(data.data); % for the 123 trials
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+exportgraphics(gcf, '_21.png','Resolution', '150');
 
 %% 12 Bar 
 clear data

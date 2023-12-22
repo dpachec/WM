@@ -13,10 +13,13 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
         for layi = 1:nLays
             M =  squeeze(networkRDMs(layi,:,:)); 
             M = vectorizeRDM(M);
+            nanIds = isnan(M); 
+            M(nanIds) = []; 
             parfor freqi = 1:nFreqs
                 for timei = 1:nTimes
                     rdm = squeeze(neuralRDMs(:, :, freqi, timei));
                     rdm = vectorizeRDM(rdm);
+                    rdm(nanIds) = []; 
                     allTEst = corr(rdm, M, 'type', 's');
                     all_r_Times(layi,freqi,timei) = allTEst;  
                 end
@@ -31,8 +34,8 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
             for triali = 1:size(neuralRDMs, 1)
                 M =  squeeze(networkRDMs(layi,triali,:)); 
                 M(triali) = []; 
-                for freqi = 1:nFreqs
-                    parfor timei = 1:nTimes
+                parfor freqi = 1:nFreqs
+                    for timei = 1:nTimes
                         rdm = squeeze(neuralRDMs(:, triali, freqi, timei));
                         rdm(triali) = []; 
                         allTEst = corr(rdm, M, 'type', 's');

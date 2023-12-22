@@ -11,7 +11,7 @@ function [ACT] = load_CATMODEL_activ(oneListIDs)
         for j = 1:length(M)
             x = char(ids0{i}); 
             y = char(ids0{j}); 
-            if strcmp(x(1), y(1)) 
+            if strcmp(x(1), y(1)) & ~strcmp(x, y)
                 M(i, j) = 1;
             end
         end 
