@@ -151,12 +151,6 @@ nPerm = 1000;
 listF2sav = {
 
 
-'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_pfc_M123_[1]_3-54_0_0_1_0_.1_5_1';
-'CAT_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1';
-'CAT_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
 'Alex_pfc_M11_[1-8]_3-54_0_0_1_0_.1_5_1';
 'Alex_pfc_M12_[1-8]_3-54_0_0_1_0_.1_5_1';
 'Alex_pfc_M13_[1-8]_3-54_0_0_1_0_.1_5_1';
@@ -169,12 +163,12 @@ listF2sav = {
 'BLNETi_vvs_M11_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 'BLNETi_vvs_M12_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 'BLNETi_vvs_M13_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'CORrt_pfc_M11_[1-4]_3-54_0_0_1_0_.1_5_1';
-'CORrt_pfc_M12_[1-4]_3-54_0_0_1_0_.1_5_1';
-'CORrt_pfc_M13_[1-4]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M11_[1-4]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M12_[1-4]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M13_[1-4]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M11_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M12_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_M13_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M11_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M12_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M13_[2-2-8]_3-54_0_0_1_0_.1_5_1';
 
                     
              };
@@ -207,7 +201,7 @@ for listi = 1:length(listF2sav)
                 cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
                 
                 cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-                cfg_contrasts               = average_repetitions(cfg_contrasts);
+                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
                 
                 neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
                 networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
