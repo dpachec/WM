@@ -202,39 +202,39 @@ for listi = 1:length(listF2sav)
         if nChans > 1
 
             cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
-            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-            
-            cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-            if (cfg.avRep)
-                cfg_contrasts               = average_repetitions(cfg_contrasts);
-            end
-        
-            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-    
-    
-            % % % restrict time for permutation data
-            if strcmp(cfg.period(1), 'M')
-                if ndims(neuralRDMs) == 4
-                    neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
-                else
-                    neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
-                end
-            else
-                if ndims(neuralRDMs) == 4
-                    neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
-                else
-                    neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
-                end
-            end
-            
-            for permi = 1:nPerm
-                sC = size(networkRDMs, 2);
-                ids = randperm(sC);
-                networkRDMs = networkRDMs(:, ids, ids); 
-                nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-            end
 
+            if length(cfg_contrasts.oneListIds) > 1
+                cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+                
+                cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
+                cfg_contrasts               = average_repetitions(cfg_contrasts);
+                
+                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+        
+        
+                % % % restrict time for permutation data
+                if strcmp(cfg.period(1), 'M')
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
+                    end
+                else
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
+                    end
+                end
+                
+                for permi = 1:nPerm
+                    sC = size(networkRDMs, 2);
+                    ids = randperm(sC);
+                    networkRDMs = networkRDMs(:, ids, ids); 
+                    nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                end
+            end
         end
 
     end
