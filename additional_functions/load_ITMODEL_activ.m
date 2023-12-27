@@ -18,6 +18,7 @@ function [ACT] = load_ITMODEL_activ(oneListIDs)
             end
         end 
     end    
+    M(M==0) = 2; M = tril(M, -1); M(M==0) = 3; M(M==2) = 0; 
     ACT(1,:,:) = M; 
       
 end
