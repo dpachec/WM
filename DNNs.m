@@ -297,11 +297,6 @@ nPerm = 1000;
 
 listF2sav = {
 
-%% IN LOOP 
-clear, clc
-%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-    
-listF2sav = {
 
 'ITM_vvs_E123CAT1_[1]_3-54_0_0_1_0_.1_5_1';
 'ITM_vvs_E123CAT2_[1]_3-54_0_0_1_0_.1_5_1';
