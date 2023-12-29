@@ -70,31 +70,7 @@ if strcmp(cfg.period, 'M123') | strcmp(cfg.period, 'M123CI') | strcmp(cfg.period
     ids3 = double(string(ids2(:,[1 3])));
     idx = find(~mod(ids3, 10)); 
     ids4 = ids3-10; ids4(idx) = ids3(idx);
-elseif strcmp(cfg.period, 'M11') 
-    for i = 1:length(oneListIDs)
-        idh = strsplit(oneListIDs{i});
-        idT = char(idh(13));
-        ids3(i,:) = double(string(idT([1 3])));
-    end   
-    idx = find(~mod(ids3, 10)); 
-    ids4 = ids3-10; ids4(idx) = ids3(idx);
-elseif strcmp(cfg.period, 'M12') 
-    for i = 1:length(oneListIDs)
-        idh = strsplit(oneListIDs{i});
-        idT = char(idh(14));
-        ids3(i,:) = double(string(idT([1 3])));
-    end     
-    idx = find(~mod(ids3, 10)); 
-    ids4 = ids3-10; ids4(idx) = ids3(idx);
-elseif strcmp(cfg.period, 'M13') 
-    for i = 1:length(oneListIDs)
-        idh = strsplit(oneListIDs{i});
-        idT = char(idh(15));
-        ids3(i,:) = double(string(idT([1 3])));        
-    end 
-    idx = find(~mod(ids3, 10)); 
-    ids4 = ids3-10; ids4(idx) = ids3(idx);
-elseif strcmp(cfg.period(1), 'E') 
+elseif strcmp(cfg.period(1), 'E') | strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13') 
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});
         idT = char(idh(3));

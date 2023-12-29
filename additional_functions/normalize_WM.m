@@ -5,8 +5,10 @@ function [cfg_contrasts] = normalize_WM(cfg_contrasts, acrossTrials, zScType, bl
  end
 
 oneListPow = cfg_contrasts.oneListPow;
-oneListIds = cfg_contrasts.oneListIds;
-oneListIds = str2num(cell2mat(oneListIds));
+%oneListIds = cfg_contrasts.oneListIds;
+%oneListIds = str2num(cell2mat(oneListIds));
+oneListIds = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0);
+oneListIds = double(string(cat(1, oneListIds{:})));
 
 if strcmp (zScType, 'sess')
     z2u = 21;
