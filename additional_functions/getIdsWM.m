@@ -2,8 +2,14 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
 
     %oneListIds = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds_c, 'un', 0);
     %oneListIds = double(string(cat(1, oneListIds{:})));
-    oneListIds = str2num(cell2mat(cfg_contrasts.oneListIds_c));
-    oneListIdsa = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds_c, 'un', 0);
+    if isfield(cfg_contrasts, 'oneListIds_c')
+        oneListIds = str2num(cell2mat(cfg_contrasts.oneListIds_c));
+        oneListIdsa = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds_c, 'un', 0);
+    else
+        oneListIds = str2num(cell2mat(cfg_contrasts.oneListIds));
+        oneListIdsa = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0);
+    end
+    
     
 
     isCued = ((oneListIds(:, 1) == 1 & oneListIds(:, 2) == 1) | (oneListIds(:, 1) == 3 & oneListIds(:, 2) == 2) | (oneListIds(:, 1) == 5 & oneListIds(:, 2) == 3) ); 
@@ -124,7 +130,12 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
     
 
     cfg_contrasts.oneListTraces   = cfg_contrasts.oneListTraces(:,:,ids);
-    cfg_contrasts.oneListIds      = cfg_contrasts.oneListIds_c(ids); 
+
+    if isfield(cfg_contrasts, 'oneListIds_c')
+        cfg_contrasts.oneListIds      = cfg_contrasts.oneListIds_c(ids); 
+    else
+        cfg_contrasts.oneListIds      = cfg_contrasts.oneListIds(ids); 
+    end
 
 
     if isfield(cfg_contrasts, 'oneListIds_c')

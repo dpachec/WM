@@ -7,12 +7,12 @@ clear
 tic 
  
 %global parameters % no ; for log
-subjfir = 1;
-subjend = 1;
+subjfir = 63;
+subjend = 83;
 
 
 %%power parameters
-eLim            =       [-2 7]; %[-3 7];            %   max 5 
+eLim            =       [-7 7]; %[-3 7];            %   max 5 
 xlimE           =       [-500 4000];       %   for cleaning at enc
 xlimR           =       [-500 4000];      %   for cleaning at ret
 cleaning        =       1;                 %      event
@@ -22,7 +22,7 @@ montage         =       'bipo';            %   'aver', 'bipo'
 timeRes         =       0.1; %0.01;               %    0.1 = 100ms; 0.01 = 10ms; or 'all' 
 takeAllTrials   =       0; 
 region          =       'vvs';
-powOrAmp        =       'pow'; %power or raw amplitude time series
+powOrAmp        =       'amp'; %power or raw amplitude time series
   
 disp ([ 'eLim = ' num2str(eLim) newline ...
         'takeMean = ' num2str(takeMean) newline ...
@@ -88,7 +88,7 @@ for sessi = subjfir:subjend
     disp (['size onelistTraces_c > ' num2str(size(oneListTraces_c)) ]);
     
     if strcmp(powOrAmp, 'amp')
-        cfg_contrasts.oneListIds_c        =       oneListIds_c; 
+        cfg_contrasts.oneListIds          =       oneListIds_c; 
         cfg_contrasts.oneListTraces       =       oneListTraces_c; 
         cfg_contrasts.chanNames           =       struct2cell(EEG.chanlocs)'; %[{EEG.chanlocs.labels}']; 
         cfg_contrasts.subj                =       EEG.subj; 
@@ -115,11 +115,11 @@ end
 
 %% Combine sessions for each subject and saves to output_folder
 
-cd D:\_WM\analysis\out_contrasts\100ms\vvs\separate_blocks
+cd D:\_WM\analysis\out_contrasts\raw_traces_extended\vvs
 
 % % % create folder to store the subject data
-output_folder = 'D:\_WM\analysis\out_contrasts\10ms\hipp\allTrials';
-mkdir(fname);
+output_folder = 'D:\_WM\analysis\out_contrasts\raw_traces_extended\vvs\allTrials';
+mkdir(output_folder);
 sublist = dir('*contr.mat');
 sublist = {sublist.name};
 disp (['measurements -> ' num2str(length(sublist))]);

@@ -21,8 +21,11 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
     end
     
     if timeRes == 0.1        
-         lim_1   = 1; %
-         lim_2   = 70; 
+         %lim_1   = 1; %
+         %lim_2   = 70; 
+
+         lim_1   = 1; % just to test 05 Jan (restore to previous version)
+         lim_2   = 140; % just to test 05 Jan (restore to previous version)
     end
 
     %fieldtrip analysis
@@ -78,7 +81,7 @@ function [oneListPow] = extract_power_WM (cfg_contrasts , cfg)
         
     if DNN_analysis
         if strcmp(period(1), 'E') & timeRes == 0.1
-           oneListPow = oneListPow(:,:,:,16:40);
+           %oneListPow = oneListPow(:,:,:,16:40); %uncomment to get the timing of the preprint (before Jan 08)
         elseif strcmp(period(1), 'M') & timeRes == 0.1
             oneListPow = oneListPow(:,:,:,16:65);
         end

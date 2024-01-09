@@ -61,7 +61,9 @@ else
 end
 
 
-if strcmp(cfg.period, 'M123') | strcmp(cfg.period, 'M123CI') | strcmp(cfg.period, 'M123II') | strcmp(cfg.period, 'M123CC') | strcmp(cfg.period, 'M123IC') 
+if strcmp(cfg.period, 'M123') | strcmp(cfg.period, 'M123CI') | strcmp(cfg.period, 'M123II') | strcmp(cfg.period, 'M123CC') ...
+   | strcmp(cfg.period, 'M123IC') | strcmp(cfg.period, 'M123CAT1') | strcmp(cfg.period, 'M123CAT2') | strcmp(cfg.period, 'M123CAT3') ...
+   | strcmp(cfg.period, 'M123CAT4') | strcmp(cfg.period, 'M123CAT5') | strcmp(cfg.period, 'M123CAT6') 
     for i = 1:length(oneListIDs)
         idh = strsplit(oneListIDs{i});
         toSum = double(string(idh(2)));
@@ -88,8 +90,30 @@ if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp 
         | strcmp (cfg.net2load , 'AE-t06') | strcmp (cfg.net2load , 'BKNETi') | strcmp (cfg.net2load , 'BNETi') | strcmp (cfg.net2load , 'BDNETi') ...
         | strcmp (cfg.net2load , 'BFNETi') | strcmp (cfg.net2load , 'CORz') 
 
-
     networkRDMs = ACT(:, ids4, ids4);
 else
     networkRDMs = ACT; 
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

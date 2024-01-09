@@ -27,9 +27,8 @@ for chani = 1:length(elec_mni_frv.chanpos)
     [~, indx] = max(labels.count); 
     % check https://www.fieldtriptoolbox.org/faq/how_can_i_determine_the_anatomical_label_of_a_source/
     myCoord(chani,:) = labels.name(indx);
-    EEG.chanlocs(chani).location = labels.name(indx);
 end
-
+[EEG.chanlocs.location] = myCoord{:}; 
 coord = string(myCoord);
 
 
