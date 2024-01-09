@@ -16,11 +16,13 @@ meanInFreq          = 0;
 avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
-contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
+%contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
+contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-n2s                 = 20000;
+%n2s                 = 20000;
+n2s                 = 2000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 aVTime              = 0; % Average or not in time the feature vectors

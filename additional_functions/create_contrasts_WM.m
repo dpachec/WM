@@ -251,6 +251,42 @@ if ~isempty(intersect(c2c, 'EE'))
 
 
 
+    % % % % % 1) M1 
+    if ~isempty(intersect(c2c, 'EM1'))
+      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*') %* is for the average data
+        for j = 1:length(oneListIds)
+            evej = strsplit(oneListIds{j});
+            if strcmp(evej(1), '5')
+               trli = string(evei(12)); trlj = string(evej(12));
+               trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+               trlij = [trli trlj];
+            
+               if length(trlij) == length(unique(trlij)) % there are no repetitions = different trials
+                  idEnc = [evei(13) evei(14) evei(15)] ;
+                  idM1  = [evej(13) evej(14) evej(15)] ;
+                  oneIdEnc = [double(string(idEnc{1}(1))) double(string(idEnc{2}(1))) double(string(idEnc{3}(1)))]; 
+                  oneIdM1 = [double(string(idM1{1}(1))) double(string(idM1{2}(1))) double(string(idM1{3}(1)))]; 
+                  juntsCAT = [oneIdEnc oneIdM1];
+
+
+                 if length(unique(juntsCAT)) <= 5
+                  if exist('countDISC_EM1')
+                    new_disc_em1{countDISC_EM1} = [i, j];
+                    countDISC_EM1 = countDISC_EM1+1;
+                  end
+                 elseif length(unique(juntsCAT)) == 6
+                   if exist('countDIDC_EM1')
+                    new_didc_em1{countDIDC_EM1} = [i, j];
+                    countDIDC_EM1 = countDIDC_EM1+1;
+                  end
+
+                 end
+              end 
+           end
+        end
+      end
+    end
+
     
 end
 

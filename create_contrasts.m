@@ -7,12 +7,12 @@ clear
 tic 
  
 %global parameters % no ; for log
-subjfir = 63;
+subjfir = 1;
 subjend = 83;
 
 
 %%power parameters
-eLim            =       [-7 7]; %[-3 7];            %   max 5 
+eLim            =       [-3 7]; %[-3 7];            %   max 5 
 xlimE           =       [-500 4000];       %   for cleaning at enc
 xlimR           =       [-500 4000];      %   for cleaning at ret
 cleaning        =       1;                 %      event
