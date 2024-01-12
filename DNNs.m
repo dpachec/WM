@@ -1,3 +1,25 @@
+%% 
+%% Export power from epoched rawTraces (same as before)
+clear 
+f2sav = 'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+cfg = getParams(f2sav);
+cfg.DNN_analysis = 1; 
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+filelistSess = getFilesWM(paths.traces);
+
+for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['Subj > ' num2str(sessi)]);
+    clearvars -except sessi filelistSess paths cfg
+    load([paths.traces filelistSess{sessi}]);   
+
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+    cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
+
+    save([filelistSess{sessi}(1:3) '_normPow.mat'], 'cfg_contrasts');
+    
+end
+
+
 %% Calculate from epoched raw traces
 %% 
 clear
@@ -19,8 +41,7 @@ clear
 %f2sav = 'Res34-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 
-f2sav = 'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -31,25 +52,24 @@ filelistSess = getFilesWM(paths.traces);
 t1 = datetime; 
 
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-    disp(['File > ' num2str(sessi)]);
+    disp(['Subj > ' num2str(sessi)]);
     load([paths.traces filelistSess{sessi}]);   
 
+    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+    cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
     cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
 
     if length(cfg_contrasts.oneListIds) > 1
-        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    
-        cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
-    
+        
         cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
         
         neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
         networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
 
-        % just to test with shuffled labels
-        sC = size(networkRDMs, 2);
-        ids = randperm(sC);
-        networkRDMs = networkRDMs(:, ids, ids); 
+%         % just to test with shuffled labels
+%         sC = size(networkRDMs, 2);
+%         ids = randperm(sC);
+%         networkRDMs = networkRDMs(:, ids, ids); 
 
     
         nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
@@ -70,20 +90,48 @@ clear, clc
     
 listF2sav = {
 
-'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
 
-'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
-'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT1_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT2_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT3_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT4_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT5_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT6_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_pfc_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_pfc_E123CAT1_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT2_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT3_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT4_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT5_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT6_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+
 
 };   
 
@@ -102,18 +150,127 @@ for listi = 1:length(listF2sav)
         %disp(['File > ' num2str(sessi)]);
         load([paths.traces filelistSess{sessi}]);   
     
+        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+        cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
         if length(cfg_contrasts.oneListIds) > 1
-            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-        
-            cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
-        
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-            
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+            %nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
+            nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+        end
+
+    end
+
+    
+    save([paths.results.DNNs f2sav '.mat'], 'nnFit');
+
+end
+
+%% IN LOOP LOADING POWER DATA
+clear, clc
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+listF2sav = {
+
+'ITM_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'ITM_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_E123CAT1_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT2_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT3_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT4_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT5_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CAT6_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_pfc_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_pfc_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_pfc_E123CAT1_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT2_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT3_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT4_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT5_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_pfc_E123CAT6_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+};   
+
+
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi 
         
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFiles(paths.powerFromRT);
+    
+    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+        %disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+        
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+    
+        if length(cfg_contrasts.oneListIds) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
             %nnFit{sessi,1}              = fitModelPartialCorrelation(neuralRDMs, networkRDMs, cfg.fitMode); 
             nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
@@ -129,6 +286,108 @@ end
 
 
 
+%%PERMUTATIONS IN LOOP LOADING POWER DATA
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+
+clear
+nPerm = 1000;
+
+  
+listF2sav = {
+
+'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+};   
+
+
+    
+
+for listi = 1:length(listF2sav)
+    
+    clearvars -except listF2sav listi nPerm 
+        
+    f2sav       = listF2sav{listi}
+        
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFiles(paths.powerFromRT);
+    
+    t1 = datetime; 
+    
+    for sessi= 1:length(filelistSess) 
+        disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+
+        nChans = size(cfg_contrasts.chanNames, 1); 
+    
+        if nChans > 1
+
+            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+
+            if length(cfg_contrasts.oneListIds) > 1
+                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+        
+                % % % restrict time for permutation data
+                if strcmp(cfg.period(1), 'M')
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
+                    end
+                else
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
+                    end
+                end
+                
+                for permi = 1:nPerm
+                    sC = size(networkRDMs, 2);
+                    ids = randperm(sC);
+                    networkRDMs = networkRDMs(:, ids, ids); 
+                    nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                end
+            end
+        end
+
+    end
+    
+    mkdir ([paths.results.DNNs]);
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
+    
+
+end
+   
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
+
+
 
 
 %% PERMUTATIONS IN LOOP
@@ -139,15 +398,36 @@ nPerm = 100;
 
 listF2sav = {
 
-'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 'BLNETi_vvs_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_E123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
+'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_M123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_vvs_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+'CORrt_vvs_M123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+
 
                     
 };
@@ -174,17 +454,14 @@ for listi = 1:length(listF2sav)
     
         if nChans > 1
 
-            cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
+            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
+            cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
+            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
 
             if length(cfg_contrasts.oneListIds) > 1
-                cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-                
-                cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
                 cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-                
                 neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
                 networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-        
         
                 % % % restrict time for permutation data
                 if strcmp(cfg.period(1), 'M')
@@ -249,8 +526,7 @@ clear , clc
 %f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
 %f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
-f2sav = 'CORrt_vvs_M11_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-
+f2sav = 'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
