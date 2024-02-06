@@ -1,7 +1,6 @@
 %% Load All Subjects  
 %% 
 
-
 clear
 %diary('_console_log.txt'); diary on; disp(string(datetime));
 tic 

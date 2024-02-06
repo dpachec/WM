@@ -1,7 +1,7 @@
 %% load cfg_contrasts
 %% 
 clearvars
-region              = 'vvs';
+region              = 'pfc';
 paths = load_paths_WM(region, 'none');
 filelistSess = getFiles(paths.out_contrasts);
 
@@ -17,12 +17,13 @@ avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
-contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
+%contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
+contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
 %n2s                 = 20000;
-n2s                 = 2000;
+n2s                 = 5000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 aVTime              = 0; % Average or not in time the feature vectors
@@ -75,7 +76,7 @@ end
 cd .. 
 
  
-%% process Folders and create one file per condition including all subjects
+%%process Folders and create one file per condition including all subjects
 
 clearvars -except region
 paths = load_paths_WM(region, 'none');
@@ -315,6 +316,62 @@ hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y+.0015;
 hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045; 
 
 
+[hBoth p ci ts] = ttest2(cVVS, cPFC); clustinfo = bwconncomp(hBoth);
+clustinfo = bwconncomp(hBoth);
+clear allTObs
+
+for pixi = 1:length(clustinfo.PixelIdxList)
+     tObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+end
+
+hbBoth = hBoth; hbBoth(hBoth==0) = nan; hbBoth(hbBoth==1) = l2y +.00775; 
+
+times = -.75:.01:.75
+
+figure()
+%plot(mc1, 'r', 'linewidth' ,2); hold on; 
+%plot(mc2, 'b', 'linewidth' ,2); 
+shadedErrorBar(times, mcPFC, sePFC, 'k', 1); hold on; 
+shadedErrorBar(times, mcVVS, seVVS, 'r', 1); hold on; 
+plot(times, hbPFC, 'k', 'linewidth' ,10);
+plot(times, hbVVS, 'r', 'linewidth' ,10);
+plot(times, hbBoth, 'g', 'linewidth' ,10);
+set(gca, 'FontSize', 20, 'xlim', [-.5, .75], 'ylim', [l2y 0.06])
+plot([0 0], get(gca, 'ylim'), 'k:', 'LineWidth', 2);
+plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
+
+
+exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+%% analysis high temporal resolution: Fig2E randomly subselecting same number of subjects 1000 times
+
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+load all % this file contains the traces from VVS and PFC computed in the cells above
+
+mc1PFC = mean(cond1_PFC); 
+mc2PFC = mean(cond2_PFC); 
+cPFC = cond1_PFC-cond2_PFC;
+mcPFC = mean(cPFC)
+stdPFC = std(cPFC); 
+sePFC = stdPFC/sqrt(size(cPFC, 1));
+
+ids2u = randsample(26, 16);
+
+mc1VVS = mean(cond1_VVS(ids2u, :)); 
+mc2VVS = mean(cond2_VVS(ids2u, :)); 
+cVVS = cond1_VVS(ids2u, :) - cond2_VVS(ids2u, :); 
+mcVVS = mean(cVVS); 
+stdVVS = std(cVVS); 
+seVVS = stdVVS/sqrt(size(cVVS, 1))
+
+
+l2y = -.015; 
+[hPFC p ci ts] = ttest(cPFC); 
+hbPFC = hPFC; hbPFC(hbPFC==0) = nan; hbPFC(hbPFC==1) = l2y+.0015; 
+[hVVS p ci ts] = ttest(cVVS); 
+hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045; 
+
+
 [hBoth p ci ts] = ttest2(cVVS, cPFC); 
 hbBoth = hBoth; hbBoth(hBoth==0) = nan; hbBoth(hbBoth==1) = l2y +.00775; 
 
@@ -334,6 +391,54 @@ plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
 
 
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
+
+
+
+
+
+
+%% analysis high temporal resolution: Fig2E randomly subselecting same number of subjects 1000 times
+
+cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+load all % this file contains the traces from VVS and PFC computed in the cells above
+
+nPerm = 1000; 
+
+clear max_clust_sum_perm
+for permi = 1:nPerm
+    cPFC = cond1_PFC-cond2_PFC;
+    ids2u = randsample(26, 16);
+    cVVS = cond1_VVS(ids2u, :) - cond2_VVS(ids2u, :); 
+        
+    [hBoth p ci ts] = ttest2(cVVS, cPFC); 
+    t = ts.tstat; 
+
+    clustinfo = bwconncomp(hBoth);
+    clear allTObs
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             allTObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+        end
+    else
+        allTObs(permi,:) = 0;
+    end
+    
+    if exist('allTObs')
+        [max2u id] = max(abs(allTObs));
+        max_clust_sum_perm(permi,:) = allTObs(id); 
+    else
+        max_clust_sum_perm(permi,:) = 0; 
+    end
+    
+
+end
+
+%% 
+
+histogram (max_clust_sum_perm); hold on; 
+plot([tObs tObs], get(gca,'ylim'),'r','lineWidth', 3);
+
+
 
 
 %% stats: condition label shuffling 

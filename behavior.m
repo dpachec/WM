@@ -100,12 +100,12 @@ allPerfPos = [corr_123_pos corr_all_pos];
 
 %% 6 Bar 
 clear data
-data.data = [corr_123_pos'] 
+data.data = [corr_123_pos]; 
 
 
 figure(1); set(gcf,'Position', [0 0 550 650]); 
-mean_S = mean(data.data, 2);
-hb = plot ( data.data); hold on;
+mean_S = mean(data.data);
+hb = plot ([1:6], data.data); hold on;
 set(hb, 'lineWidth', 3, 'Marker', '.', 'MarkerSize',35);hold on;
 h = bar (mean_S);hold on;
 set(h,'FaceColor', 'none', 'lineWidth', 3);
@@ -115,11 +115,28 @@ set(gca,'XTick',[1 6],'XTickLabel',{'', ''}, ...
 plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);hold on;
 %set(gca, 'LineWidth', 3);
 
-[h p ci t] = ttest(data.data); % for the 123 trials
+[h p ci t] = ttest(data.data(:, 4), data.data(:, 6) ); % for the 123 trials
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
-
 exportgraphics(gcf, '_21.png','Resolution', '150');
+
+%% LME
+clc
+allD = data.data(:); 
+positions = [[ones(1, 32) ones(1, 32)*2 ones(1, 32)*3]' ; [ones(1, 32) ones(1, 32)*2 ones(1, 32)*3]'];
+singORMult = [ones(1, 96) ones(1, 96)*2]';
+subID = [1:32 1:32 1:32 1:32 1:32 1:32]';
+d4LME = [allD positions singORMult subID];
+
+tbl = table(d4LME(:,1), d4LME(:,2), d4LME(:,3), d4LME(:,4), ...
+    'VariableNames',{'performance','position','trial_type', 'subID'});
+
+lme = fitlme(tbl,'performance ~ position + trial_type + (1|subID)'); % random intercept model
+
+lme
+
+
+
 
 %% 12 Bar 
 clear data

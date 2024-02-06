@@ -80,7 +80,176 @@ if ~isempty(intersect(c2c, 'EE'))
     end
     end
     
-    
+   
+    if ~isempty(intersect(c2c, 'EE1'))
+    if strcmp(posEnc, '1') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '1') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                  if exist('countALL_EE1')
+                    new_all_ee1{countALL_EE1} = [i, j];
+                    countALL_EE1 = countALL_EE1+1;
+                  end
+                  if strcmp(it_id_Enc,it_id_Ret) 
+                     %disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
+                     if exist('countSISC_EE1')
+                        new_sisc_ee1{countSISC_EE1} = [i, j];
+                        countSISC_EE1 = countSISC_EE1+1;
+                     end
+                  elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EE > ' trlij]);    
+                     if exist('countDISC_EE1')
+                         new_disc_ee1{countDISC_EE1} = [i, j];
+                         countDISC_EE1 = countDISC_EE1+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EE1')
+                        new_didc_ee1{countDIDC_EE1} = [i, j];
+                        countDIDC_EE1 = countDIDC_EE1+1;
+                     end
+                   end
+            else
+                it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 if ~strcmp(cat_id_Enc,cat_id_Ret)
+                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 end 
+            end
+
+
+        end
+        end
+    end
+    end
+
+
+
+     if ~isempty(intersect(c2c, 'EE2'))
+    if strcmp(posEnc, '3') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '3') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                  if exist('countALL_EE2')
+                    new_all_ee2{countALL_EE2} = [i, j];
+                    countALL_EE2 = countALL_EE2+1;
+                  end
+                  if strcmp(it_id_Enc,it_id_Ret) 
+                     %disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
+                     if exist('countSISC_EE2')
+                        new_sisc_ee2{countSISC_EE2} = [i, j];
+                        countSISC_EE2 = countSISC_EE2+1;
+                     end
+                  elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EE > ' trlij]);    
+                     if exist('countDISC_EE2')
+                         new_disc_ee2{countDISC_EE2} = [i, j];
+                         countDISC_EE2 = countDISC_EE2+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EE2')
+                        new_didc_ee2{countDIDC_EE2} = [i, j];
+                        countDIDC_EE2 = countDIDC_EE2+1;
+                     end
+                   end
+            else
+                it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 if ~strcmp(cat_id_Enc,cat_id_Ret)
+                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 end 
+            end
+
+
+        end
+        end
+    end
+    end
+
+
+
+     if ~isempty(intersect(c2c, 'EE3'))
+    if strcmp(posEnc, '5') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '5') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                  if exist('countALL_EE3')
+                    new_all_ee3{countALL_EE3} = [i, j];
+                    countALL_EE3 = countALL_EE3+1;
+                  end
+                  if strcmp(it_id_Enc,it_id_Ret) 
+                     %disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
+                     if exist('countSISC_EE3')
+                        new_sisc_ee3{countSISC_EE3} = [i, j];
+                        countSISC_EE3 = countSISC_EE3+1;
+                     end
+                  elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EE > ' trlij]);    
+                     if exist('countDISC_EE3')
+                         new_disc_ee3{countDISC_EE3} = [i, j];
+                         countDISC_EE3 = countDISC_EE3+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EE3')
+                        new_didc_ee3{countDIDC_EE3} = [i, j];
+                        countDIDC_EE3 = countDIDC_EE3+1;
+                     end
+                   end
+            else
+                it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 if ~strcmp(cat_id_Enc,cat_id_Ret)
+                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 end 
+            end
+
+
+        end
+        end
+    end
+    end
+
+
+
+
     
    % % %  %ENCODING - MAINTENANCE 2
    if ~isempty(intersect(c2c, 'EM2'))

@@ -117,7 +117,8 @@ clc
 clearvars -except ACT_FR ACT_CH 
 
 %create cateogy model
-M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
+M = kron(eye(6), ones(10)); %equivalent to
+%M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
 
 % freiburg
 ACT = ACT_FR;
