@@ -86,7 +86,7 @@ clear, clc
 listF2sav = {
 
 
-'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_PCI';
+'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_PCI';
 
 
 };   
@@ -132,9 +132,34 @@ clear, clc
     
 listF2sav = {
 
-'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_PCI';
+% 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_PCI';
+% 'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+% 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+
+%'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+'CAT_vvs_E123_[1-8]_9-12_1_0_0_0_.1_5_1';
+'CAT_vvs_E123_[1-8]_13-29_1_0_0_0_.1_5_1';
+'CAT_vvs_E123_[1-8]_30-38_1_0_0_0_.1_5_1';
+'CAT_vvs_E123_[1-8]_39-54_1_0_0_0_.1_5_1';
+
+'CAT_vvs_M123_[1-8]_3-8_1_0_0_0_.1_5_1';
+'CAT_vvs_M123_[1-8]_9-12_1_0_0_0_.1_5_1';
+'CAT_vvs_M123_[1-8]_13-29_1_0_0_0_.1_5_1';
+'CAT_vvs_M123_[1-8]_30-38_1_0_0_0_.1_5_1';
+'CAT_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1';
+
+'CAT_pfc_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+'CAT_pfc_E123_[1-8]_9-12_1_0_0_0_.1_5_1';
+'CAT_pfc_E123_[1-8]_13-29_1_0_0_0_.1_5_1';
+'CAT_pfc_E123_[1-8]_30-38_1_0_0_0_.1_5_1';
+'CAT_pfc_E123_[1-8]_39-54_1_0_0_0_.1_5_1';
+
+'CAT_pfc_M123_[1-8]_3-8_1_0_0_0_.1_5_1';
+'CAT_pfc_M123_[1-8]_9-12_1_0_0_0_.1_5_1';
+'CAT_pfc_M123_[1-8]_13-29_1_0_0_0_.1_5_1';
+'CAT_pfc_M123_[1-8]_30-38_1_0_0_0_.1_5_1';
+'CAT_pfc_M123_[1-8]_39-54_1_0_0_0_.1_5_1';
 
 
 };   
@@ -148,10 +173,10 @@ for listi = 1:length(listF2sav)
     cfg = getParams(f2sav);
     cfg.DNN_analysis = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFiles(paths.powerFromRT);
+    filelistSess = getFilesWM(paths.powerFromRT);
     
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-        %disp(['File > ' num2str(sessi)]);
+        disp(['File > ' num2str(sessi)]);
         load([paths.powerFromRT filelistSess{sessi}]);   
         
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
@@ -161,7 +186,7 @@ for listi = 1:length(listF2sav)
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-            nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, 'I'); 
+            %nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
             nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
         end
 
@@ -184,38 +209,19 @@ nPerm = 1000;
   
 listF2sav = {
 
-'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-
-%'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1'; %these 3 were done
-%'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';%these 3 were done
-%'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';%these 3 were done
-
-'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-
-'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
-
-
-'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+%'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 };   
 
 
     
+% % % START AGAIN HERE BEFORE LEAVING FOR CSIM
+%%for listi = 23:length(listF2sav)
 
-for listi = 1:length(listF2sav)
-    
+for listi = 1:length(listF2sav)    
     clearvars -except listF2sav listi nPerm 
         
     f2sav       = listF2sav{listi}
@@ -223,7 +229,7 @@ for listi = 1:length(listF2sav)
     cfg = getParams(f2sav);
     cfg.DNN_analysis = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFiles(paths.powerFromRT);
+    filelistSess = getFilesWM(paths.powerFromRT);
     
     t1 = datetime; 
     
@@ -261,7 +267,9 @@ for listi = 1:length(listF2sav)
                     sC = size(networkRDMs, 2);
                     ids = randperm(sC);
                     networkRDMs = networkRDMs(:, ids, ids); 
-                    nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                    nnFitPerm(permi, sessi,:,:, :)     = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                    %nnFitPerm(permi, sessi,:,:, :)      = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+                    
                 end
             end
         end
@@ -277,6 +285,87 @@ end
 t2 = datetime; 
 etime(datevec(t2), datevec(t1))
 
+
+%% PERMUTATIONS IN LOOP LOADING POWER DATA
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
+
+clear
+nPerm = 1000;
+
+  
+listF2sav = {
+
+'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+
+
+};   
+
+
+    
+% % % START AGAIN HERE BEFORE LEAVING FOR CSIM
+for listi = 23:length(listF2sav)
+    clearvars -except listF2sav listi nPerm 
+        
+    f2sav       = listF2sav{listi}
+        
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFilesWM(paths.powerFromRT);
+    
+    t1 = datetime; 
+    
+    for sessi= 1:length(filelistSess) 
+        disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+
+        nChans = size(cfg_contrasts.chanNames, 1); 
+    
+        if nChans > 1
+
+            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+
+            if length(cfg_contrasts.oneListIds) > 1
+                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+        
+                % % % restrict time for permutation data
+                if strcmp(cfg.period(1), 'M')
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
+                    end
+                else
+                    if ndims(neuralRDMs) == 4
+                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
+                    else
+                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
+                    end
+                end
+                
+                for permi = 1:nPerm
+                    sC = size(networkRDMs, 2);
+                    ids = randperm(sC);
+                    networkRDMs = networkRDMs(:, ids, ids); 
+                    nnFitPerm(permi, sessi,:,:, :)     = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                    %nnFitPerm(permi, sessi,:,:, :)      = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+                    
+                end
+            end
+        end
+
+    end
+    
+    mkdir ([paths.results.DNNs]);
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
+    
+
+end
+   
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
 
 
@@ -402,7 +491,7 @@ clear , clc
 %f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
@@ -412,19 +501,22 @@ clear , clc
 %f2sav = 'CORrt_pfc_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1'; 
 %f2sav = 'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
+%f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
 %f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-
-f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
 
 
+
+%f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+f2sav = 'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22];
-    %sub2exc = [18 22 10 20]; % for the incorrect trials
+    %sub2exc = [18 22];
+    sub2exc = [18 22 10 20]; % for the incorrect trials
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
 elseif strcmp(cfg.brainROI, 'hipp')
@@ -447,15 +539,17 @@ for layi = 1:size(nnFit{1}, 1)
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)
-       if strcmp(cfg.period(1), 'M')
-         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
-       else
-         nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
-         %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
+             %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
+           end
        end
     end
     
-    %nnH(nnH==inf) = nan; 
+    nnH(nnH==inf) = nan; 
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
     %[h p ci ts] = ttest(nnH, 0, "Tail","right");
@@ -502,6 +596,117 @@ for layi = 1:size(nnFit{1}, 1)
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
         
     end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+%%  plot all layers BANDS
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
+%f2sav = 'CORrt_pfc_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1'; 
+%f2sav = 'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1';
+%f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+%f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
+
+
+
+f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+
+
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    %sub2exc = [18 22];
+    sub2exc = [18 22 10 20]; % for the incorrect trials
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+    %set(gcf, 'Position', [100 100 1800 1000])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
+             %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
+           end
+       end
+    end
+    
+   
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+        %times = 1:134;
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    plot(times, t); hold on; %colorbar
+    
     
 
 end
@@ -590,10 +795,25 @@ for layi = 1 %1:size(nnFit{1}, 1)
    
 end
 
+%% Extract activity in specific clusters from NNH
+clear
+
+load BL-NET_nnH_vvs_E
+paths = load_paths_WM('vvs', 'none');
+load ([paths.results.clusters 'ITM_VVS_enc']);
+
+for subji = 1:size(nnH, 1)
+    nnHSubj = squeeze(nnH(subji, :, :)); 
+    nnHClust_vvsE1(subji, :) = mean(nnHSubj(clustinfo.PixelIdxList{6})); 
+end
+
+    
+   
+
 
 
 %% 
-[h p ci ts] = ttest(nnHClust_vvs4);
+[h p ci ts] = ttest(nnHClust_vvsE1);
 
 h = squeeze(h); t = squeeze(ts.tstat); 
 
@@ -648,7 +868,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% plot one bar
 clear data
-data.data = [nnHClust_pfc7]; 
+data.data = [nnHClust_vvsE1]; 
 
 figure(2); set(gcf,'Position', [0 0 500 620]); 
 mean_S = mean(data.data, 1);
@@ -937,7 +1157,7 @@ clear , clc
 %f2sav = 'CORz_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
 %f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
 
-f2sav = 'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
 
 
 
@@ -1856,114 +2076,30 @@ exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300);
 
 
 
-%% PERMUTATIONS IN LOOP
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-
-clear
-nPerm = 1000;
-
-listF2sav = {
-
-'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
-'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
-'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PC';
-'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PC';
-
-'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PC';
-'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PC';
-'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
-'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PC';
-
-                    
-             };
-    
-
-for listi = 1:length(listF2sav)
-    
-    clearvars -except listF2sav listi nPerm 
-        
-    f2sav       = listF2sav{listi}
-        
-    cfg = getParams(f2sav);
-    cfg.DNN_analysis = 1; 
-    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFiles(paths.traces);
-    
-    t1 = datetime; 
-    
-    for sessi= 1:length(filelistSess) 
-        disp(['File > ' num2str(sessi)]);
-        load([paths.traces filelistSess{sessi}]);   
-
-        nChans = size(cfg_contrasts.chanNames, 1); 
-    
-        if nChans > 1
-
-            cfg_contrasts = getIdsWM(cfg.period, cfg_contrasts);
-
-            if length(cfg_contrasts.oneListIds) > 1
-                cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-                
-                cfg_contrasts = normalize_WM(cfg_contrasts, 1, 'sess', []);
-                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-                
-                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-        
-        
-                % % % restrict time for permutation data
-                if strcmp(cfg.period(1), 'M')
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
-                    end
-                else
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
-                    end
-                end
-                
-                for permi = 1:nPerm
-                    sC = size(networkRDMs, 2);
-                    ids = randperm(sC);
-                    networkRDMs = networkRDMs(:, ids, ids); 
-                    nnFitPerm(permi, sessi,:,:, :)              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, cfg.fitMode); 
-                end
-            end
-        end
-
-    end
-    
-    mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
-    
-
-end
-   
-t2 = datetime; 
-etime(datevec(t2), datevec(t1))
-
-
-
-
-%% COMPUTE ONE MEAN ITEM LEVEL DNN FIT PER SUBJECT AND PERFORM STATS
+%% COMPUTE ONE ITEM LEVEL DNN FIT PER SUBJECT and CATEGORY, AVERAGE AND PERFORM STATS
 
 
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
+lay2u = 5; 
+
 listF2sav = {
 
-% 
+% % 
 % 'BLNETi_vvs_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+% 'BLNETi_pfc_E123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_pfc_E123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_pfc_E123CAT3_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_pfc_E123CAT4_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_pfc_E123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+% 'BLNETi_pfc_E123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
 % 'BLNETi_vvs_M123CAT1_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_vvs_M123CAT2_[8-8-56]_3-54_0_0_1_0_.1_5_1';
@@ -1979,12 +2115,12 @@ listF2sav = {
 % 'BLNETi_pfc_M123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_pfc_M123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
-% 'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 % 'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
 % 'Alex_pfc_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
@@ -2022,12 +2158,12 @@ listF2sav = {
 % 'ITM_pfc_E123CAT5_[1]_3-54_0_0_1_0_.1_5_1';
 % 'ITM_pfc_E123CAT6_[1]_3-54_0_0_1_0_.1_5_1';
 % % 
-'ITM_vvs_M123CAT1_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123CAT2_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123CAT3_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123CAT4_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123CAT5_[1]_3-54_0_0_1_0_.1_5_1';
-'ITM_vvs_M123CAT6_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT1_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT2_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT3_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT4_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT5_[1]_3-54_0_0_1_0_.1_5_1';
+% 'ITM_vvs_M123CAT6_[1]_3-54_0_0_1_0_.1_5_1';
 % % 
 % 'ITM_pfc_M123CAT1_[1]_3-54_0_0_1_0_.1_5_1';
 % 'ITM_pfc_M123CAT2_[1]_3-54_0_0_1_0_.1_5_1';
@@ -2042,14 +2178,13 @@ listF2sav = {
 
 for listi = 1:length(listF2sav)
     disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi allnnFIT
+    clearvars -except listF2sav listi allnnFIT lay2u
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     load([paths.results.DNNs f2sav '.mat']);
     x =  nnFit(:, 1);
-    lay2u = 1; 
     x = cellfun(@(x) x(lay2u,:,:), x, 'un', 0); 
     allnnFIT{listi,:} = x; 
 
@@ -2121,6 +2256,52 @@ else
 end
 
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+%% Extract activity in specific clusters from NNH
+
+
+paths = load_paths_WM('vvs', 'none');
+load ([paths.results.clusters 'ITM_VVS_enc']);
+
+for subji = 1:size(nnH, 1)
+    nnHSubj = squeeze(nnH(subji, :, :)); 
+    nnHClust_vvsE1(subji, :) = mean(nnHSubj(clustinfo.PixelIdxList{6})); 
+end
+
+    
+   
+
+
+
+%% 
+[h p ci ts] = ttest(nnHClust_vvsE1);
+
+h = squeeze(h); t = squeeze(ts.tstat); 
+
+disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+%% plot one bar
+clear data
+data.data = [nnHClust_vvsE1]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.1 .15])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% plot all nnH
 
@@ -2805,8 +2986,10 @@ for layi = 1:size(nnFit{1}, 1)
     nnHVVS1 = squeeze(nnHVVS1);
     nnHVVS2 = squeeze(nnHVVS2);
 
-    nnHVVS1([11 18 22],:,:) = []; 
-    nnHVVS2([11 18 22],:,:) = []; 
+    %sub2exc = [18 22 10 20]; % for the incorrect trials
+    sub2exc = [11 18 22 ];
+    nnHVVS1(sub2exc,:,:) = []; 
+    nnHVVS2(sub2exc,:,:) = []; 
 
     [h p ci ts] = ttest2(nnHVVS1, nnHVVS2);
     h = squeeze(h); t = squeeze(ts.tstat); 

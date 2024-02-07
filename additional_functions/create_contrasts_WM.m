@@ -420,15 +420,15 @@ if ~isempty(intersect(c2c, 'EE'))
 
 
 
-    % % % % % 1) M1 
+    % % % % % 1) EM1 
     if ~isempty(intersect(c2c, 'EM1'))
       if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*') %* is for the average data
         for j = 1:length(oneListIds)
             evej = strsplit(oneListIds{j});
             if strcmp(evej(1), '5')
-               trli = string(evei(12)); trlj = string(evej(12));
-               trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
-               trlij = [trli trlj];
+               trli = string(evei(12)); trlj = string(evej(12)); %this is just to check if they belong to the same trial 
+               trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_'); %this is just to check if they belong to the same trial  
+               trlij = [trli trlj]; %this is just to check if they belong to the same trial 
             
                if length(trlij) == length(unique(trlij)) % there are no repetitions = different trials
                   idEnc = [evei(13) evei(14) evei(15)] ;
@@ -436,8 +436,6 @@ if ~isempty(intersect(c2c, 'EE'))
                   oneIdEnc = [double(string(idEnc{1}(1))) double(string(idEnc{2}(1))) double(string(idEnc{3}(1)))]; 
                   oneIdM1 = [double(string(idM1{1}(1))) double(string(idM1{2}(1))) double(string(idM1{3}(1)))]; 
                   juntsCAT = [oneIdEnc oneIdM1];
-
-
                  if length(unique(juntsCAT)) <= 5
                   if exist('countDISC_EM1')
                     new_disc_em1{countDISC_EM1} = [i, j];

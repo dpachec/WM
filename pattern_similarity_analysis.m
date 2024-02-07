@@ -1,9 +1,9 @@
 %% load cfg_contrasts
 %% 
 clearvars
-region              = 'pfc';
+region              = 'vvs';
 paths = load_paths_WM(region, 'none');
-filelistSess = getFiles(paths.out_contrasts);
+filelistSess = getFilesWM(paths.out_contrasts);
 
 
 frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
@@ -17,8 +17,8 @@ avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
-%contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
-contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
+contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
+%contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
@@ -112,7 +112,7 @@ paths = load_paths_WM(region, 'none');
 
 contrasts = {
               %'SCSP_M2M2' 'SCDP_M2M2';
-              'DISC_M1A' 'DIDC_M1A';
+              'DISC_EM1' 'DIDC_EM1';
               
              };
 
@@ -133,15 +133,15 @@ clc
 tic; 
 
 %define conditions 
-cond1 = 'DISC_M1A';
-cond2 = 'DIDC_M1A';
+cond1 = 'DISC_EM1';
+cond2 = 'DIDC_EM1';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
-%cfg.subj2exc    =       [18 22];% vvs;
-cfg.subj2exc   =       [1]; % pfc
+cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc   =       [1]; % pfc
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;

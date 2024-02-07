@@ -18,6 +18,8 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
     if strcmp(CoI, 'C')
        CM = squeeze(load_CATMODEL_activ(cfg_contrasts.oneListIds));
        CM = vectorizeRDM(CM); 
+       nids = isnan(CM); 
+       CM(nids) = []; 
     elseif strcmp(CoI, 'I')
        CM = squeeze(load_ITMODEL_activ(cfg_contrasts.oneListIds));
        CM = vectorizeRDM(CM); 

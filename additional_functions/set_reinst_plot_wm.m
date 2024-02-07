@@ -237,6 +237,11 @@ if strcmp(cfg.cond1, 'SISC_EM2') & strcmp(cfg.cond2,'DISC_EM2')
     cfg_plot.imageName = ['_SISC_EM2-DISC_EM2-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_SISC_EM2-DISC_EM2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
+if strcmp(cfg.cond1, 'DISC_EM1') & strcmp(cfg.cond2,'DIDC_EM1')
+    cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['DISC vs.' newline 'DIDC']};
+    cfg_plot.imageName = ['_DISC_EM1-DIDC_EM1-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM1-DIDC_EM1-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
 if strcmp(cfg.cond1, 'DISC_EM2') & strcmp(cfg.cond2,'DIDC_EM2')
     cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['DISC vs.' newline 'DIDC']};
     cfg_plot.imageName = ['_DISC_EM2-DIDC_EM2-' num2str(cfg.subj2exc)  '.png']; 

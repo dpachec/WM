@@ -139,8 +139,8 @@ for i=1:length(axesHandles)
 end
 
 if cfg.saveimg
-export_fig(2, cfg_plot.imageName,'-transparent', '-r300');
-%exportgraphics(gcf, cfg.imageName, 'Resolution',150);
+%export_fig(2, cfg_plot.imageName,'-transparent', '-r300');
+exportgraphics(gcf, cfg_plot.imageName, 'Resolution',150);
 close all;
 end
 
