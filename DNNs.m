@@ -203,25 +203,28 @@ end
 %% PERMUTATIONS IN LOOP LOADING POWER DATA
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
 
-clear
+clear, clc
 nPerm = 1000;
 
   
 listF2sav = {
 
 %'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
 };   
 
 
     
 % % % START AGAIN HERE BEFORE LEAVING FOR CSIM
-%%for listi = 23:length(listF2sav)
+for listi = 1:length(listF2sav)
 
-for listi = 1:length(listF2sav)    
     clearvars -except listF2sav listi nPerm 
         
     f2sav       = listF2sav{listi}
@@ -282,8 +285,7 @@ for listi = 1:length(listF2sav)
 
 end
    
-t2 = datetime; 
-etime(datevec(t2), datevec(t1))
+
 
 
 %% PERMUTATIONS IN LOOP LOADING POWER DATA
@@ -510,7 +512,7 @@ clear , clc
 
 
 %f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
-f2sav = 'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -604,7 +606,240 @@ end
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
 
 
-%%  plot all layers BANDS
+
+
+%%  plot SEPARATELY FOR CORRECT AND INCORRECT starting from the trial level fits
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+%f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+
+cond2plot = 'CC'; 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1 6 11];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+    %set(gcf, 'Position', [100 100 1800 1000])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             avTR = atanh(nnFit{subji, 1}(layi,:,:,1:40));
+             %ids= str2num(cell2mat(nnFit{subji, 2}));
+             ids = cellfun(@(x) strsplit(x, ' '), nnFit{subji, 2}, 'un', 0); %str2num does not work
+             ids = double(string(cat(1, ids{:})));%str2num does not work
+           elseif strcmp(cfg.period(1), 'E') % for clarity
+             avTR = atanh(nnFit{subji, 1}(layi,:,:,1:15));
+             ids= str2num(cell2mat(nnFit{subji, 2}));
+           end
+            
+            if strcmp(cond2plot, 'CC')
+                %ids_IC = ids(:,20)==0; 
+                %nTR_IC = sum(ids_IC==1); 
+                ids = ids(:,20)==1; 
+                %ids = ids(randperm(length(ids), nTR_IC));
+            elseif strcmp(cond2plot, 'IC')
+                ids = ids(:,20)==0; 
+                nIncTR(subji, :) = sum(ids==1); 
+            elseif strcmp(cond2plot, 'CI')
+                ids = ids(:,19)==1; 
+            elseif strcmp(cond2plot, 'II')
+                ids = ids(:,19)==0; 
+            elseif strcmp(cond2plot, 'allT')
+                ids = 1:size(ids, 1); %just takes them all
+            end
+
+             nnH(subji, : ,:) = squeeze(mean(avTR(:, ids,:,:), 2)); 
+
+       end
+    end
+    
+    nnH(nnH==inf) = nan; 
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:52; 
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+        %times = 1:134;
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        
+    end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+%%  COMPARE CORRECT VS INCORRECT
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
+%f2sav = 'BLNETi_pfc_M123_[56]_3-54_0_0_1_1_.1_5_1';
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22 10 20 16];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1 6 11];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+    %set(gcf, 'Position', [100 100 1800 1000])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             avTR = atanh(nnFit{subji, 1}(layi,:,:,1:40));
+             ids = cellfun(@(x) strsplit(x, ' '), nnFit{subji, 2}, 'un', 0); %str2num does not work
+             ids = double(string(cat(1, ids{:})));%str2num does not work
+           elseif strcmp(cfg.period(1), 'E') % for clarity
+             avTR = atanh(nnFit{subji, 1}(layi,:,:,1:15));
+             ids= str2num(cell2mat(nnFit{subji, 2}));
+           end
+            idsCC = ids(:,20)==1; 
+            idsIC = ids(:,20)==0; 
+            nIncTR(subji, :) = sum(idsIC==1); 
+            idsCI = ids(:,19)==1; 
+            idsII = ids(:,19)==0; 
+            
+            nnH1(subji, : ,:) = squeeze(mean(avTR(:, idsCC,:,:), 2)); 
+            nnH2(subji, : ,:) = squeeze(mean(avTR(:, idsIC,:,:), 2)); 
+
+       end
+    end
+    
+    nnH1(nnH1==inf) = nan; 
+    nnH1(sub2exc, :, :) = []; 
+    nnH1 = squeeze(nnH1);
+
+    nnH2(nnH2==inf) = nan; 
+    nnH2(sub2exc, :, :) = []; 
+    nnH2 = squeeze(nnH2);
+
+    [h p ci ts] = ttest(nnH1, nnH2);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
+    d2p = squeeze(mean(nnH1 - nnH2, 'omitnan'));
+    freqs = 1:52; 
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+        %times = 1:134;
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        
+    end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+%%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
@@ -635,8 +870,8 @@ clear , clc
 
 
 
-f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
-
+%f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -667,20 +902,24 @@ for layi = 1:size(nnFit{1}, 1)
     for subji = 1:length(nnFit)
        if ~isempty(nnFit{subji, 1})
            if strcmp(cfg.period(1), 'M')
-             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:40));
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
            else
-             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
              %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
            end
        end
     end
     
-   
+    nnH(nnH==inf) = nan; 
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
     d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:52; 
     clustinfo = bwconncomp(h);
     allClustInfo{layi} = clustinfo; 
 
@@ -705,16 +944,25 @@ for layi = 1:size(nnFit{1}, 1)
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
-    plot(times, t); hold on; %colorbar
+    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        
+    end
     
 
 end
 
 %exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
-
 
 
 %% Extract activity in specific clusters DURING MAINTENANCE (FOR PERFORMANCE; OR BL-NET FITS)

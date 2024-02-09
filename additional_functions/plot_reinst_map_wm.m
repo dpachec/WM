@@ -33,7 +33,7 @@ cfg_plot.plotClust   =       1; %cluster
 %cfg_plot.sigMH_thres =       out_real.sigMH_real;
 
 
-if strcmp(cfg.cond1(end-2:end), 'EM2')
+if strcmp(cfg.cond1(end-2:end), 'EM2') | strcmp(cfg.cond1(end-2:end), 'EM1')
     dupSym      =      0; 
 else
     dupSym      =      1; 
@@ -141,7 +141,7 @@ end
 if cfg.saveimg
 %export_fig(2, cfg_plot.imageName,'-transparent', '-r300');
 exportgraphics(gcf, cfg_plot.imageName, 'Resolution',150);
-close all;
+%close all;
 end
 
 
