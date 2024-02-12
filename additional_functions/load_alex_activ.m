@@ -1,6 +1,6 @@
 
 
-% % % modify this to extract all layers at once and then keep the desired ones
+% % % modify this to extract all layers at once and then keep the desired ones (for efficiency)
 
 
 function [ACT] = load_alex_activ(cfg, sessi, subj_ch_fr, paths);
