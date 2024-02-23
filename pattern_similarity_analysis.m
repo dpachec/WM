@@ -13,17 +13,18 @@ win_width           = 5;
 mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
-avMeth              = 'none';  % average across image repetitions or not
+avMeth              = 'pow';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
+contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
-contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
+%contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
 %contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-%n2s                 = 20000;
-n2s                 = 5000;
+n2s                 = 20000;
+%n2s                 = 5000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
 aVTime              = 0; % Average or not in time the feature vectors
@@ -55,7 +56,8 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     
 
     if strcmp(avMeth,'pow')
-        cfg_contrasts = average_repetitions(cfg_contrasts);
+        cfg.avRep = 1; 
+        cfg_contrasts = average_repetitions(cfg, cfg_contrasts);
     end
     
     [out_contrasts] = create_contrasts_WM (cfg_contrasts);
@@ -112,7 +114,7 @@ paths = load_paths_WM(region, 'none');
 
 contrasts = {
               %'SCSP_M2M2' 'SCDP_M2M2';
-              'DISC_EM1' 'DIDC_EM1';
+              'DISC_EM2' 'DIDC_EM2';
               
              };
 
@@ -133,15 +135,15 @@ clc
 tic; 
 
 %define conditions 
-cond1 = 'DISC_EM1';
-cond2 = 'DIDC_EM1';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
-cfg.subj2exc    =       [18 22];% vvs;
-%cfg.subj2exc   =       [1]; % pfc
+%cfg.subj2exc    =       [18 22];% vvs;
+cfg.subj2exc   =       [1]; % pfc
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;

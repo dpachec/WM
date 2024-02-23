@@ -8,43 +8,87 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
     nTimes = size(neuralRDMs, 4); 
 
     if fitMode == 0 % trials or no trials
-        all_r_Times = zeros(nLays, nFreqs, nTimes);
+        % % % all_r_Times = zeros(nLays, nFreqs, nTimes);
+        % % % for layi = 1:nLays
+        % % %     M =  squeeze(networkRDMs(layi,:,:)); 
+        % % %     M = vectorizeRDM(M);
+        % % %     nanIds = isnan(M); 
+        % % %     M(nanIds) = []; 
+        % % %     for freqi = 1:nFreqs
+        % % %         for timei = 1:nTimes
+        % % %             rdm = squeeze(neuralRDMs(:, :, freqi, timei));
+        % % %             rdm = vectorizeRDM(rdm);
+        % % %             rdm(nanIds) = []; 
+        % % %             allTEst = corr(rdm, M, 'type', 's');
+        % % %             all_r_Times(layi,freqi,timei) = allTEst;  
+        % % %         end
+        % % %     end
+        % % % end
 
-        for layi = 1:nLays
-            M =  squeeze(networkRDMs(layi,:,:)); 
-            M = vectorizeRDM(M);
-            nanIds = isnan(M); 
-            M(nanIds) = []; 
-            parfor freqi = 1:nFreqs
-                for timei = 1:nTimes
-                    rdm = squeeze(neuralRDMs(:, :, freqi, timei));
-                    rdm = vectorizeRDM(rdm);
-                    rdm(nanIds) = []; 
-                    allTEst = corr(rdm, M, 'type', 's');
-                    all_r_Times(layi,freqi,timei) = allTEst;  
-                end
-            end
-        end
+        % % % % same as code above in vectorized form
+        % % for layi = 1:nLays
+        % %     M =  squeeze(networkRDMs(layi,:,:)); 
+        % %     M = vectorizeRDM(M);
+        % %     nanIds = isnan(M); 
+        % %     M(nanIds) = []; 
+        % % 
+        % %     rdm = neuralRDMs;
+        % %     rdm = vectorizeRDM(rdm);
+        % %     rdm(nanIds,:) = []; 
+        % % 
+        % %     allTEst = corr(rdm, M, 'type', 's');
+        % %     all_r_Times(layi,:, :) = reshape(allTEst, nFreqs, nTimes);
+        % % 
+        % % end
+
+        % % % The layer loop can be avoided as well
+        all_r_Times = zeros(nLays, nFreqs, nTimes);
+        Ms =  vectorizeRDM(networkRDMs)';
+        nanIds = isnan(Ms(:, 1)); 
+        Ms(any(nanIds, 2), :) = [];
+        rdm = neuralRDMs;
+        rdm = vectorizeRDM(rdm);
+        rdm(any(nanIds, 2), :) = [];
+        allTEst = corr(rdm, Ms, 'type', 's');
+        all_r_Times = reshape(allTEst', nLays, nFreqs, nTimes);
+
+
+        
         
     else
         nTrials = size(neuralRDMs, 1);
         all_r_Times = zeros(nLays,nTrials, nFreqs, nTimes);
-
         for layi = 1:nLays
+            % parfor triali = 1:size(neuralRDMs, 1)
+            %     M =  squeeze(networkRDMs(layi,triali,:)); 
+            %     M(triali) = []; 
+            %     for freqi = 1:nFreqs
+            %         for timei = 1:nTimes
+            %             rdm = squeeze(neuralRDMs(:, triali, freqi, timei));
+            %             rdm(triali) = []; 
+            %             allTEst = corr(rdm, M, 'type', 's');
+            %             all_r_Times(layi,triali, freqi,timei) = allTEst;  
+            %         end
+            %     end
+            % end
+
+            % % % same as code above in vectorized form
             for triali = 1:size(neuralRDMs, 1)
                 M =  squeeze(networkRDMs(layi,triali,:)); 
                 M(triali) = []; 
-                parfor freqi = 1:nFreqs
-                    for timei = 1:nTimes
-                        rdm = squeeze(neuralRDMs(:, triali, freqi, timei));
-                        rdm(triali) = []; 
-                        allTEst = corr(rdm, M, 'type', 's');
-                        all_r_Times(layi,triali, freqi,timei) = allTEst;  
-                    end
-                end
+                nanIds = isnan(M); 
+                M(nanIds) = []; 
+                rdm = squeeze(neuralRDMs(:, triali, :, :));
+                rdm(triali,:,:) = []; 
+                rdm(nanIds,:) = []; 
+                rdm = reshape(rdm, [], nFreqs*nTimes);
+                allTEst = corr(rdm, M, 'type', 's');
+                all_r_Times(layi,triali, :,:) = reshape(allTEst, nFreqs, nTimes);
             end
-        end    
 
+        end
+
+      
 
     end
     
@@ -80,9 +124,11 @@ else % if only 3 dimensions (frequencies used as features)
             for triali = 1:size(neuralRDMs, 1)
                 M =  squeeze(networkRDMs(layi,triali,:)); 
                 M(triali) = []; 
+                
                 parfor timei = 1:nTimes
                     rdm = squeeze(neuralRDMs(:, triali, timei));
                     rdm(triali) = []; 
+                    
                     allTEst = corr(rdm, M, 'type', 's');
                     all_r_Times(layi,triali, timei) = allTEst;  
                 end

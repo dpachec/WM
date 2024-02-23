@@ -20,6 +20,10 @@ function [cfg] = getParams(f2sav)
     cfg.mf          = double(string((mf{1})));
     if length(f2t) > 12
         cfg.BLIT        = f2t{13}(1);
+        cfg.meth        = f2t{13};
+    else
+        cfg.meth        = 'Correlation';
     end
+    
 
 end

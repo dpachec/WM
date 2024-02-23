@@ -129,7 +129,7 @@ function[cfg_contrasts] = getIdsWM(period, cfg_contrasts)
     end
     
 
-    cfg_contrasts.oneListTraces   = cfg_contrasts.oneListTraces(:,:,ids);
+%    cfg_contrasts.oneListTraces   = cfg_contrasts.oneListTraces(:,:,ids);
     cfg_contrasts.oneListPow      = cfg_contrasts.oneListPow(ids,:,:,:); 
 
     if isfield(cfg_contrasts, 'oneListIds_c')

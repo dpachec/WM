@@ -1,10 +1,8 @@
 %% 
-%% Export power from epoched rawTraces (same as before)
+%% Export power from epoched rawTraces 
+% % note that multi-item trials are discarded, and data is normalized across trials after removing these trials
 clear 
-f2sav = 'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
-cfg = getParams(f2sav);
-cfg.DNN_analysis = 1; 
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.traces);
 
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
@@ -12,35 +10,35 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     clearvars -except sessi filelistSess paths cfg
     load([paths.traces filelistSess{sessi}]);   
 
-    cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-    cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
+    cfg.timeRes = .1; 
+    cfg.DNN_analysis = 1; 
+    cfg.period = 'M'; 
+    oneListPow                  = extract_power_WM (cfg_contrasts, cfg); % 
+    cfg_contrasts.oneListPow    = oneListPow; 
+    
+    cfg_contrastsE               = getIdsWM('E123', cfg_contrasts);
+    cfg_contrastsE               = normalize_WM(cfg_contrastsE, 1, 'sess', []);
+
+    cfg_contrastsM               = getIdsWM('M123', cfg_contrasts);
+    cfg_contrastsM               = normalize_WM(cfg_contrastsM, 1, 'sess', []);
+
+    cfg_contrasts = []; 
+    cfg_contrasts.oneListPow = cat(1, cfg_contrastsE.oneListPow, cfg_contrastsM.oneListPow); 
+    cfg_contrasts.chanNames = cfg_contrastsE.chanNames; 
+    cfg_contrasts.oneListIds = cat(1, cfg_contrastsE.oneListIds, cfg_contrastsM.oneListIds); 
+
+
 
     save([filelistSess{sessi}(1:3) '_normPow.mat'], 'cfg_contrasts');
     
 end
-
 
 %% Calculate from epoched raw traces
 clear
 %Network_ROI_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win-width_mf
 
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CORrtRELU_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETeBatchNorm_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'AlexEco_pfc_E123_[1-8]_3-54_1_0_0_0_.1_5_1';
-%
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1';
-%f2sav = 'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'Res18-2_pfc_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'CORrt_vvs_M123_[8]_3-54_1_0_1_0_.1_5_1';
-
-%f2sav = 'BLNETe_pfc_M123NC_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Res34-2-3-0_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-
-f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -78,52 +76,6 @@ t2 = datetime;
 etime(datevec(t2), datevec(t1))
 
 
-%% IN LOOP 
-clear, clc
-%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
-    
-listF2sav = {
-
-
-'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
-
-
-};   
-
-
-for listi = 1:length(listF2sav)
-    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi 
-        
-    f2sav       = listF2sav{listi}; 
-    cfg = getParams(f2sav);
-    cfg.DNN_analysis = 1; 
-    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFilesWM(paths.traces);
-    
-    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
-        disp(['File > ' num2str(sessi)]);
-        load([paths.traces filelistSess{sessi}]);   
-    
-        cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-        cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
-        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
-    
-        if length(cfg_contrasts.oneListIds) > 1
-            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-            %nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, 'C'); 
-            nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
-        end
-
-    end
-
-    
-    save([paths.results.DNNs f2sav '.mat'], 'nnFit');
-
-end
 
 %% IN LOOP LOADING POWER DATA
 clear, clc
@@ -131,38 +83,16 @@ clear, clc
     
 listF2sav = {
 
-'AlexMask_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-
-% 'CAT_vvs_E123_[1]_9-12_1_0_0_0_.1_5_1';
-% 'CAT_vvs_E123_[1]_13-29_1_0_0_0_.1_5_1';
-% 'CAT_vvs_E123_[1]_30-38_1_0_0_0_.1_5_1';
-% 'CAT_vvs_E123_[1]_39-54_1_0_0_0_.1_5_1';
-% 
-% 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1';
-% 'CAT_vvs_M123_[1]_9-12_1_0_0_0_.1_5_1';
-% 'CAT_vvs_M123_[1]_13-29_1_0_0_0_.1_5_1';
-% 'CAT_vvs_M123_[1]_30-38_1_0_0_0_.1_5_1';
-% 'CAT_vvs_M123_[1]_39-54_1_0_0_0_.1_5_1';
-% 
-% 'CAT_pfc_E123_[1]_3-8_1_0_0_0_.1_5_1';
-% 'CAT_pfc_E123_[1]_9-12_1_0_0_0_.1_5_1';
-% 'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1';
-% 'CAT_pfc_E123_[1]_30-38_1_0_0_0_.1_5_1';
-% 'CAT_pfc_E123_[1]_39-54_1_0_0_0_.1_5_1';
-% 
-% 'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1';
-% 'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1';
-% 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1';
-% 'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1';
-% 'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1';
+%'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 
 
 };   
 
-
+t1 = datetime; 
 for listi = 1:length(listF2sav)
     disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi 
+    clearvars -except listF2sav listi t1
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
@@ -170,7 +100,7 @@ for listi = 1:length(listF2sav)
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFilesWM(paths.powerFromRT);
     
-    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    for sessi= 1:length(filelistSess) 
         disp(['File > ' num2str(sessi)]);
         load([paths.powerFromRT filelistSess{sessi}]);   
         
@@ -180,34 +110,85 @@ for listi = 1:length(listF2sav)
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+            if strcmp(cfg.meth, 'MASK')
+                networkRDMs                 = restrictBetCatCorr(cfg_contrasts, networkRDMs); 
+            end
 
-            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-            %nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+            if ~strcmp(cfg.meth(1:2), 'PC')
+                tic
+                nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+                toc
+            elseif strcmp(cfg.meth(1:2), 'PC')
+                nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+            end
             nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
         end
-
     end
-
     
     save([paths.results.DNNs f2sav '.mat'], 'nnFit');
 
 end
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
-%% IN LOOP LOADING POWER DATA > TEST EXCLUDING BETWEEN CAT CORRELATIONS
+
+
+
+%% IN LOOP LOADING POWER DATA PERMUTATIONS
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
+nPerm = 100; 
 listF2sav = {
 
+
 %'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+
+'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
+
+'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+
+'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
+
+'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
+
+'CORrt_vvs_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'CORrt_vvs_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'CORrt_pfc_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+'CORrt_pfc_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+
+'Alex_vvs_M11_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+
+'Alex_pfc_M11_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_pfc_M12_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_pfc_M13_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+
+
 
 };   
 
+t1 = datetime; 
 
 for listi = 1:length(listF2sav)
     disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi 
+    clearvars -except listF2sav listi nPerm
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
@@ -225,321 +206,142 @@ for listi = 1:length(listF2sav)
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-            ITM                         = squeeze(load_ITMODEL_activ(cfg_contrasts.oneListIds));
-            ITMR                        = repmat(ITM, 1, 1, size(networkRDMs,1));
-            networkRDMs(isnan(ITMR))    = nan; 
+            if strcmp(cfg.meth, 'MASK')
+                networkRDMs                 = restrictBetCatCorr(cfg_contrasts, networkRDMs); 
+            end
+            neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
 
-            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-            nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+            parfor permi = 1:nPerm
+                sC = size(networkRDMs, 2);
+                ids = randperm(sC);
+                networkRDMs1 = networkRDMs(:, ids, ids); 
+                if ~strcmp(cfg.meth(1:2), 'PC')
+                    nnFitPerm(permi, sessi,:,:, :,:)     = fitModel_WM(neuralRDMs, networkRDMs1, cfg.fitMode); 
+                elseif strcmp(cfg.meth(1:2), 'PC')
+                    nnFitPerm(permi, sessi,:,:, :,:)     = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+                end
+            end
         end
-
     end
-
     
-    save([paths.results.DNNs f2sav '.mat'], 'nnFit');
+    save([paths.results.DNNs f2sav num2str(nPerm) 'p.mat'], 'nnFitPerm');
 
 end
 
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
 
-
-%% PERMUTATIONS IN LOOP LOADING POWER DATA
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-
+%% IN LOOP LOADING POWER DATA PERMUTATIONS for trial level analysis
 clear, clc
-nPerm = 1000;
-
-  
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+nPerm = 1000; 
 listF2sav = {
 
+'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
-
-'BLNETi_vvs_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-'BLNETi_pfc_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_pfc_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_pfc_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_pfc_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-% 
-% 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-% 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-% 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-% 
-% 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-% 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-% 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
 };   
 
+t1 = datetime; 
 
-    
-% % % START AGAIN HERE BEFORE LEAVING FOR CSIM
 for listi = 1:length(listF2sav)
-
-    clearvars -except listF2sav listi nPerm 
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi nPerm
         
-    f2sav       = listF2sav{listi}
-        
+    f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
     cfg.DNN_analysis = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFilesWM(paths.powerFromRT);
     
-    t1 = datetime; 
-    
-    for sessi= 1:length(filelistSess) 
-        disp(['File > ' num2str(sessi)]);
+    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+        disp(['Sessi > ' num2str(sessi)]);
         load([paths.powerFromRT filelistSess{sessi}]);   
-
-        nChans = size(cfg_contrasts.chanNames, 1); 
-    
-        if nChans > 1
-
-            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
-
-            if length(cfg_contrasts.oneListIds) > 1
-                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
         
-                % % % restrict time for permutation data
-                if strcmp(cfg.period(1), 'M')
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
-                    end
-                else
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
-                    end
-                end
-                
-                for permi = 1:nPerm
-                    sC = size(networkRDMs, 2);
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+    
+        if length(cfg_contrasts.oneListIds) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+            neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
+
+            sC = size(networkRDMs, 2);
+            ids = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0); %str2num does not work
+            ids = double(string(cat(1, ids{:})));%str2num does not work
+          
+            CC = find(ids(:,20)==1); 
+            IC = find(ids(:,20)==0); 
+            CI = find(ids(:,19)==1); 
+            II = find(ids(:,19)==0); 
+            
+            parfor permi = 1:nPerm
+                if length(CC) > 2
+                    networkRDMsCC = networkRDMs(:, CC, CC); 
+                    neuralRDMsCC = neuralRDMs(CC, CC, :, :); 
+                    sC = size(neuralRDMsCC, 2);
                     ids = randperm(sC);
-                    networkRDMs = networkRDMs(:, ids, ids); 
-                    nnFitPerm(permi, sessi,:,:, :)     = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-                    %nnFitPerm(permi, sessi,:,:, :)      = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
-                    
+                    neuralRDMsCC = neuralRDMsCC(:, ids, ids); 
+                    nnFitPerm{permi, sessi, 1} = fitModel_WM(neuralRDMsCC, networkRDMsCC, cfg.fitMode); 
                 end
             end
-        end
-
-    end
-    
-    mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
-    
-
-end
-   
-
-
-
-%% PERMUTATIONS IN LOOP LOADING POWER DATA
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-
-clear
-nPerm = 1000;
-
-  
-listF2sav = {
-
-'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-
-
-};   
-
-
-for listi = 1:length(listF2sav)
-    clearvars -except listF2sav listi nPerm 
-        
-    f2sav       = listF2sav{listi}
-        
-    cfg = getParams(f2sav);
-    cfg.DNN_analysis = 1; 
-    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFilesWM(paths.powerFromRT);
-    
-    t1 = datetime; 
-    
-    for sessi= 1:length(filelistSess) 
-        disp(['File > ' num2str(sessi)]);
-        load([paths.powerFromRT filelistSess{sessi}]);   
-
-        nChans = size(cfg_contrasts.chanNames, 1); 
-    
-        if nChans > 1
-
-            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
-
-            if length(cfg_contrasts.oneListIds) > 1
-                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-        
-                % % % restrict time for permutation data
-                if strcmp(cfg.period(1), 'M')
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
-                    end
-                else
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
-                    end
-                end
-                
-                for permi = 1:nPerm
-                    sC = size(networkRDMs, 2);
+            parfor permi = 1:nPerm
+                if length(IC) > 2
+                    networkRDMsIC = networkRDMs(:, IC, IC); 
+                    neuralRDMsIC = neuralRDMs(IC, IC, :, :); 
+                    sC = size(neuralRDMsIC, 2);
                     ids = randperm(sC);
-                    networkRDMs = networkRDMs(:, ids, ids); 
-                    nnFitPerm(permi, sessi,:,:, :)     = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-                    %nnFitPerm(permi, sessi,:,:, :)      = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
-                    
+                    neuralRDMsIC = neuralRDMsIC(:, ids, ids); 
+                    nnFitPerm{permi, sessi, 2} = fitModel_WM(neuralRDMsIC, networkRDMsIC, cfg.fitMode); 
                 end
             end
+            parfor permi = 1:nPerm
+                if length(CI) > 2
+                    networkRDMsCI = networkRDMs(:, CI, CI); 
+                    neuralRDMsCI = neuralRDMs(CI, CI, :, :);
+                    sC = size(neuralRDMsCI, 2);
+                    ids = randperm(sC);
+                    neuralRDMsCI = neuralRDMsCI(:, ids, ids); 
+                    nnFitPerm{permi, sessi, 3} = fitModel_WM(neuralRDMsCI, networkRDMsCI, cfg.fitMode); 
+                end
+            end
+            parfor permi = 1:nPerm
+                if length(II) > 2
+                    networkRDMsII = networkRDMs(:, II, II); 
+                    neuralRDMsII = neuralRDMs(II, II, :, :); 
+                    sC = size(neuralRDMsII, 2);
+                    ids = randperm(sC);
+                    neuralRDMsII = neuralRDMsII(:, ids, ids); 
+                    nnFitPerm{permi, sessi, 4} = fitModel_WM(neuralRDMsII, networkRDMsII, cfg.fitMode); 
+                end                
+            end
         end
-
     end
     
-    mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
-    
+    save([paths.results.DNNs f2sav '.mat'], 'nnFitPerm');
 
 end
-   
+
 t2 = datetime; 
 etime(datevec(t2), datevec(t1))
 
-
-
-%% PERMUTATIONS IN LOOP
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-
-clear
-nPerm = 100;
-
-listF2sav = {
-
-'Alex_vvs_E123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123II_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_E123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
-
-'BLNETi_vvs_E123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_E123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-'CORrt_vvs_E123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_E123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-
-'Alex_vvs_M123CI_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_M123CC_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_M123II_[1-8]_3-54_0_0_1_0_.1_5_1';
-'Alex_vvs_M123IC_[1-8]_3-54_0_0_1_0_.1_5_1';
-
-'BLNETi_vvs_M123CI_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123CC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123II_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-'BLNETi_vvs_M123IC_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-
-'CORrt_vvs_M123CI_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M123CC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-'CORrt_vvs_M123IC_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-
-
-                    
-};
-    
-
-for listi = 1:length(listF2sav)
-    
-    clearvars -except listF2sav listi nPerm 
-        
-    f2sav       = listF2sav{listi}
-        
-    cfg = getParams(f2sav);
-    cfg.DNN_analysis = 1; 
-    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-    filelistSess = getFiles(paths.traces);
-    
-    t1 = datetime; 
-    
-    for sessi= 1:length(filelistSess) 
-        disp(['File > ' num2str(sessi)]);
-        load([paths.traces filelistSess{sessi}]);   
-
-        nChans = size(cfg_contrasts.chanNames, 1); 
-    
-        if nChans > 1
-
-            cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
-            cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
-            cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
-
-            if length(cfg_contrasts.oneListIds) > 1
-                cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
-                neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
-                networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
-        
-                % % % restrict time for permutation data
-                if strcmp(cfg.period(1), 'M')
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:40); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:40); %band analysis
-                    end
-                else
-                    if ndims(neuralRDMs) == 4
-                        neuralRDMs = neuralRDMs(:,:,:,6:15); %frequency-resolved
-                    else
-                        neuralRDMs = neuralRDMs(:,:,6:15); %band analysis
-                    end
-                end
-                
-                for permi = 1:nPerm
-                    sC = size(networkRDMs, 2);
-                    ids = randperm(sC);
-                    networkRDMs = networkRDMs(:, ids, ids); 
-                    nnFitPerm(permi, sessi,:,:, :)              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-                end
-            end
-        end
-
-    end
-    
-    mkdir ([paths.results.DNNs]);
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
-    
-
-end
-   
-t2 = datetime; 
-etime(datevec(t2), datevec(t1))
 
 
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-%f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
-f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-
+%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'
+%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
+%f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
+f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
 
 
 
@@ -577,7 +379,7 @@ for layi = 1:size(nnFit{1}, 1)
        end
     end
     
-    nnH(nnH==inf) = nan; 
+    %nnH(nnH==inf) = nan; 
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
     %[h p ci ts] = ttest(nnH, 0, "Tail","right");
@@ -657,7 +459,7 @@ disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 clear , clc
 
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
-f2sav = 'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 cond2plot = 'CC'; 
 
@@ -696,12 +498,12 @@ for layi = 1:size(nnFit{1}, 1)
            end
             
             if strcmp(cond2plot, 'CC')
-                ids_IC = ids(:,20)==0; 
-                nTR_IC = sum(ids_IC==1); 
+                %ids_IC = ids(:,20)==0; 
+                %nTR_IC = sum(ids_IC==1); 
                 ids = find(ids(:,20)==1); 
-                if length(ids) > nTR_IC
-                    ids = ids(randperm(length(ids), nTR_IC), :);
-                end
+                %if length(ids) > nTR_IC
+                %    ids = ids(randperm(length(ids), nTR_IC), :);
+                %end
             elseif strcmp(cond2plot, 'IC')
                 ids = ids(:,20)==0; 
                 nIncTR(subji, :) = sum(ids==1); 
@@ -777,12 +579,13 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
-%f2sav = 'BLNETi_pfc_M123_[56]_3-54_0_0_1_1_.1_5_1';
+%f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22 10 20 16];
+    sub2exc = [18 22];
+    %sub2exc = [18 22 10 20 16];
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1 6 11];
 end
@@ -885,36 +688,103 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 
 
 
-%%  plot all layers FREQUENCY RESOLVED
+%% plot all layers BANDS > recover method for plotting the category model in individual bands
+
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BDNETi_pfc_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CORz_pfc_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CORrt_pfc_M123II_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-%f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-%f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
-%f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
 
 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    %sub2exc = [18 22];
+    sub2exc = [18 22 10 20]; % for the incorrect trials
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+    %set(gcf, 'Position', [100 100 1800 1000])
+end
+
+for layi = 1:size(nnFit{1}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
+             %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
+           end
+       end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:52; 
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+        %times = 1:134;
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    plot(times, t); hold on; %colorbar
+    
+    if strcmp(cfg.period(1), 'M')
+        
+    else
+        
+    end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+%%  plot all layers FREQUENCY RESOLVED
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
 
 %f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
 f2sav =  'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1';
@@ -1423,208 +1293,6 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 
 
 
-%%  plot all layers FREQUENCY RESOLVED
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear , clc
-
-%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'Res18-8_vvs_MALL_[3]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav = 'Res34-2_vvs_MALL_[1]_3-54_0_0_1_0_.1_5_1'; 
-%f2sav =  'AE-t10_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'Alex_pfc_M123I_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
-%f2sav = 'BNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BDNETi_vvs_M123_[1-13]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BFNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'BKNETi_pfc_M123_[1-7]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CORz_vvs_M123_[1-4]_3-54_1_0_1_0_.1_5_1'; 
-%f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1';
-
-f2sav =  'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-
-
-
-cfg = getParams(f2sav);
-if strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22];
-elseif strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1];
-end
-
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav '.mat']);
-
-
-tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
-if strcmp(cfg.period(1), 'M')
-    set(gcf, 'Position', [100 100 1200 1000])
-else
-    set(gcf, 'Position', [100 100 700 1200])
-end
-
-for layi = 1:size(nnFit{1}, 1)
-    ax1 = nexttile;
-    clear nnH
-    for subji = 1:length(nnFit)
-         if ~isempty(nnFit{subji, 1})
-           if strcmp(cfg.period(1), 'M')
-             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
-           else
-             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
-           end
-         end
-    end
-    
-    nnH(sub2exc, :, :) = []; 
-    nnH = squeeze(nnH);
-    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
-    [h p ci ts] = ttest(nnH);
-    h = squeeze(h); t = squeeze(ts.tstat); 
-    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
-    
-    d2p = squeeze(mean(nnH, 'omitnan'));
-    freqs = 1:52; 
-    clustinfo = bwconncomp(h);
-    allClustInfo{layi} = clustinfo; 
-
-    % store allTOBS
-    if ~isempty(clustinfo.PixelIdxList)
-        for pixi = 1:length(clustinfo.PixelIdxList)
-             %if length(clustinfo.PixelIdxList{pixi}) > 1
-                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
-             %end        
-        end
-    else
-        allTObs(layi, :, :) = 0;
-    end
-
-
-    
-    if strcmp(cfg.period(1), 'M')
-        times = 1:size(t, 2); 
-    else
-        times = 1:15; 
-    end
-    myCmap = colormap(brewermap([],'YlOrRd'));
-    colormap(myCmap)
-    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
-    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-    
-    if strcmp(cfg.period(1), 'M')
-        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
-        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
-    else
-        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'FontSize', 8, 'clim', [-5 5]);
-        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
-        
-    end
-    
-
-end
-
-%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
-exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
-
-%% COMPUTE CLUSTERS in each permutation FREQUENCY RESOLVED
-clc
-clearvars -except allTObs f2sav
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)__timeRes__win__mf
-
-% use the same name as the previously plotted file
-f2sav = [f2sav '_1000p.mat'];
-
-cfg = getParams(f2sav);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-
-cd ([paths.results.DNNs])
-load(f2sav);
-
-if strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1];
-elseif strcmp(cfg.brainROI, 'vvs')
-    sub2exc = [18 22];
-end
-
-f2t = strsplit(f2sav, '_');
-nPerm = double(string((f2t{end}(1:end-5))));
-nLays = size(nnFitPerm, 3);
-
-for permi = 1:nPerm
-    
-    for layi = 1:nLays
-        
-        dataP = atanh(squeeze(nnFitPerm(permi, :,layi, :,:)));
-        %dataP = squeeze(nnFitPerm(permi, :,layi, :,:));
-        dataP(sub2exc, :, :) = []; 
-        [h p ci ts] = ttest(dataP);
-        h = squeeze(h); t = squeeze(ts.tstat);
-        h(:, 1:5) = 0; % only sum t-values in cluster after the baseline
-        
-        
-        clear allSTs  
-        clustinfo = bwconncomp(h);
-        for pxi = 1:length(clustinfo.PixelIdxList)
-           allSTs(pxi) = sum(t(clustinfo.PixelIdxList{pxi}));% 
-        end
-        
-        %sort all clusters 
-        if exist('allSTs')
-            [max2u id] = max(allSTs);
-        else
-            allSTs = 0; 
-            id = 1;
-        end
-        
-        max_clust_sum_perm(permi,layi,:) = allSTs(id); 
-    end
-
-end
-
-cd (paths.github)
-
-
-%% compute p value bands for all layers FREQ RES
-clc
-clear p
-
-for layi = 1:size(allTObs, 1)
-    clear mcsR mcsP
-    for pixi = 1:size(allTObs, 2)
-        mcsR = allTObs(layi, pixi); 
-
-        if mcsR ~= 0
-            mcsP = squeeze(max_clust_sum_perm(:,layi));
-        
-            %allAb = mcsP(abs(mcsP) > abs(mcsR));
-            allAb = mcsP(mcsP > mcsR);
-            p(layi, pixi,:) = 1 - ((nPerm-1) - (length (allAb)))  / nPerm;
-        else
-            p(layi, pixi,:) = nan; 
-        end
-    end
-end
-
-p (p==1.0010 | p == 1) = nan; 
-p_ranked = p; p_ranked(isnan(p_ranked)) = []; 
-p_ranked = sort(p_ranked(:));
-p
-
-%% p last layer only
-p = p (end,:);
-p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
-p_ranked = sort(p_ranked(:))
-
-
-
 
 
 %% SAVE ONLY NEURAL RDMS 
@@ -1635,12 +1303,12 @@ listF2sav = {
 
 %'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 %'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
 %'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 %'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-%'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 
 };   
@@ -1659,7 +1327,7 @@ for listi = 1:length(listF2sav)
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         load([paths.traces filelistSess{sessi}]);   
        
-        [cfg_contrasts] = getIdsWM(cfg.period, cfg_contrasts);
+        [cfg_contrasts]             = getIdsWM(cfg.period, cfg_contrasts);
         cfg_contrasts.oneListPow    = extract_power_WM (cfg_contrasts, cfg); % 
         cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
         cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
@@ -1672,6 +1340,299 @@ for listi = 1:length(listF2sav)
     save([paths.results.neuralRDMS.IT f2sav '.mat'], 'allNeuralRDMS');
 
 end
+
+
+%% %% SAVE ONLY NEURAL RDMS FROM POWER DATA
+clear, clc
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+listF2sav = {
+'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+
+'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+
+};   
+
+t1 = datetime; 
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi t1
+        
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFilesWM(paths.powerFromRT);
+    
+    for sessi= 1:length(filelistSess) 
+        disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+        
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+    
+        if length(cfg_contrasts.oneListIds) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            allNeuralRDMS{sessi,1}      = neuralRDMs; 
+            allNeuralRDMS{sessi,2}      = cfg_contrasts.oneListIds; 
+        end
+    end
+    
+    save([paths.results.neuralRDMS f2sav(6:end) '.mat'], 'allNeuralRDMS');
+
+end
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
+
+
+
+
+%% Process and plot RDM in the PFC cluster during encoding
+clear
+
+f2load = 'pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+load ([paths.results.clusters 'CAT_PFC_ENC_px8']);
+idsClust = clustinfo.PixelIdxList{8}; 
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    nRows       = size(neuralRDMs, 1); 
+    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    meanRDM{subji,:} = rdm; 
+    CM = load_CATMODEL_activ(ids); 
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM', rdm, 'type', 's');    
+    
+    %z-score RDM
+    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    CM = squeeze(load_M6_activ(ids));
+    mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
+    mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
+    mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
+    mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
+    mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
+    mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
+
+    rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
+    rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
+    rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
+    rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
+    rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
+    rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
+
+    meanRDMZ{subji, :} = rdm;
+    CM = load_CATMODEL_activ(ids); 
+    rdmZ = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
+end
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+[h p ci t] = ttest (allRZ);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+%% plot for every subject 
+
+
+for subji = 1:length(meanRDMZ)
+
+    figure()
+    tiledlayout(1,2)
+    nexttile
+    rdm = meanRDMZ{subji}; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    imagesc(rdm); colorbar; axis square
+
+    nexttile
+    rdm = meanRDM{subji}; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    imagesc(rdm); colorbar;axis square
+
+end
+
+%% plot mean
+mRDM = cat(3, meanRDMZ{:}); 
+mRDM = squeeze(mean(mRDM, 3)); 
+mRDM(logical(eye(size(mRDM, 1)))) = nan; 
+imagesc(mRDM); axis square; 
+
+%% correlate with category model
+
+for subji = 1:length(meanRDM)
+
+    rdm = meanRDM{subji}; 
+    CM = kron(eye(6), ones(10));
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM, rdm, 'type', 's');    
+end
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+
+%% Process and plot RDM in the PFC cluster during maintenance
+clear, clc
+
+f2load = 'pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    nRows       = size(neuralRDMs, 1); 
+    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    meanRDM{subji,:} = rdm; 
+    CM = load_CATMODEL_activ(ids); 
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM', rdm, 'type', 's');    
+    
+    %z-score RDM
+    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    CM = squeeze(load_M6_activ(ids));
+    mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
+    mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
+    mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
+    mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
+    mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
+    mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
+
+    rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
+    rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
+    rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
+    rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
+    rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
+    rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
+
+    meanRDMZ{subji, :} = rdm;
+    CM = load_CATMODEL_activ(ids); 
+    rdmZ = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
+end
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+[h p ci t] = ttest (allRZ);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+%% plot RDM in cluster for every subject 
+
+for subji = 1:length(meanRDMZ)
+
+    figure()
+    tiledlayout(1,2)
+    nexttile
+    rdm = meanRDMZ{subji}; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    imagesc(rdm); colorbar; axis square
+
+    nexttile
+    rdm = meanRDM{subji}; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    imagesc(rdm); colorbar;axis square
+
+end
+
+
+%% plot mean
+clear mRDM
+meanRDMZ = meanRDMZ(2:end); 
+mRDM = cat(3, meanRDMZ{:}); 
+mRDM = squeeze(mean(mRDM, 3)); 
+mRDM(logical(eye(size(mRDM, 1)))) = nan; 
+imagesc(mRDM); axis square; 
+
+ 
+%% correlate with category model
+
+for subji = 1:length(meanRDM)
+
+
+    rdm = meanRDM{subji}; 
+    CM = kron(eye(6), ones(10));
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM, rdm, 'type', 's');    
+end
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+%% Process and plot RDM during encoding
+clear
+
+f2load = 'vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    meanRDM{subji,:} = mean(mean(neuralRDMs(:, :,3:8, 8:12), 3), 4); 
+end
+
+%%test
+% tfPlot = zeros(10, 10, 52, 46); 
+% tfPlot1 = reshape(tfPlot, 10, 10, []); 
+% tfPlot1(:, :, idsClust) = 1; 
+% tfPlot1 = reshape(tfPlot1, 10, 10, 52, 46); 
+% 
+% imagesc(squeeze(tfPlot1(2,2,:,:)))
+
+
+%% plot mean
+meanRDM = meanRDM(2:end); 
+mRDM = cat(3, meanRDM{:}); 
+mRDM = squeeze(mean(mRDM, 3 )); 
+
+mRDM(logical(eye(size(mRDM, 1)))) = nan; 
+imagesc(mRDM)
 
 %% Process neural RDMs and compute CCI for CATEGORIES
 

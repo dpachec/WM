@@ -20,34 +20,54 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
        CM = vectorizeRDM(CM); 
        nids = isnan(CM); 
        CM(nids) = []; 
+
     elseif strcmp(CoI, 'I')
        CM = squeeze(load_ITMODEL_activ(cfg_contrasts.oneListIds));
        CM = vectorizeRDM(CM); 
        nids = isnan(CM); 
        CM(nids) = []; 
     end
-
-    for layi = 1:nLays
-        M = squeeze(networkRDMs(layi,:,:)); 
-        M = vectorizeRDM(M);
-        M(nids) = []; 
-%             zAT = Zall; 
-%             zAT(:, layi) = []; 
+    % 
+    % for layi = 1:nLays
+    %     M = squeeze(networkRDMs(layi,:,:)); 
+    %     M = vectorizeRDM(M);
+    %     M(nids) = []; 
+    %     parfor freqi = 1:nFreqs
+    %         for timei = 1:nTimes
+    %             rdm = squeeze(neuralRDMs(:, :, freqi, timei));
+    %             rdm = vectorizeRDM(rdm);
+    %             rdm(nids) = []; 
+    %             allTEst = partialcorr(rdm, M, CM, 'type', 's');
+    %             all_r_Times(layi,freqi,timei) = allTEst;  
+    %         end
+    %     end
+    % end
         
-        parfor freqi = 1:nFreqs
-            for timei = 1:nTimes
-                rdm = squeeze(neuralRDMs(:, :, freqi, timei));
-                rdm = vectorizeRDM(rdm);
-                rdm(nids) = []; 
-                %allTEst = partialcorr(rdm, M, zAT, 'type', 's');
-                allTEst = partialcorr(rdm, M, CM, 'type', 's');
-                all_r_Times(layi,freqi,timei) = allTEst;  
-            end
-        end
-    end
-        
-          
+      
+        % % same as code above in vectorized form
+        % parfor layi = 1:nLays
+        %     M =  squeeze(networkRDMs(layi,:,:)); 
+        %     M = vectorizeRDM(M);
+        % 
+        %     rdm = neuralRDMs;
+        %     rdm = vectorizeRDM(rdm);
+        % 
+        %     allTEst = partialcorr(rdm, M, CM, 'type', 's');
+        %     all_r_Times(layi,:, :) = reshape(allTEst, nFreqs, nTimes);;  
+        % 
+        % end    
 
+        % % % The layer loop can be avoided as well
+        all_r_Times = zeros(nLays, nFreqs, nTimes);
+        Ms =  vectorizeRDM(networkRDMs)';
+        nanIds = isnan(Ms(:, 1)); 
+        nanIds = nanIds|nids; 
+        Ms(any(nanIds, 2), :) = [];
+        rdm = neuralRDMs;
+        rdm = vectorizeRDM(rdm);
+        rdm(any(nanIds, 2), :) = [];
+        allTEst = partialcorr(rdm, Ms, CM, 'type', 's');
+        all_r_Times = reshape(allTEst', nLays, nFreqs, nTimes);
     
     
     

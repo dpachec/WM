@@ -31,6 +31,11 @@ if acrossTrials
        for iti = 1:4
            ids = oneListIds(:,1) == trltyp(iti); 
            ids = (ids+idSess ==2); 
+           if iti ==4
+            ids2 = oneListIds(:,2) ~= 4; 
+            ids = ids + ids2 == 2; 
+           end
+
            data = oneListPow(ids, :, :, :);
            mT = mean(data, 1);
            stdT = std(data, [], 1);
