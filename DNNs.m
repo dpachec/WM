@@ -188,7 +188,7 @@ t1 = datetime;
 
 for listi = 1:length(listF2sav)
     disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi nPerm
+    clearvars -except listF2sav listi nPerm t1
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
@@ -787,7 +787,7 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 clear , clc
 
 %f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
-f2sav =  'ITM_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1';
+f2sav =  'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
 
 
 cfg = getParams(f2sav);
