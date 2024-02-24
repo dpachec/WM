@@ -138,7 +138,7 @@ etime(datevec(t2), datevec(t1))
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
-nPerm = 100; 
+nPerm = 1000; 
 listF2sav = {
 
 
@@ -180,7 +180,13 @@ listF2sav = {
 'Alex_pfc_M12_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 'Alex_pfc_M13_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
+'BLNETi_vvs_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
+'BLNETi_vvs_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
+'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
 
+'BLNETi_pfc_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
+'BLNETi_pfc_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
+'BLNETi_pfc_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
 
 };   
 
