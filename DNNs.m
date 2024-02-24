@@ -106,7 +106,7 @@ for listi = 1:length(listF2sav)
         
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
-        if length(cfg_contrasts.oneListIds) > 1
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
@@ -208,7 +208,7 @@ for listi = 1:length(listF2sav)
         
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
-        if length(cfg_contrasts.oneListIds) > 1
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
@@ -271,7 +271,7 @@ for listi = 1:length(listF2sav)
         
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
-        if length(cfg_contrasts.oneListIds) > 1
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
