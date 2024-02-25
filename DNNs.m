@@ -210,7 +210,9 @@ for listi = 1:length(listF2sav)
     
         if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            tic
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            toc
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             if strcmp(cfg.meth, 'MASK')
                 networkRDMs                 = restrictBetCatCorr(cfg_contrasts, networkRDMs); 
