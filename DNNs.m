@@ -84,7 +84,7 @@ clear, clc
 listF2sav = {
 
 %'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
-'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 
 
 };   
@@ -108,7 +108,9 @@ for listi = 1:length(listF2sav)
     
         if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            tic
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            toc
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             if strcmp(cfg.meth, 'MASK')
                 networkRDMs                 = restrictBetCatCorr(cfg_contrasts, networkRDMs); 
