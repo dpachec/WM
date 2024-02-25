@@ -219,7 +219,7 @@ for listi = 1:length(listF2sav)
             end
             neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
 
-            parfor permi = 1:nPerm
+            for permi = 1:nPerm
                 sC = size(networkRDMs, 2);
                 ids = randperm(sC);
                 networkRDMs1 = networkRDMs(:, ids, ids); 
@@ -232,7 +232,7 @@ for listi = 1:length(listF2sav)
         end
     end
     
-    save([paths.results.DNNs f2sav num2str(nPerm) 'p.mat'], 'nnFitPerm');
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
 
 end
 
