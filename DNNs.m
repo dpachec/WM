@@ -140,21 +140,7 @@ clear, clc
 nPerm = 1000;
 listF2sav = {
 
-
-'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-'BLNETi_vvs_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
-
-'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_PCC';
-
-'CORrt_vvs_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'CORrt_pfc_M123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
-'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
+'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK';
 
 };   
 
@@ -1335,8 +1321,8 @@ listF2sav = {
 
 %'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 %'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 
 };   
 
@@ -1374,7 +1360,7 @@ etime(datevec(t2), datevec(t1))
 
 
 
-%% Process and plot RDM in the PFC cluster during encoding
+%% Process and plot RDM in the PFC cluster during ENCODING
 clear
 
 f2load = 'pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
@@ -1426,6 +1412,10 @@ for subji = 1:nSubjs
     allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
 end
 
+sub2exc = [1]; 
+allR(sub2exc) = []; 
+allRZ(sub2exc) = []; 
+
 [h p ci t] = ttest (allR);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
@@ -1453,27 +1443,6 @@ for subji = 1:length(meanRDMZ)
 
 end
 
-%% plot mean
-mRDM = cat(3, meanRDMZ{:}); 
-mRDM = squeeze(mean(mRDM, 3)); 
-mRDM(logical(eye(size(mRDM, 1)))) = nan; 
-imagesc(mRDM); axis square; 
-
-%% correlate with category model
-
-for subji = 1:length(meanRDM)
-
-    rdm = meanRDM{subji}; 
-    CM = kron(eye(6), ones(10));
-    rdm = vectorizeRDM(rdm); 
-    CM = vectorizeRDM(CM); 
-    allR(subji, :) = corr(CM, rdm, 'type', 's');    
-end
-
-[h p ci t] = ttest (allR);
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-
 
 %% RESIDUAL ANALYSIS PFC : Process and plot RDM in the PFC cluster during maintenance
 clear, clc
@@ -1485,89 +1454,28 @@ load([paths.results.neuralRDMS f2load]);
 
 t1 = datetime; 
 nSubjs = size(allNeuralRDMS, 1); 
-nFreqs = size(allNeuralRDMS{1}, 3); 
-nTimes = size(allNeuralRDMS{1}, 4); 
+nFreqs = size(allNeuralRDMS{2}, 3); 
+nTimes = size(allNeuralRDMS{2}, 4); 
 
 load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
 idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
 
 for subji = 1:nSubjs
-    neuralRDMs  = allNeuralRDMS{subji, 1}; 
-    ids         = allNeuralRDMS{subji, 2};
-    nRows       = size(neuralRDMs, 1); 
-    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
-    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
-    meanRDM{subji,:} = rdm; 
-    %CM = load_CATMODEL_activ(ids); 
-    CM = load_ITMODEL_activ(ids); 
-    rdm = vectorizeRDM(rdm); 
-    CM = vectorizeRDM(CM); 
-    allR(subji, :) = corr(CM', rdm, 'type', 's');    
-    
-    %z-score RDM
-    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
-    CM = squeeze(load_M6_activ(ids));
-    mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
-    mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
-    mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
-    mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
-    mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
-    mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
-
-    rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
-    rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
-    rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
-    rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
-    rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
-    rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
-
-    meanRDMZ{subji, :} = rdm;
-    CM = load_CATMODEL_activ(ids); 
-    rdmZ = vectorizeRDM(rdm); 
-    CM = vectorizeRDM(CM); 
-    allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
-end
-
-[h p ci t] = ttest (allR);
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-
-[h p ci t] = ttest (allRZ);
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-%% RESIDUAL ANALYSIS VVS: Process and plot RDM in the VVS cluster during maintenance
-clear, clc
-
-f2load = 'vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-paths = load_paths_WM('vvs', 'none');
-filelistSess = getFilesWM(paths.results.neuralRDMS);
-load([paths.results.neuralRDMS f2load]);   
-
-t1 = datetime; 
-nSubjs = size(allNeuralRDMS, 1); 
-nFreqs = size(allNeuralRDMS{1}, 3); 
-nTimes = size(allNeuralRDMS{1}, 4); 
-
-load ([paths.results.clusters 'all_clustinfo_VVS']);
-idsClustVVS{1} = allClustInfo{1,4}.PixelIdxList{14}; 
-idsClustVVS{2} = allClustInfo{1,5}.PixelIdxList{25}; 
-idsClustVVS{3} = allClustInfo{1,6}.PixelIdxList{17}; 
-
-for subji = 1:nSubjs
-    neuralRDMs  = allNeuralRDMS{subji, 1}; 
-    ids         = allNeuralRDMS{subji, 2};
-    nRows       = size(neuralRDMs, 1); 
-    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
-
-    for layi = 1:3
-        idsClust = idsClustVVS{layi}; 
+    if ~isempty(allNeuralRDMS{subji, 1})
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        nRows       = size(neuralRDMs, 1); 
+        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
         rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
         meanRDM{subji,:} = rdm; 
         %CM = load_CATMODEL_activ(ids); 
         CM = load_ITMODEL_activ(ids); 
         rdm = vectorizeRDM(rdm); 
         CM = vectorizeRDM(CM); 
-        allR(layi, subji, :) = corr(CM', rdm, 'type', 's');    
+        isnanIDs = isnan(CM); 
+        CM(isnanIDs) = []; 
+        rdm(isnanIDs) = []; 
+        allR(subji, :) = corr(CM', rdm, 'type', 's');    
         
         %z-score RDM
         rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
@@ -1586,14 +1494,101 @@ for subji = 1:nSubjs
         rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
         rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
     
-        meanRDMZ{layi, subji, :} = rdm;
+        meanRDMZ{subji, :} = rdm;
         %CM = load_CATMODEL_activ(ids); 
         CM = load_ITMODEL_activ(ids); 
         rdmZ = vectorizeRDM(rdm); 
         CM = vectorizeRDM(CM); 
-        allRZ(layi, subji, :) = corr(CM', rdmZ, 'type', 's');    
+        isnanIDs = isnan(CM); 
+        CM(isnanIDs) = []; 
+        rdmZ(isnanIDs) = []; 
+        allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
     end
 end
+
+sub2exc = [1]; 
+allR(sub2exc) = []; 
+allRZ(sub2exc) = []; 
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+[h p ci t] = ttest (allRZ);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+%% RESIDUAL ANALYSIS VVS: Process and plot RDM in the VVS cluster during maintenance
+clear, clc
+
+f2load = 'vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{2}, 3); 
+nTimes = size(allNeuralRDMS{2}, 4); 
+
+load ([paths.results.clusters 'all_clustinfo_VVS']);
+idsClustVVS{1} = allClustInfo{1,4}.PixelIdxList{14}; 
+idsClustVVS{2} = allClustInfo{1,5}.PixelIdxList{25}; 
+idsClustVVS{3} = allClustInfo{1,6}.PixelIdxList{17}; 
+
+for subji = 1:nSubjs
+    if ~isempty(allNeuralRDMS{subji, 1})
+
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        nRows       = size(neuralRDMs, 1); 
+        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+    
+        for layi = 1:3
+            idsClust = idsClustVVS{layi}; 
+            rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+            meanRDM{subji,:} = rdm; 
+            %CM = load_CATMODEL_activ(ids); 
+            CM = load_ITMODEL_activ(ids); 
+            rdm = vectorizeRDM(rdm); 
+            CM = vectorizeRDM(CM); 
+            isnanIDs = isnan(CM); 
+            CM(isnanIDs) = []; 
+            rdm(isnanIDs) = []; 
+            allR(layi, subji, :) = corr(CM', rdm, 'type', 's');    
+            
+            %z-score RDM
+            rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+            CM = squeeze(load_M6_activ(ids));
+            mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
+            mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
+            mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
+            mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
+            mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
+            mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
+        
+            rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
+            rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
+            rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
+            rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
+            rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
+            rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
+        
+            meanRDMZ{layi, subji, :} = rdm;
+            %CM = load_CATMODEL_activ(ids); 
+            CM = load_ITMODEL_activ(ids); 
+            rdmZ = vectorizeRDM(rdm); 
+            CM = vectorizeRDM(CM); 
+            isnanIDs = isnan(CM); 
+            CM(isnanIDs) = []; 
+            rdmZ(isnanIDs) = []; 
+            allRZ(layi, subji, :) = corr(CM', rdmZ, 'type', 's');    
+        end
+    end
+end
+
+sub2exc = [18 22]; 
+allR(:,sub2exc) = []; 
+allRZ(:,sub2exc) = []; 
+
 
 [h p ci t] = ttest (allR(1,:));
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
