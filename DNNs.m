@@ -56,7 +56,7 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
     cfg_contrasts               = normalize_WM(cfg_contrasts, 1, 'sess', []);
     cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
 
-    if length(cfg_contrasts.oneListIds) > 1
+    if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
         
         cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
         
@@ -84,8 +84,7 @@ clear, clc
 listF2sav = {
 
 %'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
-'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-
+'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
 
 };   
 
@@ -138,19 +137,9 @@ etime(datevec(t2), datevec(t1))
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
-nPerm = 1000; 
+nPerm = 1000;
 listF2sav = {
 
-
-%'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-
-'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 
 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
@@ -167,27 +156,6 @@ listF2sav = {
 'CORrt_vvs_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1_PCC';
 
-'CORrt_vvs_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'CORrt_vvs_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'CORrt_pfc_E123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-'CORrt_pfc_M123_[2-2-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-
-'Alex_vvs_M11_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-
-'Alex_pfc_M11_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_M12_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_M13_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-
-'BLNETi_vvs_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-
-'BLNETi_pfc_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-'BLNETi_pfc_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'; 
-
 };   
 
 t1 = datetime; 
@@ -201,7 +169,11 @@ for listi = 1:length(listF2sav)
     cfg.DNN_analysis = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFilesWM(paths.powerFromRT);
-    
+    if strcmp(cfg.period(1), 'E')
+        nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 10);
+    else
+        nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 35);
+    end
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         disp(['File > ' num2str(sessi)]);
         load([paths.powerFromRT filelistSess{sessi}]);   
@@ -219,16 +191,17 @@ for listi = 1:length(listF2sav)
             end
             neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
 
-            for permi = 1:nPerm
+            parfor permi = 1:nPerm
                 sC = size(networkRDMs, 2);
                 ids = randperm(sC);
-                networkRDMs1 = networkRDMs(:, ids, ids); 
+                networkRDMsRP = networkRDMs(:, ids, ids); 
                 if ~strcmp(cfg.meth(1:2), 'PC')
-                    nnFitPerm(permi, sessi,:,:, :,:)     = fitModel_WM(neuralRDMs, networkRDMs1, cfg.fitMode); 
+                    nnFitPerm(permi, sessi,:,:, :)     = fitModel_WM(neuralRDMs, networkRDMsRP, cfg.fitMode); 
                 elseif strcmp(cfg.meth(1:2), 'PC')
-                    nnFitPerm(permi, sessi,:,:, :,:)     = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
+                    nnFitPerm(permi, sessi,:,:, :)     = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMsRP, f2sav(end)); 
                 end
             end
+            
         end
     end
     
@@ -1355,10 +1328,10 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
 'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
@@ -1384,7 +1357,7 @@ for listi = 1:length(listF2sav)
         
         cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
     
-        if length(cfg_contrasts.oneListIds) > 1
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
             cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             allNeuralRDMS{sessi,1}      = neuralRDMs; 
@@ -1502,10 +1475,10 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 
 
-%% Process and plot RDM in the PFC cluster during maintenance
+%% RESIDUAL ANALYSIS PFC : Process and plot RDM in the PFC cluster during maintenance
 clear, clc
 
-f2load = 'pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1525,7 +1498,8 @@ for subji = 1:nSubjs
     neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
     rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
     meanRDM{subji,:} = rdm; 
-    CM = load_CATMODEL_activ(ids); 
+    %CM = load_CATMODEL_activ(ids); 
+    CM = load_ITMODEL_activ(ids); 
     rdm = vectorizeRDM(rdm); 
     CM = vectorizeRDM(CM); 
     allR(subji, :) = corr(CM', rdm, 'type', 's');    
@@ -1560,6 +1534,81 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 [h p ci t] = ttest (allRZ);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+%% RESIDUAL ANALYSIS VVS: Process and plot RDM in the VVS cluster during maintenance
+clear, clc
+
+f2load = 'vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+load ([paths.results.clusters 'all_clustinfo_VVS']);
+idsClustVVS{1} = allClustInfo{1,4}.PixelIdxList{14}; 
+idsClustVVS{2} = allClustInfo{1,5}.PixelIdxList{25}; 
+idsClustVVS{3} = allClustInfo{1,6}.PixelIdxList{17}; 
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    nRows       = size(neuralRDMs, 1); 
+    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+
+    for layi = 1:3
+        idsClust = idsClustVVS{layi}; 
+        rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+        meanRDM{subji,:} = rdm; 
+        %CM = load_CATMODEL_activ(ids); 
+        CM = load_ITMODEL_activ(ids); 
+        rdm = vectorizeRDM(rdm); 
+        CM = vectorizeRDM(CM); 
+        allR(layi, subji, :) = corr(CM', rdm, 'type', 's');    
+        
+        %z-score RDM
+        rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+        CM = squeeze(load_M6_activ(ids));
+        mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
+        mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
+        mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
+        mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
+        mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
+        mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
+    
+        rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
+        rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
+        rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
+        rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
+        rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
+        rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
+    
+        meanRDMZ{layi, subji, :} = rdm;
+        %CM = load_CATMODEL_activ(ids); 
+        CM = load_ITMODEL_activ(ids); 
+        rdmZ = vectorizeRDM(rdm); 
+        CM = vectorizeRDM(CM); 
+        allRZ(layi, subji, :) = corr(CM', rdmZ, 'type', 's');    
+    end
+end
+
+[h p ci t] = ttest (allR(1,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci t] = ttest (allRZ(1,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci t] = ttest (allR(2,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci t] = ttest (allRZ(2,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci t] = ttest (allR(3,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+[h p ci t] = ttest (allRZ(3,:));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
 
 %% plot RDM in cluster for every subject 
 
