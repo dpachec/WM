@@ -83,8 +83,7 @@ clear, clc
     
 listF2sav = {
 
-%'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
-'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 };   
 
@@ -203,13 +202,13 @@ etime(datevec(t2), datevec(t1))
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
-nPerm = 1000; 
+nPerm = 100; 
 listF2sav = {
 
 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
-'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
-'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+%'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+%'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 
 };   
@@ -222,7 +221,6 @@ for listi = 1:length(listF2sav)
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
-    cfg.DNN_analysis = 1; 
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     filelistSess = getFilesWM(paths.powerFromRT);
     
@@ -238,66 +236,22 @@ for listi = 1:length(listF2sav)
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
 
-            sC = size(networkRDMs, 2);
-            ids = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0); %str2num does not work
-            ids = double(string(cat(1, ids{:})));%str2num does not work
-          
-            CC = find(ids(:,20)==1); 
-            IC = find(ids(:,20)==0); 
-            CI = find(ids(:,19)==1); 
-            II = find(ids(:,19)==0); 
-            
             parfor permi = 1:nPerm
-                if length(CC) > 2
-                    networkRDMsCC = networkRDMs(:, CC, CC); 
-                    neuralRDMsCC = neuralRDMs(CC, CC, :, :); 
-                    sC = size(neuralRDMsCC, 2);
-                    ids = randperm(sC);
-                    neuralRDMsCC = neuralRDMsCC(:, ids, ids); 
-                    nnFitPerm{permi, sessi, 1} = fitModel_WM(neuralRDMsCC, networkRDMsCC, cfg.fitMode); 
-                end
-            end
-            parfor permi = 1:nPerm
-                if length(IC) > 2
-                    networkRDMsIC = networkRDMs(:, IC, IC); 
-                    neuralRDMsIC = neuralRDMs(IC, IC, :, :); 
-                    sC = size(neuralRDMsIC, 2);
-                    ids = randperm(sC);
-                    neuralRDMsIC = neuralRDMsIC(:, ids, ids); 
-                    nnFitPerm{permi, sessi, 2} = fitModel_WM(neuralRDMsIC, networkRDMsIC, cfg.fitMode); 
-                end
-            end
-            parfor permi = 1:nPerm
-                if length(CI) > 2
-                    networkRDMsCI = networkRDMs(:, CI, CI); 
-                    neuralRDMsCI = neuralRDMs(CI, CI, :, :);
-                    sC = size(neuralRDMsCI, 2);
-                    ids = randperm(sC);
-                    neuralRDMsCI = neuralRDMsCI(:, ids, ids); 
-                    nnFitPerm{permi, sessi, 3} = fitModel_WM(neuralRDMsCI, networkRDMsCI, cfg.fitMode); 
-                end
-            end
-            parfor permi = 1:nPerm
-                if length(II) > 2
-                    networkRDMsII = networkRDMs(:, II, II); 
-                    neuralRDMsII = neuralRDMs(II, II, :, :); 
-                    sC = size(neuralRDMsII, 2);
-                    ids = randperm(sC);
-                    neuralRDMsII = neuralRDMsII(:, ids, ids); 
-                    nnFitPerm{permi, sessi, 4} = fitModel_WM(neuralRDMsII, networkRDMsII, cfg.fitMode); 
-                end                
-            end
+                sC = size(neuralRDMs, 2);
+                ids = randperm(sC);
+                neuralRDMs1 = neuralRDMs(:, ids, ids); 
+                nnFitPerm{permi, sessi} = fitModel_WM(neuralRDMs1, networkRDMs, cfg.fitMode); 
+            end                
         end
     end
+
     
-    save([paths.results.DNNs f2sav '.mat'], 'nnFitPerm');
+save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
 
 end
 
 t2 = datetime; 
 etime(datevec(t2), datevec(t1))
-
-
 
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
@@ -426,15 +380,16 @@ disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 clear , clc
 
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
-f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
-cond2plot = 'CC'; 
+cond2plot = 'IC'; %allT CC CI
+minSubCrit = 5; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1 6 11];
+    sub2exc = [1];
 end
 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -449,7 +404,7 @@ else
     %set(gcf, 'Position', [100 100 1800 1000])
 end
 
-for layi = 1:size(nnFit{1}, 1)
+for layi = 1:size(nnFit{2}, 1)
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)
@@ -465,29 +420,25 @@ for layi = 1:size(nnFit{1}, 1)
            end
             
             if strcmp(cond2plot, 'CC')
-                %ids_IC = ids(:,20)==0; 
-                %nTR_IC = sum(ids_IC==1); 
-                ids = find(ids(:,20)==1); 
-                %if length(ids) > nTR_IC
-                %    ids = ids(randperm(length(ids), nTR_IC), :);
-                %end
+                ids = ids(:,20)==1; 
             elseif strcmp(cond2plot, 'IC')
                 ids = ids(:,20)==0; 
-                nIncTR(subji, :) = sum(ids==1); 
             elseif strcmp(cond2plot, 'CI')
                 ids = ids(:,19)==1; 
             elseif strcmp(cond2plot, 'II')
                 ids = ids(:,19)==0; 
             elseif strcmp(cond2plot, 'allT')
-                ids = 1:size(ids, 1); %just takes them all
+                ids = logical(ones(1, size(ids, 1))); %just takes them all
             end
 
+             nTR(subji,:) = sum(ids==1); 
              nnH(subji, : ,:) = squeeze(mean(avTR(:, ids,:,:), 2)); 
 
        end
     end
     
-    nnH(nnH==inf) = nan; 
+    sub2exc2 = find(nTR<minSubCrit); 
+    sub2exc = union(sub2exc, sub2exc2);
     nnH(sub2exc, :, :) = []; 
     nnH = squeeze(nnH);
     %[h p ci ts] = ttest(nnH, 0, "Tail","right");
@@ -547,14 +498,15 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 clear , clc
 
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
-f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
     %sub2exc = [18 22 10 20 16];
 elseif strcmp(cfg.brainROI, 'pfc')
-    sub2exc = [1 6 11];
+    sub2exc = [1];
+    %sub2exc = [1;2;6;7;9;11;14]; 
 end
 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -569,7 +521,7 @@ else
     %set(gcf, 'Position', [100 100 1800 1000])
 end
 
-for layi = 1:size(nnFit{1}, 1)
+for layi = 1:size(nnFit{2}, 1)
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)
@@ -846,10 +798,10 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 
 
 %% Extract activity in specific clusters DURING MAINTENANCE (FOR PERFORMANCE; OR BL-NET FITS)
-clear
+clear, clc
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -861,11 +813,11 @@ end
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav '.mat']);
 
-%load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
-load ([paths.results.clusters 'all_clustinfo_VVS']);
+load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+%load ([paths.results.clusters 'all_clustinfo_VVS']);
 
 clear nnHClust_pfc7 nnHClust_vvs4 nnHClust_vvs5 nnHClust_vvs6
-for layi = 1 %1:size(nnFit{1}, 1)
+for layi = 6 %1:size(nnFit{1}, 1)
     clear nnH
     for subji = 1:length(nnFit)
            if strcmp(cfg.period(1), 'M')
@@ -881,32 +833,20 @@ for layi = 1 %1:size(nnFit{1}, 1)
     for subji = 1:size(nnH, 1)
         nnHSubj = squeeze(nnH(subji, :, :)); 
         if strcmp(cfg.period(1), 'M')
-            if strcmp(cfg.brainROI, 'vvs')
-               nnHClust_vvs4(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
+            if layi == 4 & strcmp(cfg.brainROI, 'vvs')
+               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
             end 
-            if strcmp(cfg.brainROI, 'vvs')
-               nnHClust_vvs5(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
+            if layi == 5 & strcmp(cfg.brainROI, 'vvs')
+               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
             end 
-            if strcmp(cfg.brainROI, 'vvs')
-               nnHClust_vvs6(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
+            if layi == 6 & strcmp(cfg.brainROI, 'vvs')
+               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
             end
             if strcmp(cfg.brainROI, 'pfc')
-                nnHClust_pfc7(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{7})); 
+                nnHClust(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{7})); 
             end
-
-
-
-            %if layi == 4 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
-            %    nnHClust_vvs4(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
-            %end 
-            %if layi == 5 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
-                %nnHClust_vvs5(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
-            %end 
-            %if layi == 6 & strcmp(cfg.brainROI, 'vvs') & strcmp(cfg.net2load, 'AlexEco')
-            %    nnHClust_vvs6(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
-            %end
             if layi == 8 & strcmp(cfg.brainROI, 'pfc') & strcmp(cfg.net2load, 'AlexEco')
-                nnHClust_pfc7(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{2})); 
+                nnHClust(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{2})); 
             end
         elseif strcmp(cfg.period(1), 'E')
             nnHClust_vvsE1(subji, :) = mean(nnHSubj(allClustInfo{1}.PixelIdxList{1})); 
@@ -922,6 +862,12 @@ for layi = 1 %1:size(nnFit{1}, 1)
     
    
 end
+
+[h p ci ts] = ttest(nnHClust);
+h = squeeze(h); t = squeeze(ts.tstat); 
+disp (['t = ' num2str(ts.tstat) ',' ' p = ' num2str(p)]);
+
+
 
 %% Extract activity in specific clusters from NNH 
 
