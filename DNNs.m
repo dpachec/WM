@@ -235,12 +235,29 @@ for listi = 1:length(listF2sav)
             neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
             networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
             neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
+            if strcmp(cfg.period(1), 'M')
+             ids = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0); %str2num does not work
+             ids = double(string(cat(1, ids{:})));
+           elseif strcmp(cfg.period(1), 'E') % for clarity
+             ids= str2num(cell2mat(nnFit{subji, 2}));
+           end
+            
+           idsCC = find(ids(:,20)==1); 
+           idsIC = find(ids(:,20)==0);
+           networkRDMsIC = networkRDMs(:, idsIC, idsIC); 
+           networkRDMsCC = networkRDMs(:, idsCC, idsCC); 
+           
 
             parfor permi = 1:nPerm
-                sC = size(neuralRDMs, 2);
-                ids = randperm(sC);
-                neuralRDMs1 = neuralRDMs(:, ids, ids); 
-                nnFitPerm{permi, sessi} = fitModel_WM(neuralRDMs1, networkRDMs, cfg.fitMode); 
+                % % shuffling ids must be done in each condition independently 
+                networkRDMsPerm = zeros(size(networkRDMs)); 
+                idsRandIC = randperm(length(idsIC)); 
+                networkRDMsIC1 = networkRDMsIC(:, idsRandIC, idsRandIC); 
+                networkRDMsPerm(:, idsIC, idsIC) = networkRDMsIC1; 
+                idsRandCC = randperm(length(idsCC)); 
+                networkRDMsCC1 = networkRDMs(:, idsRandCC, idsRandCC); 
+                networkRDMsPerm(:, idsCC, idsCC) = networkRDMsCC1; 
+                nnFitPerm{permi, sessi} = fitModel_WM(neuralRDMs, networkRDMsPerm, cfg.fitMode); 
             end                
         end
     end
