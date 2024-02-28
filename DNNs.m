@@ -139,7 +139,19 @@ clear, clc
 nPerm = 1000;
 listF2sav = {
 
-'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK';
+%'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'
+'CAT_vvs_M11_[1]_3-54_1_0_1_0_.1_5_1'
+'CAT_vvs_M12_[1]_3-54_1_0_1_0_.1_5_1'
+'CAT_vvs_M13_[1]_3-54_1_0_1_0_.1_5_1'
+
+'Alex_vvs_M11_[1-8]_3-54_1_0_1_0_.1_5_1'
+'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1'
+'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
+
+'BLNETi_vvs_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+'BLNETi_vvs_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+
 
 };   
 
@@ -156,8 +168,10 @@ for listi = 1:length(listF2sav)
     filelistSess = getFilesWM(paths.powerFromRT);
     if strcmp(cfg.period(1), 'E')
         nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 10);
-    else
+    elseif strcmp(cfg.period, 'M123')
         nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 35);
+    else 
+        nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 21);
     end
     for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         disp(['File > ' num2str(sessi)]);
