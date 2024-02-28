@@ -42,17 +42,6 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 %load myCmap;
 myCmap = colormap(brewermap([],'YlOrRd'));
 
@@ -79,41 +68,45 @@ if dupSym
 end
 
 
-subplot (131);
-imagesc (flipud(myresizem(meanReal_cond1, 10)));axis equal; hold on; colorbar;
-if cfg_plot.plotCueOnset
-    plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
-    plot([cfg_plot.limFR*10 cfg_plot.limFR*10], get(gca,'ylim'),'k:', 'linewidth', lwd1);  
-end
-t1 = title (cfg_plot.lbls3plot{1});
-
-subplot (132);
-imagesc (flipud(myresizem(meanReal_cond2, 10))); axis equal; hold on; colorbar;
-if cfg_plot.plotCueOnset
-    plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
-    plot([cfg_plot.limFR*10 cfg_plot.limFR*10], get(gca,'ylim'),'k:', 'linewidth', lwd1); 
-end
-t2 = title (cfg_plot.lbls3plot{2});
-colormap jet;
+% % % uncomment to plot all 3 maps
+% % subplot (131);
+% % imagesc (flipud(myresizem(meanReal_cond1, 10)));axis equal; hold on; colorbar;
+% % if cfg_plot.plotCueOnset
+% %     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
+% %     plot([cfg_plot.limFR*10 cfg_plot.limFR*10], get(gca,'ylim'),'k:', 'linewidth', lwd1);  
+% % end
+% % t1 = title (cfg_plot.lbls3plot{1});
+% % 
+% % subplot (132);
+% % imagesc (flipud(myresizem(meanReal_cond2, 10))); axis equal; hold on; colorbar;
+% % if cfg_plot.plotCueOnset
+% %     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
+% %     plot([cfg_plot.limFR*10 cfg_plot.limFR*10], get(gca,'ylim'),'k:', 'linewidth', lwd1); 
+% % end
+% % t2 = title (cfg_plot.lbls3plot{2});
+% % colormap jet;
 
 
 ax3 = subplot (133);
+
 if plot1clust
     sigMH_real = zeros(size(sigMH_real)); 
-    sigMH_real(out_real.clustInfoReal.PixelIdxList{clust2plot}) = 1;
+    for pixi = 1:length(clust2plot)
+        sigMH_real(out_real.clustInfoReal.PixelIdxList{clust2plot(pixi)}) = 1;
+    end
     if dupSym
         sigMH_real = triu(sigMH_real.',1) + tril(sigMH_real);
     end
 end
 imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; 
 if cfg_plot.plotClust
-    contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k');colorbar; 
+    contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k'); %colorbar; 
 end
 if cfg_plot.plotCueOnset
     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
     plot([cfg_plot.limFR*10 cfg_plot.limFR*10], get(gca,'ylim'),'k:', 'linewidth', lwd1); 
 end
-t3 = title (cfg_plot.lbls3plot{3}); 
+%t3 = title (cfg_plot.lbls3plot{3}); 
 colormap (ax3, myCmap);
 
 axesHandles = findall(0, 'type', 'axes');
@@ -126,8 +119,10 @@ d2uE = cfg_plot.binsE; d2uR = cfg_plot.binsR;
 limE = [0 d2uE];
 limR = [0 d2uR];
 
-set(axesHandles, 'clim', cfg_plot.clim, 'ytick', cfg_plot.placeTY*10, 'yticklabel', fliplr(labels_to_plotE),...
-'xtick', cfg_plot.placeTX*10, 'xticklabel', labels_to_plotR, 'FontSize', 12, 'xlim', limE*10, 'ylim', limR*10); 
+%set(axesHandles, 'clim', cfg_plot.clim, 'ytick', cfg_plot.placeTY*10, 'yticklabel', fliplr(labels_to_plotE),...
+%'xtick', (cfg_plot.placeTX-1)*10, 'xticklabel', labels_to_plotR, 'FontSize', 12, 'xlim', limE*10, 'ylim', limR*10); 
+set(axesHandles, 'clim', cfg_plot.clim, 'ytick', cfg_plot.placeTY*10, 'yticklabel', {},...
+'xtick', (cfg_plot.placeTX-1)*10, 'xticklabel', {}, 'FontSize', 12, 'xlim', limE*10, 'ylim', limR*10); 
 
 set(ax3, 'clim', cfg.climT);
 

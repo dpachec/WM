@@ -13,9 +13,9 @@ win_width           = 5;
 mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
-avMeth              = 'pow';  % average across image repetitions or not
+avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
-contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
+contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3' 'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE'  }; %
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
 %contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
@@ -23,7 +23,112 @@ contr2save          = {'DISC_EM2' 'DIDC_EM2'}; %{};
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-n2s                 = 20000;
+n2s                 = 10000;
+%n2s                 = 5000;
+loadSurr            = 0; 
+zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
+aVTime              = 0; % Average or not in time the feature vectors
+ 
+%diary([paths.results_path 'rsa_log.txt']); diary on; disp(string(datetime));
+ 
+ 
+ 
+for sessi= 7:length(filelistSess) %this one starts at 1 and not at 3
+    disp(['File > ' num2str(sessi)]);
+    load([paths.out_contrasts filelistSess{sessi}]);   
+    
+    disp ([ 'fnames = ' fnames{:} newline 'win_width = ' num2str(win_width) newline 'mf = ' num2str(mf) newline ...
+            'meanInTime = ' num2str(meanInTime) newline 'meanInFreq = ' num2str(meanInFreq) newline 'TG = ' num2str(TG) newline ...
+            'bline = ' num2str(bline) newline 'acrossTrials = ' num2str(acrossTrials) newline 'batch_bin = ' num2str(batch_bin)  ]);
+        
+    
+    cfg_contrasts = normalize_WM(cfg_contrasts, acrossTrials, zScType, bline);
+% %     % % check the normalization across trials works 
+% %     ids = str2num(cell2mat(cfg_contrasts.oneListIds));
+% %     d2p = squeeze(mean(cfg_contrasts.oneListPow(ids(:, 1) ==1, :, :, :)));
+% %     imagesc(squeeze(d2p(1,:,:))); colorbar % % % because of the normalization across trials
+
+ 
+    cfg_contrasts.contr2save = contr2save';
+    cfg_contrasts.n2s = n2s;
+    cfg_contrasts.loadSurr = loadSurr;
+    cfg_contrasts.batch_bin = batch_bin;
+    
+
+    if strcmp(avMeth,'pow')
+        cfg.avRep = 1; 
+        cfg_contrasts = average_repetitions(cfg, cfg_contrasts);
+    end
+    
+    [out_contrasts] = create_contrasts_WM (cfg_contrasts);
+        
+ 
+    for freqi = 1:length(frequncies2test)
+        fname = fnames{freqi};
+        mkdir ([paths.results.bands fname]);
+        cd ([paths.results.bands fname]);
+        f           = frequncies2test{freqi}; 
+        % % the rsa_WM function saves the similarity matrices (TG=1) or diagonals (TG = 0)
+        rsa_WM (out_contrasts, win_width, mf, f, meanInTime, meanInFreq, sessi, TG, aVTime)
+        cd ..
+    end
+ 
+end
+
+cd .. 
+
+ 
+%%process Folders and create one file per condition including all subjects
+
+clearvars -except region
+paths = load_paths_WM(region, 'none');
+currentDir = pwd; 
+mkdir(paths.results.bands)
+cd (paths.results.bands)
+fold = dir(); dirs = find(vertcat(fold.isdir));
+fold = fold(dirs);
+ 
+for foldi = 3:length(fold) % start at 3 cause 1 and 2 are . and ...
+    
+    clearvars -except contrasts fold foldi cmaps2use perms2use t2use cmapi region dupSym2use frequncies2test currentDir
+    
+    direct = fold(foldi);
+    cd (direct.name)
+ 
+    processFoldersWM; 
+
+    cd .. 
+end
+
+cd (currentDir);
+disp ('done')
+
+% % % % % % 
+
+clearvars
+region              = 'pfc';
+paths = load_paths_WM(region, 'none');
+filelistSess = getFilesWM(paths.out_contrasts);
+
+
+frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+
+win_width           = 5; 
+mf                  = 1; 
+meanInTime          = 0; 
+meanInFreq          = 0; 
+avMeth              = 'none';  % average across image repetitions or not
+TG                  = 1; %temporal generalization
+contr2save          = { 'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3' 'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE' 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
+%contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
+%contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
+%contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
+%contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
+bline               = [3 7];
+acrossTrials        = 1;
+batch_bin           = 1000;
+n2s                 = 10000;
 %n2s                 = 5000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
@@ -103,9 +208,7 @@ end
 cd (currentDir);
 disp ('done')
 
-
-
-
+ 
 %% LOAD all conditions
 clearvars
 
@@ -114,7 +217,7 @@ paths = load_paths_WM(region, 'none');
 
 contrasts = {
               %'SCSP_M2M2' 'SCDP_M2M2';
-              'DISC_EM2' 'DIDC_EM2';
+              'SCSP_EM1' 'SCDP_EM1';
               
              };
 
@@ -129,25 +232,25 @@ for i = 1:length(c)
 end
 
 
-%% PLOT
+%%PLOT
 clc
 %clear all; 
 tic; 
 
 %define conditions 
-cond1 = 'DISC_EM2';
-cond2 = 'DIDC_EM2';
+cond1 = 'SCSP_EM1';
+cond2 = 'SCDP_EM1';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
-%cfg.subj2exc    =       [18 22];% vvs;
-cfg.subj2exc   =       [1]; % pfc
+cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc   =       [1]; % pfc
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
-cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
 cfg.cut2        =       '1-4'; %1-1 1-4 4-4
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
@@ -155,7 +258,7 @@ cfg.lwd1        =       2; %baseline
 cfg.lwd2        =       2; %significant outline
 cfg.remClust    =       0; 
 cfg.plot1clust  =       0;  
-cfg.clust2plot  =       3;  
+cfg.clust2plot  =       [];  %VVS > 3-8: 4; 9-12: 6; 13-29: 8; 30-75: 7; 75-150: [3 17]; vector of pixels to print
 cfg.all_cond1   =       cond1B; 
 cfg.all_cond2   =       cond2B; 
 cfg.alpha       =       0.05; 

@@ -69,9 +69,9 @@ if ~isempty(intersect(c2c, 'EE'))
                 %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
                 %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
                 %end
-                 if ~strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
-                 end 
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
             end
 
 
@@ -106,7 +106,7 @@ if ~isempty(intersect(c2c, 'EE'))
                         countSISC_EE1 = countSISC_EE1+1;
                      end
                   elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
-                     %disp(['DISC_EE > ' trlij]);    
+                     %disp(['DISC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
                      if exist('countDISC_EE1')
                          new_disc_ee1{countDISC_EE1} = [i, j];
                          countDISC_EE1 = countDISC_EE1+1;
@@ -124,9 +124,9 @@ if ~isempty(intersect(c2c, 'EE'))
                 %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
                 %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
                 %end
-                 if ~strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
-                 end 
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     %disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
             end
 
 
@@ -180,9 +180,9 @@ if ~isempty(intersect(c2c, 'EE'))
                 %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
                 %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
                 %end
-                 if ~strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
-                 end 
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     %disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
             end
 
 
@@ -236,9 +236,9 @@ if ~isempty(intersect(c2c, 'EE'))
                 %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
                 %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
                 %end
-                 if ~strcmp(cat_id_Enc,cat_id_Ret)
-                     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
-                 end 
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
             end
 
 
@@ -382,10 +382,10 @@ if ~isempty(intersect(c2c, 'EE'))
     % % % % % 1) M2M2 for SCSP SCDP
     if ~isempty(intersect(c2c, 'M2M2'))
       if ( strcmp(evei(1), '7') | strcmp(evei(1), '7*') | strcmp(evei(1), '-7') | strcmp(evei(1), '9'))  & ~strcmp(evei(2), '4')
-        cueRetI = str2double(evei{2});
-        idx = 12 + cueRetI;
+        posI = str2double(evei{2});
+        idx = 12 + posI;
         idRet_I = double(string(evei(idx)));
-        cuedCI = floor(idRet_I / 100);
+        catI = floor(idRet_I / 100);
         
         for j = i:length(oneListIds)
            evej = strsplit(oneListIds{j});
@@ -394,24 +394,42 @@ if ~isempty(intersect(c2c, 'EE'))
            trlij = [trli trlj];
             
            if length(trlij) == length(unique(trlij)) % all averaged instances are from different trials
-            if ( strcmp(evej(1), '7') | strcmp(evej(1), '7*') | strcmp(evej(1), '-7') | strcmp(evei(1), '9')  )  & ~strcmp(evei(2), '4')
-                  cueRetJ = str2double(evej{2});idx = 12 + cueRetJ;
+            if ( strcmp(evej(1), '7') | strcmp(evej(1), '7*') | strcmp(evej(1), '-7') | strcmp(evej(1), '9')  )  & ~strcmp(evej(2), '4')
+                  posJ = str2double(evej{2});
+                  idx = 12 + posJ;
                   idRet_J = double(string(evej(idx)));
-                  cuedCJ = floor(idRet_J / 100);
+                  catJ = floor(idRet_J / 100);
                   
-                  if cuedCI == cuedCJ & cueRetI == cueRetJ
+                  if catI == catJ & posI == posJ
                     if exist('countSCSP_M2M2')
                         %disp(['SCSP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
                         new_scsp_m2m2{countSCSP_M2M2} = [i, j];
                         countSCSP_M2M2 = countSCSP_M2M2+1;
                     end
-                  else
-                    if cuedCI ~= cuedCJ & cueRetI == cueRetJ
-                        %disp(['DIDC_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
-                        new_scdp_m2m2{countSCDP_M2M2} = [i, j];
-                        countSCDP_M2M2 = countSCDP_M2M2+1;
+                  end   
+
+                    if catI == catJ & posI ~= posJ
+                        if exist('countSCDP_M2M2')
+                            %disp(['SCDP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
+                            new_scdp_m2m2{countSCDP_M2M2} = [i, j];
+                            countSCDP_M2M2 = countSCDP_M2M2+1;
+                        end
                     end
-                end
+
+                   if catI ~= catJ & posI == posJ
+                    if exist('countDCSP_M2M2')
+                        %disp(['DCSP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_dcsp_m2m2{countDCSP_M2M2} = [i, j];
+                        countDCSP_M2M2 = countDCSP_M2M2+1;
+                    end
+                   end
+                    if catI ~= catJ & posI ~= posJ 
+                     if exist('countDCDP_M2M2')
+                        %disp(['DCDP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_dcdp_m2m2{countDCDP_M2M2} = [i, j];
+                        countDCDP_M2M2 = countDCDP_M2M2+1;
+                     end
+                    end
               end 
            end
         end
@@ -420,39 +438,124 @@ if ~isempty(intersect(c2c, 'EE'))
 
 
 
-    % % % % % 1) EM1 
+    % % % % % 1) SCSP vs SCDP for EM1
     if ~isempty(intersect(c2c, 'EM1'))
-      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*') %* is for the average data
-        for j = 1:length(oneListIds)
-            evej = strsplit(oneListIds{j});
-            if strcmp(evej(1), '5')
-               trli = string(evei(12)); trlj = string(evej(12)); %this is just to check if they belong to the same trial 
-               trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_'); %this is just to check if they belong to the same trial  
-               trlij = [trli trlj]; %this is just to check if they belong to the same trial 
-            
-               if length(trlij) == length(unique(trlij)) % there are no repetitions = different trials
-                  idEnc = [evei(13) evei(14) evei(15)] ;
-                  idM1  = [evej(13) evej(14) evej(15)] ;
-                  oneIdEnc = [double(string(idEnc{1}(1))) double(string(idEnc{2}(1))) double(string(idEnc{3}(1)))]; 
-                  oneIdM1 = [double(string(idM1{1}(1))) double(string(idM1{2}(1))) double(string(idM1{3}(1)))]; 
-                  juntsCAT = [oneIdEnc oneIdM1];
-                 if length(unique(juntsCAT)) <= 5
-                  if exist('countDISC_EM1')
-                    new_disc_em1{countDISC_EM1} = [i, j];
-                    countDISC_EM1 = countDISC_EM1+1;
+      if strcmp(evei(1), '5')
+          for j = i:length(oneListIds)
+              evej = strsplit(oneListIds{j});
+              allIt_I = double(string(char(([evei(13) evei(14) evei(15)])))); allCat_I = floor(allIt_I/100); 
+              allIt_J = double(string(char(([evej(13) evej(14) evej(15)])))); allCat_J = floor(allIt_J/100); 
+              allItIJ = [allIt_I ; allIt_J]; 
+              allCatIJ = [allCat_I ; allCat_J]; 
+              ids2u = allCat_I == allCat_J;
+              if strcmp(evej(1), '5')
+                  triali = str2double(evei{11}); 
+                  trialj = str2double(evej{11}); 
+                  if triali ~= trialj % different trials
+                      if sum(ids2u & ismember(allCat_I, allCat_J)) > 1
+                          if exist('countSCSP_EM1')
+                                %disp(['SCSP_EM1 > ' oneListIds{i} '//' oneListIds{j}]);     
+                                new_scsp_em1{countSCSP_EM1} = [i, j];
+                                countSCSP_EM1 = countSCSP_EM1+1;
+                          end
+                      elseif sum(ids2u & ismember(allCat_I, allCat_J)) < 1 & unique (allCatIJ) < 6
+                          if exist('countSCDP_EM1')
+                                %disp(['SCDP_EM1 > ' oneListIds{i} '//' oneListIds{j}]);     
+                                new_scdp_em1{countSCDP_EM1} = [i, j];
+                                countSCDP_EM1 = countSCDP_EM1+1;
+                          end
+                      end
                   end
-                 elseif length(unique(juntsCAT)) == 6
-                   if exist('countDIDC_EM1')
-                    new_didc_em1{countDIDC_EM1} = [i, j];
-                    countDIDC_EM1 = countDIDC_EM1+1;
-                  end
+              end
+          end
+      end
+    end
 
-                 end
+ % % % % % 1) SCSP vs SCDP for EE
+    if ~isempty(intersect(c2c, 'EE'))
+      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*')
+        posI = str2double(evei{1});
+        catI = str2double(evei{3});
+        catI = floor(catI/100); 
+        
+        for j = i:length(oneListIds)
+           evej = strsplit(oneListIds{j});
+           trli = string(evei(12)); trlj = string(evej(12));
+           trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+           trlij = [trli trlj];
+            
+           if length(trlij) == length(unique(trlij)) % all averaged instances are from different trials
+            if strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') | strcmp(evej(1), '*') 
+                  posJ = str2double(evej{1});
+                  catJ = str2double(evej{3});
+                  catJ = floor(catJ/100); 
+
+                  if catI == catJ & posI == posJ
+                    if exist('countSCSP_EE')
+                        %disp(['SCSP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_scsp_ee{countSCSP_EE} = [i, j];
+                        countSCSP_EE = countSCSP_EE+1;
+                    end
+                  end   
+
+                    if catI == catJ & posI ~= posJ
+                        if exist('countSCDP_EE')
+                            %disp(['SCDP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                            new_scdp_ee{countSCDP_EE} = [i, j];
+                            countSCDP_EE = countSCDP_EE+1;
+                        end
+                    end
+
+                   if catI ~= catJ & posI == posJ
+                    if exist('countDCSP_EE')
+                        %disp(['DCSP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_dcsp_ee{countDCSP_EE} = [i, j];
+                        countDCSP_EE = countDCSP_EE+1;
+                    end
+                   end
+                    if catI ~= catJ & posI ~= posJ 
+                     if exist('countDCDP_EE')
+                        %disp(['DCDP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                        new_dcdp_ee{countDCDP_EE} = [i, j];
+                        countDCDP_EE = countDCDP_EE+1;
+                     end
+                    end
               end 
            end
         end
       end
     end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
 end

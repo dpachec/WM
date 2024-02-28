@@ -190,7 +190,7 @@ for listi = 1:length(listF2sav)
         end
     end
     
-    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
 
 end
 
@@ -217,7 +217,7 @@ t1 = datetime;
 
 for listi = 1:length(listF2sav)
     disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
-    clearvars -except listF2sav listi nPerm
+    clearvars -except listF2sav listi nPerm t1
         
     f2sav       = listF2sav{listi}; 
     cfg = getParams(f2sav);
@@ -263,7 +263,7 @@ for listi = 1:length(listF2sav)
     end
 
     
-save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm');
+save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
 
 end
 
@@ -278,9 +278,9 @@ clear , clc
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
-f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
-
+f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
+%f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
+%f2sav = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -2754,6 +2754,113 @@ for subji = 1:length(nnFitALEX)
      nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(4,:,1:40));
    else
      nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(4,:,1:15));
+   end
+end
+
+if strcmp(cfg.brainROI, 'vvs')
+    nnHBLNET([18 22], :, :) = []; 
+    nnHALEX([18 22], :, :) = []; 
+else
+    nnHBLNET([1], :, :) = []; 
+    nnHALEX([1], :, :) = []; 
+end
+
+
+nnHBLNET = squeeze(nnHBLNET);
+nnHALEX = squeeze(nnHALEX);
+
+[h p ci ts] = ttest(nnHBLNET, nnHALEX);
+h = squeeze(h); t = squeeze(ts.tstat); 
+h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+
+freqs = 1:52; 
+clustinfo = bwconncomp(h);
+allClustInfo{1} = clustinfo; 
+
+% store allTOBS
+if ~isempty(clustinfo.PixelIdxList)
+    for pixi = 1:length(clustinfo.PixelIdxList)
+         allTObs(1, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+         allTObs1(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+    end
+else
+    allTObs(1, :, :) = 0;
+end
+
+if exist('allTObs1')
+    [max2u id] = max(abs(allTObs1));
+    tObs = allTObs1(id); 
+end
+
+
+if strcmp(cfg.period(1), 'M')
+    times = 1:size(t, 2); 
+else
+    times = 1:15; 
+end
+myCmap = colormap(brewermap([],'YlOrRd'));
+colormap(myCmap)
+contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+
+if strcmp(cfg.period(1), 'M')
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'xlim', [1 40], 'clim', [-3 3], 'FontSize', 10);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+else
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'FontSize', 8, 'clim', [-5 5]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    
+end
+
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+%% Ttest at every time-frequency point comparing fits in BL-NET and BF-NET BK-NET BD-NET fits
+
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+lay2test = 7;
+
+f2sav1 = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+cfg = getParams(f2sav1);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav1 '.mat']);
+nnFitBLNET = nnFit; 
+
+f2sav2 = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1';
+cfg = getParams(f2sav2);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav2 '.mat']);
+nnFitALEX = nnFit; 
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+end
+
+
+ax1 = nexttile;
+clear nnHVVS nnHPFC
+for subji = 1:length(nnFitBLNET)
+   if strcmp(cfg.period(1), 'M')
+     nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(lay2test,:,1:40));
+   else
+     nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(lay2test,:,1:15));
+   end
+end
+for subji = 1:length(nnFitALEX)
+   if strcmp(cfg.period(1), 'M')
+     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(lay2test,:,1:40));
+   else
+     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(lay2test,:,1:15));
    end
 end
 
