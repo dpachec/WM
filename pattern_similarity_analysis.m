@@ -23,7 +23,7 @@ contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'D
 bline               = [3 7];
 acrossTrials        = 1;
 batch_bin           = 1000;
-n2s                 = 10000;
+n2s                 = 5000;
 %n2s                 = 5000;
 loadSurr            = 0; 
 zScType             = 'sess'; %'blo''sess' % 'allTrials' = all trials from all sessions and blocks
@@ -33,7 +33,7 @@ aVTime              = 0; % Average or not in time the feature vectors
  
  
  
-for sessi= 7:length(filelistSess) %this one starts at 1 and not at 3
+for sessi= 8:length(filelistSess) %this one starts at 1 and not at 3
     disp(['File > ' num2str(sessi)]);
     load([paths.out_contrasts filelistSess{sessi}]);   
     
