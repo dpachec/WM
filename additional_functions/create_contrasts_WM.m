@@ -473,7 +473,7 @@ if ~isempty(intersect(c2c, 'EE'))
 
  % % % % % 1) SCSP vs SCDP for EE
     if ~isempty(intersect(c2c, 'EE'))
-      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')| strcmp(posEnc, '*')
+      if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')
         posI = str2double(evei{1});
         catI = str2double(evei{3});
         catI = floor(catI/100); 
@@ -485,7 +485,7 @@ if ~isempty(intersect(c2c, 'EE'))
            trlij = [trli trlj];
             
            if length(trlij) == length(unique(trlij)) % all averaged instances are from different trials
-            if strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') | strcmp(evej(1), '*') 
+            if strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') 
                   posJ = str2double(evej{1});
                   catJ = str2double(evej{3});
                   catJ = floor(catJ/100); 
@@ -595,7 +595,7 @@ eval(  ['if exist(''new_' lower(contr2save{ci}) ''') & any(strcmp(contr2save, ''
            'disp ([''new_' lower(contr2save{ci})  ' ' ' '' num2str(length(new_' lower(contr2save{ci}) '))]);' newline...
            ' nTrials = length(new_' lower(contr2save{ci}) '); ' newline ...
            ' if nTrials > batch_bin ' newline ...
-               ' nBatches = ceil(nTrials/batch_bin)' newline ... 
+               ' nBatches = ceil(nTrials/batch_bin);' newline ... 
                contr2save{ci} '{nBatches} = [];' newline ...
                ' for batchi = 1:nBatches ' newline ... 
                    'if strcmp(''' contr2save{ci}(end-1:end) ''', ''EE'')' newline ... 

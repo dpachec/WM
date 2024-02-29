@@ -83,7 +83,7 @@ clear, clc
     
 listF2sav = {
 
-'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'CAT_pfc_E123_[1]_25-29_1_0_0_0_.1_5_1';
 
 };   
 
@@ -139,18 +139,18 @@ clear, clc
 nPerm = 1000;
 listF2sav = {
 
-%'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'
-'CAT_vvs_M11_[1]_3-54_1_0_1_0_.1_5_1'
-'CAT_vvs_M12_[1]_3-54_1_0_1_0_.1_5_1'
-'CAT_vvs_M13_[1]_3-54_1_0_1_0_.1_5_1'
-
-'Alex_vvs_M11_[1-8]_3-54_1_0_1_0_.1_5_1'
-'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1'
-'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
-
-'BLNETi_vvs_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'
-'BLNETi_vvs_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'
-'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'
+% 'CAT_vvs_M11_[1]_3-54_1_0_1_0_.1_5_1'
+% 'CAT_vvs_M12_[1]_3-54_1_0_1_0_.1_5_1'
+% 'CAT_vvs_M13_[1]_3-54_1_0_1_0_.1_5_1'
+% 
+% 'Alex_vvs_M11_[1-8]_3-54_1_0_1_0_.1_5_1'
+% 'Alex_vvs_M12_[1-8]_3-54_1_0_1_0_.1_5_1'
+% 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
+% 
+% 'BLNETi_vvs_M11_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+% 'BLNETi_vvs_M12_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+% 'BLNETi_vvs_M13_[8-8-56]_3-54_1_0_1_0_.1_5_1'
 
 
 };   
@@ -411,9 +411,9 @@ disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 clear , clc
 
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
-cond2plot = 'IC'; %allT CC CI
+cond2plot = 'CC'; %allT CC CI
 minSubCrit = 5; 
 
 cfg = getParams(f2sav);
@@ -643,14 +643,13 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
+f2sav = 'CAT_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1';
 
 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
-    %sub2exc = [18 22];
-    sub2exc = [18 22 10 20]; % for the incorrect trials
+    sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
 end
@@ -714,7 +713,11 @@ for layi = 1:size(nnFit{1}, 1)
     end
     myCmap = colormap(brewermap([],'YlOrRd'));
     colormap(myCmap)
+    hb = h; hb(h==1) = 0; hb(h==0) = nan; 
+    
     plot(times, t); hold on; %colorbar
+    plot(times, hb)
+    
     
     if strcmp(cfg.period(1), 'M')
         
@@ -828,7 +831,7 @@ end
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
 
 
-%% Extract activity in specific clusters DURING MAINTENANCE (FOR PERFORMANCE; OR BL-NET FITS)
+%% Extract activity in specific clusters DURING MAINTENANCE (FOR PERFORMANCE; OR BL-NET FITS) > select each layer in the for loop
 clear, clc
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
@@ -1624,6 +1627,10 @@ end
 
 [h p ci t] = ttest (allR);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+
+
 %% Process and plot RDM during encoding
 clear
 
@@ -1662,6 +1669,78 @@ mRDM = squeeze(mean(mRDM, 3 ));
 
 mRDM(logical(eye(size(mRDM, 1)))) = nan; 
 imagesc(mRDM)
+
+
+%% Process and plot RDM during maintenance in VVS theta cluster
+clear
+
+f2load = 'vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    rdm         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
+    meanRDM{subji,:} = rdm; 
+    CM = load_CATMODEL_activ(ids); 
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM', rdm, 'type', 's');    
+    
+    
+end
+
+sub2exc = [18 22]; 
+allR(sub2exc) = []; 
+
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+%% Process and plot RDM during encoding in VVS theta cluster
+clear
+
+f2load = 'vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    rdm         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,6:14), 3),4)); %Theta cluster time period
+    meanRDM{subji,:} = rdm; 
+    CM = load_CATMODEL_activ(ids); 
+    rdm = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allR(subji, :) = corr(CM', rdm, 'type', 's');    
+    
+    
+end
+
+sub2exc = [18 22]; 
+allR(sub2exc) = []; 
+
+
+[h p ci t] = ttest (allR);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
 
 %% Process neural RDMs and compute CCI for CATEGORIES
 
@@ -3676,5 +3755,16 @@ plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
 
 
 
-%%
 
+
+
+
+%%
+%figure
+%histogram(mcsP); hold on; 
+%catter(mcsR,0, 'filled','r');
+    
+
+
+
+%%

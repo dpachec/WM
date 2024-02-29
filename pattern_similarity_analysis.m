@@ -15,7 +15,9 @@ meanInTime          = 0;
 meanInFreq          = 0; 
 avMeth              = 'none';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
-contr2save          = { 'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3' 'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE' 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
+contr2save          = { 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
+%contr2save          = { 'DISC_EM11' 'DIDC_EM11' 'DISC_EM12' 'DIDC_EM12' 'DISC_EM13' 'DIDC_EM13' 'DCSP_EE' 'DCDP_EE'}; %
+%contr2save          = { 'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3' 'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE' 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
 %contr2save          = {'SISC_EE' 'DISC_EE' 'DIDC_EE' 'SISC_EM2' 'DISC_EM2' 'DIDC_EM2' 'DISC_M2M2' 'DIDC_M2M2'}; %{};
 %contr2save          = {'SCSP_M2M2' 'SCDP_M2M2'}; %{};
 %contr2save          = {'DISC_EM1' 'DIDC_EM1'}; %{};
@@ -110,9 +112,14 @@ region = 'pfc';
 paths = load_paths_WM(region, 'none');
 
 contrasts = {
-              %'SCSP_M2M2' 'SCDP_M2M2';
-              'SCSP_EM1' 'SCDP_EM1';
+              %'SCSP_EE' 'SCDP_EE';
+              %'DISC_EE1' 'DIDC_EE1';
+              %'DISC_EE2' 'DIDC_EE2';
+              %'DISC_EE3' 'DIDC_EE3';
               
+              'SCSP_M2M2' 'SCDP_M2M2' ; 
+              'DCSP_M2M2' 'DCDP_M2M2';
+
              };
 
 c = unique (contrasts);
@@ -126,14 +133,14 @@ for i = 1:length(c)
 end
 
 
-%%PLOT
+%% PLOT
 clc
 %clear all; 
 tic; 
 
 %define conditions 
-cond1 = 'SCSP_EM1';
-cond2 = 'SCDP_EM1';
+cond1 = 'DCSP_M2M2';
+cond2 = 'DCDP_M2M2';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
@@ -144,8 +151,8 @@ cfg.subj2exc    =       [18 22];% vvs;
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-4'; %1-1 1-4 4-4
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '4-4'; %1-1 1-4 4-4
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
 cfg.lwd1        =       2; %baseline 
