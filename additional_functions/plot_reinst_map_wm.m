@@ -33,7 +33,7 @@ cfg_plot.plotClust   =       1; %cluster
 %cfg_plot.sigMH_thres =       out_real.sigMH_real;
 
 
-if strcmp(cfg.cond1(end-2:end), 'EM2') | strcmp(cfg.cond1(end-2:end), 'EM1')
+if strcmp(cfg.cond1(end-2:end), 'EM2') | strcmp(cfg.cond1(end-3:end), 'EM11') | strcmp(cfg.cond1(end-3:end), 'EM12') | strcmp(cfg.cond1(end-3:end), 'EM13')
     dupSym      =      0; 
 else
     dupSym      =      1; 

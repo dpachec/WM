@@ -535,6 +535,147 @@ if ~isempty(intersect(c2c, 'EE'))
 
 
 
+if ~isempty(intersect(c2c, 'EM11'))
+    if strcmp(posEnc, '1') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '5') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                  if strcmp(it_id_Enc,it_id_Ret) 
+                     %disp(['SISC_EE> ' oneListIds{i} '//' oneListIds{j}]);   
+                     if exist('countSISC_EM11')
+                        new_sisc_em11{countSISC_EM11} = [i, j];
+                        countSISC_EM11 = countSISC_EM11+1;
+                     end
+                  elseif ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EM11 > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDISC_EM11')
+                         new_disc_em11{countDISC_EM11} = [i, j];
+                         countDISC_EM11 = countDISC_EM11+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EE > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EM11')
+                        new_didc_em11{countDIDC_EM11} = [i, j];
+                        countDIDC_EM11 = countDIDC_EM11+1;
+                     end
+                   end
+            else
+                %it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                %cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     %disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
+            end
+
+
+        end
+        end
+    end
+    end
+
+
+
+     if ~isempty(intersect(c2c, 'EM12'))
+    if strcmp(posEnc, '3') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '3') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                  if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EM12 > ' trlij]);    
+                     if exist('countDISC_EM12')
+                         new_disc_em12{countDISC_EM12} = [i, j];
+                         countDISC_EM12 = countDISC_EM12+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EM12 > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EM12')
+                        new_didc_em12{countDIDC_EM12} = [i, j];
+                        countDIDC_EM12 = countDIDC_EM12+1;
+                     end
+                   end
+            else
+                %it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                %cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     %disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
+            end
+
+
+        end
+        end
+    end
+    end
+
+
+
+     if ~isempty(intersect(c2c, 'EM13'))
+    if strcmp(posEnc, '5') %* is for the average data
+        for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
+           evej = strsplit(oneListIds{j});
+           if strcmp(evej(1), '5') 
+            trli = string(evei(12)); trlj = string(evej(12));
+            trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
+            trlij = [trli trlj];
+            
+            if length(trlij) == length(unique(trlij)) % all averaged items were presented in different trials. 
+                    
+                  it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                  cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+
+                 if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DISC_EM13 > ' trlij]);    
+                     if exist('countDISC_EM13')
+                         new_disc_em13{countDISC_EM13} = [i, j];
+                         countDISC_EM13 = countDISC_EM13+1;
+                     end
+                  elseif ~strcmp(cat_id_Enc,cat_id_Ret)
+                     %disp(['DIDC_EM13 > ' oneListIds{i} '//' oneListIds{j}]);     
+                     if exist('countDIDC_EM13')
+                        new_didc_em13{countDIDC_EM13} = [i, j];
+                        countDIDC_EM13 = countDIDC_EM13+1;
+                     end
+                   end
+            else
+                %it_id_Enc = evei(3); it_id_Ret = evej(3); 
+                %cat_id_Enc = it_id_Enc{1}(1); cat_id_Ret = it_id_Ret{1}(1);
+                %if ~strcmp(it_id_Enc,it_id_Ret) & strcmp(cat_id_Enc,cat_id_Ret)
+                %    disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                %end
+                 % if ~strcmp(cat_id_Enc,cat_id_Ret)
+                 %     disp(['Trial Overlap > ' it_id_Enc ' > ' it_id_Ret]);
+                 % end 
+            end
+
+
+        end
+        end
+    end
+    end
 
 
 

@@ -403,11 +403,6 @@ if strcmp(cfg.cond1, 'DCSP_M2M2') & strcmp(cfg.cond2,'DCDP_M2M2')
     cfg_plot.imageName = ['_DCSP_M2M2-DCDP_M2M2-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_DCSP_M2M2-DCDP_M2M2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
-if strcmp(cfg.cond1, 'SCSP_EM1') & strcmp(cfg.cond2,'SCDP_EM1')
-    cfg_plot.lbls3plot = {['SCSP'] ['SCDP'] ['SCSP vs.' newline 'SCDP']};
-    cfg_plot.imageName = ['_SCSP_EM1-SCDP_EM1-' num2str(cfg.subj2exc)  '.png']; 
-    if (cfg.runperm) cfg_plot.imageName = ['_SCSP_EM1-SCDP_EM1-' num2str(cfg.subj2exc) '.png_c.png'] ; end
-end
 if strcmp(cfg.cond1, 'DISC_EE1') & strcmp(cfg.cond2,'DIDC_EE1')
     cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['DISC vs.' newline 'DIDC']};
     cfg_plot.imageName = ['_DISC_EE1-DIDC_EE1-' num2str(cfg.subj2exc)  '.png']; 
@@ -428,6 +423,28 @@ if strcmp(cfg.cond1, 'SCSP_EE') & strcmp(cfg.cond2,'SCDP_EE')
     cfg_plot.imageName = ['_SCSP_EE-SCDP_EE-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_SCSP_EE-SCDP_EE-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
+if strcmp(cfg.cond1, 'SCSP_EM1') & strcmp(cfg.cond2,'SCDP_EM1')
+    cfg_plot.lbls3plot = {['SCSP'] ['SCDP'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_SCSP_EM1-SCDP_EM1-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_SCSP_EM1-SCDP_EM1-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+if strcmp(cfg.cond1, 'DISC_EM11') & strcmp(cfg.cond2,'DIDC_EM11')
+    cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_DISC_EM11-DIDC_EM11-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM11-DIDC_EM11-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+if strcmp(cfg.cond1, 'DISC_EM12') & strcmp(cfg.cond2,'DIDC_EM12')
+    cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_DISC_EM12-DIDC_EM12-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM12-DIDC_EM12-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+if strcmp(cfg.cond1, 'DISC_EM13') & strcmp(cfg.cond2,'DIDC_EM13')
+    cfg_plot.lbls3plot = {['DISC'] ['DIDC'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_DISC_EM13-DIDC_EM13-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM13-DIDC_EM13-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+
+
 
 cfg_plot = cfg_plot;
  
