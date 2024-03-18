@@ -185,7 +185,42 @@ end
 sum(s_ids)
 
 
+%% export s_all as csv file
 
+%allChans = cat(1, s_all{:})
+cd D:\_WM\analysis\out_contrasts
+load vvs_elec
+allChans = cat(1, chanNames_all{:})
+writematrix(string(allChans), 'allChans_VVS.csv')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
 
 
 

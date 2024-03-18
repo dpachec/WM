@@ -60,6 +60,23 @@ if strcmp(cfg.res, '100_norm')
         cfg_plot.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
     end
 
+    if strcmp(cfg.cut2, '1-2')
+        cfg_plot.mlimE = 3:17; %1:85;
+        cfg_plot.mlimR = 11:30; %1:85
+        x = 45; %note that x is different from the original size of the matrix 
+        cfg_plot.binsE = 20; 
+        cfg_plot.binsR = 15; 
+        cfg_plot.labels_to_plotE = -.5:.5:1; 
+        cfg_plot.labels_to_plotR = -.5:.5:2; 
+        cfg_plot.limFE =  10.5;
+        cfg_plot.limFR =  4.5;
+        cfg_plot.l2excE = [1 3 ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.placeTX = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5]; 
+        cfg_plot.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];  
+        cfg_plot.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
+    end
+
     if strcmp(cfg.cut2, '4-4')
         cfg_plot.mlimE = 3:47 %1:45; %1:85;
         cfg_plot.mlimR = 3:47 %1:45; %1:85
@@ -113,6 +130,23 @@ if strcmp(cfg.res, '100_perm')
         cfg_plot.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];  
         cfg_plot.plotCueOnset    =       0; %plot cue onset at encoding and retrieval
         
+    end
+
+    if strcmp(cfg.cut2, '1-2')
+        cfg_plot.mlimE = 8:17; %1:85;
+        cfg_plot.mlimR = 16:30; %1:85
+        x = 45; %note that x is different from the original size of the matrix 
+        cfg_plot.binsE = 20; 
+        cfg_plot.binsR = 15; 
+        cfg_plot.labels_to_plotE = -.5:.5:1; 
+        cfg_plot.labels_to_plotR = -.5:.5:2; 
+        cfg_plot.limFE =  10.5;
+        cfg_plot.limFR =  4.5;
+        cfg_plot.l2excE = [1 3 ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.placeTX = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5]; 
+        cfg_plot.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];  
+        cfg_plot.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
     end
 
     if strcmp(cfg.cut2, '4-4')
@@ -423,6 +457,11 @@ if strcmp(cfg.cond1, 'SCSP_EE') & strcmp(cfg.cond2,'SCDP_EE')
     cfg_plot.imageName = ['_SCSP_EE-SCDP_EE-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_SCSP_EE-SCDP_EE-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
+if strcmp(cfg.cond1, 'DCSP_EE') & strcmp(cfg.cond2,'DCDP_EE')
+    cfg_plot.lbls3plot = {['DCSP'] ['DCDP'] ['DCSP vs.' newline 'DCDP']};
+    cfg_plot.imageName = ['_DCSP_EE-DCDP_EE-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DCSP_EE-DCDP_EE-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
 if strcmp(cfg.cond1, 'SCSP_EM1') & strcmp(cfg.cond2,'SCDP_EM1')
     cfg_plot.lbls3plot = {['SCSP'] ['SCDP'] ['SCSP vs.' newline 'SCDP']};
     cfg_plot.imageName = ['_SCSP_EM1-SCDP_EM1-' num2str(cfg.subj2exc)  '.png']; 
@@ -443,8 +482,16 @@ if strcmp(cfg.cond1, 'DISC_EM13') & strcmp(cfg.cond2,'DIDC_EM13')
     cfg_plot.imageName = ['_DISC_EM13-DIDC_EM13-' num2str(cfg.subj2exc)  '.png']; 
     if (cfg.runperm) cfg_plot.imageName = ['_DISC_EM13-DIDC_EM13-' num2str(cfg.subj2exc) '.png_c.png'] ; end
 end
-
-
+if strcmp(cfg.cond1, 'SCSP_EM2') & strcmp(cfg.cond2,'SCDP_EM2')
+    cfg_plot.lbls3plot = {['SCSP'] ['SCDP'] ['SCSP vs.' newline 'SCDP']};
+    cfg_plot.imageName = ['_SCSP_EM2-SCDP_EM2-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_SCSP_EM2-SCDP_EM2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
+if strcmp(cfg.cond1, 'DCSP_EM2') & strcmp(cfg.cond2,'DCDP_EM2')
+    cfg_plot.lbls3plot = {['DCSP'] ['DCDP'] ['DCSP vs.' newline 'DCDP']};
+    cfg_plot.imageName = ['_DCSP_EM2-DCDP_EM2-' num2str(cfg.subj2exc)  '.png']; 
+    if (cfg.runperm) cfg_plot.imageName = ['_DCSP_EM2-DCDP_EM2-' num2str(cfg.subj2exc) '.png_c.png'] ; end
+end
 
 cfg_plot = cfg_plot;
  

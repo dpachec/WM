@@ -101,7 +101,8 @@ for coni = 1:length(currentContrast)
             mY= squeeze(yM(triali,:,:));
             r = corr (mX', mY','Type', 's'); 
             idC = strsplit(id, '_');
-            if ~strcmp(idC{2}, 'EM2') & ~strcmp(idC{2}, 'EM11') & ~strcmp(idC{2}, 'EM12') & ~strcmp(idC{2}, 'EM13') 
+            if ~strcmp(idC{2}, 'EM2') & ~strcmp(idC{2}, 'EM11') & ~strcmp(idC{2}, 'EM12') & ~strcmp(idC{2}, 'EM13') ...
+                & ~strcmp(idC{2}, 'EM21') & ~strcmp(idC{2}, 'EM22') & ~strcmp(idC{2}, 'EM23') 
                 id0 = find(r==0);
                 r = tril(squeeze(r)); %symmetric so only half is saved
                 r(r == 0) = nan;r(id0)=0;

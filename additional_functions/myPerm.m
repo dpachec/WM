@@ -25,9 +25,10 @@ function [out_perm] = myPerm (cfg_perm)
         
     end
     
-    sizeM = size(meanReal_cond1, 2); 
-    out_perm.m_fakeH= zeros (cfg_perm.n_perm, sizeM, sizeM);
-    out_perm.m_fakeT= zeros (cfg_perm.n_perm, sizeM, sizeM);
+    size1 = size(meanReal_cond1, 2); 
+    size2 = size(meanReal_cond1, 3); 
+    out_perm.m_fakeH= zeros (cfg_perm.n_perm, size1, size2);
+    out_perm.m_fakeT= zeros (cfg_perm.n_perm, size1, size2);
     
     for permi = 1:cfg_perm.n_perm
         rsa_all_1 = rsa_perm(permi, :,1,:,:); 
@@ -82,7 +83,7 @@ function [out_perm] = myPerm (cfg_perm)
     end
      
  
-    fprintf('\n');
+    %fprintf('\n');
  
  
     all_clust_tsum_real             =   cfg_perm.out_real.all_clust_tsum_real;
