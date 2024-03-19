@@ -1,7 +1,7 @@
 function [EEG] = select_electrodes(EEG, region)
 
-atlas = ft_read_atlas('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg.nii'); %from SPM12 (included in additional_functions)
-atlas.coordsys = 'mni';
+%atlas = ft_read_atlas('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg.nii'); %from SPM12 (included in additional_functions)
+%atlas.coordsys = 'mni';
 
 S = struct2cell(EEG.chanlocs)'; 
 
@@ -15,19 +15,41 @@ EEG.chanlocs = EEG.chanlocs(idx);
 EEG.data = EEG.data(idx,:);
 EEG.nbchan = size(EEG.data,1);
 
+% clear myCoord;
+% for chani = 1:length(elec_mni_frv.chanpos)
+%     cfg            = [];
+%     cfg.roi        = elec_mni_frv.chanpos(chani,:);
+%     cfg.atlas      = atlas;
+%     cfg.inputcoord = 'mni';
+%     cfg.output     = 'label';
+%     cfg.maxqueryrange = 5;
+%     labels = ft_volumelookup(cfg, atlas);
+%     [~, indx] = max(labels.count); 
+%     % check https://www.fieldtriptoolbox.org/faq/how_can_i_determine_the_anatomical_label_of_a_source/
+%     myCoord(chani,:) = labels.name(indx);
+% end
+% [EEG.chanlocs.location] = myCoord{:}; 
+% coord = string(myCoord);
+
+
+% get freesurfer template
+addpath('D:\Documents\MATLAB\spm12\');
+V_aparc                 = spm_vol('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg_1.nii');
+
+[Y_aparc, XYZ_aparc]    = spm_read_vols(V_aparc);
+load('fs_regionvalue2regionlabel.mat');
+fprintf('You can evaluate %d different regions using this freesurfer template...\n', size(fs_regionvalue2regionlabel, 1));
+
 clear myCoord;
 for chani = 1:length(elec_mni_frv.chanpos)
-    cfg            = [];
-    cfg.roi        = elec_mni_frv.chanpos(chani,:);
-    cfg.atlas      = atlas;
-    cfg.inputcoord = 'mni';
-    cfg.output     = 'label';
-    cfg.maxqueryrange = 5;
-    labels = ft_volumelookup(cfg, atlas);
-    [~, indx] = max(labels.count); 
-    % check https://www.fieldtriptoolbox.org/faq/how_can_i_determine_the_anatomical_label_of_a_source/
-    myCoord(chani,:) = labels.name(indx);
+    MNI_coors           = round(elec_mni_frv.chanpos(chani, :)); 
+    tmpidx              = find(XYZ_aparc(1, :) == MNI_coors(1) & XYZ_aparc(2, :) == MNI_coors(2) & XYZ_aparc(3, :) == MNI_coors(3));
+    this_region_value   = Y_aparc(tmpidx);
+    tmpidx              = find(cell2mat(fs_regionvalue2regionlabel(:, 1)) == this_region_value);
+    fs_region_name      = fs_regionvalue2regionlabel{tmpidx, 2};
+    myCoord{chani}    = fs_region_name; 
 end
+
 [EEG.chanlocs.location] = myCoord{:}; 
 coord = string(myCoord);
 
