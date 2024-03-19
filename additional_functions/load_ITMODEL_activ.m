@@ -1,9 +1,12 @@
 
-function [ACT] = load_ITMODEL_activ(oneListIDs)
+function [ACT nRep] = load_ITMODEL_activ(oneListIDs)
 
 
     ids = cellfun(@(x) strsplit(string(x)), oneListIDs, 'UniformOutput', false);
     ids0 = double(string(cellfun(@(x) x(3), ids, 'UniformOutput', false)));
+
+    [a,b] = histc(ids0,unique(ids0));
+    nRep = a(b);
 
     M = zeros (length(ids0));
     

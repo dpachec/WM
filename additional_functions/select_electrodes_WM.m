@@ -1,6 +1,6 @@
 function [EEG] = select_electrodes(EEG, region)
 
-atlas = ft_read_atlas('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg.nii'); %from SPM12 (included in the additional_functions)
+atlas = ft_read_atlas('D:\Documents\GitHub\WM\additional_functions\aparc aseg-in-rawavg.nii'); %from SPM12 (included in additional_functions)
 atlas.coordsys = 'mni';
 
 S = struct2cell(EEG.chanlocs)'; 
@@ -30,7 +30,6 @@ for chani = 1:length(elec_mni_frv.chanpos)
 end
 [EEG.chanlocs.location] = myCoord{:}; 
 coord = string(myCoord);
-
 
 
 switch region

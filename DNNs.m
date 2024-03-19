@@ -83,9 +83,11 @@ clear, clc
     
 listF2sav = {
 
-'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
-'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
+% 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
+% 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
+% 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
+
+'CAT_vvs_M123IC-R_[1]_3-54_1_0_1_0_.1_5_1.mat';
 
 };   
 
@@ -712,8 +714,7 @@ p_ranked = sort(p_ranked(:))
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-f2sav = 'CAT_vvs_M123_[1-8]_39-54_1_0_0_0_.1_5_1';
-
+f2sav = 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1';
 
 
 cfg = getParams(f2sav);
@@ -808,14 +809,14 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-%f2sav = 'CAT_vvs_E123_[1-8]_3-8_1_0_0_0_.1_5_1';
-f2sav =  'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
+f2sav = 'CAT_vvs_E123_[1]_3-8_1_0_0_0_.1_5_1';
+%f2sav =  'Alex_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1_MASK'; 
 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
-    %sub2exc = [18 22];
-    sub2exc = [18 22 10 20]; % for the incorrect trials
+    sub2exc = [18 22];
+    
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
 end
@@ -1365,15 +1366,15 @@ clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
 listF2sav = {
-%'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
-%'Alex_vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_vvs_E123_[]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+%'Alex_vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
 
-%'Alex_pfc_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-%'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-%'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
-%'Alex_vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_pfc_E123_[]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_vvs_E123_[]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_pfc_M123_[]_3-54_0_0_1_0_.1_5_1'; 
+%'Alex_vvs_M123_[]_3-54_0_0_1_0_.1_5_1'; 
 
 };   
 
@@ -1414,7 +1415,7 @@ etime(datevec(t2), datevec(t1))
 %% Process and plot RDM in the PFC cluster during ENCODING
 clear
 
-f2load = 'pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1477,7 +1478,7 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 %% Process extract RDM in the correct vs incorrect cluster in VVS during maintenance
 clear, clc
 % % first load neural RDMs in VVS
-f2load = 'vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+f2load = 'vvs_M123_[]_3-54_0_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1551,7 +1552,7 @@ end
 %% RESIDUAL ANALYSIS PFC : Process and plot RDM in the PFC cluster during maintenance
 clear, clc
 
-f2load = 'pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+f2load = 'pfc_M123_[]_3-54_0_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1623,7 +1624,7 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 %% RESIDUAL ANALYSIS VVS: Process and plot RDM in the VVS cluster during maintenance
 clear, clc
 
-f2load = 'vvs_M123_[1-8]_3-54_0_0_1_0_.1_5_1'; 
+f2load = 'vvs_M123_[]_3-54_0_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1710,7 +1711,7 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 %% Correlate PFC CLUSTER WITH CATEGORY MODEL 
 clear, clc
 
-f2load = 'pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('pfc', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1755,7 +1756,7 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 %% Correlate 3 clusters with CATEGORY MODEL VVS
 clear, clc
 
-f2load = 'vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1853,7 +1854,7 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 %% Process and plot RDM during encoding
 clear
 
-f2load = 'vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'vvs_E123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1893,7 +1894,7 @@ imagesc(mRDM)
 %% Process and plot RDM during maintenance in VVS theta cluster
 clear
 
-f2load = 'vvs_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1908,27 +1909,64 @@ nTimes = size(allNeuralRDMS{1}, 4);
 for subji = 1:nSubjs
     neuralRDMs  = allNeuralRDMS{subji, 1}; 
     ids         = allNeuralRDMS{subji, 2};
-    rdm         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
-    meanRDM{subji,:} = rdm; 
-    CM = load_CATMODEL_activ(ids); 
-    rdm = vectorizeRDM(rdm); 
-    CM = vectorizeRDM(CM); 
-    allR_M(subji, :) = corr(CM', rdm, 'type', 's');    
+    oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+    oneListIds = double(string(cat(1, oneListIds{:})));
+    idsF1 = oneListIds(:, 3);
+    idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
+    [x1 x2 x3] = intersect (idsF1, idsF2);
     
+    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
+    
+    rdm = nan(60); 
+    rdm(x3,x3) = rdmS; 
+    meanRDM(subji,:,:) = rdm; 
+
+    CM = load_CATMODEL_activ(ids); 
+    rdmS = vectorizeRDM(rdmS); 
+    CM = vectorizeRDM(CM); 
+    allR_M(subji, :) = corr(CM', rdmS, 'type', 's');    
     
 end
 
 sub2exc = [18 22]; 
 allR_M(sub2exc) = []; 
-
+meanRDM(sub2exc, :, :) = [];
 
 [h p ci t] = ttest (allR_M);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
+
+%% plot average RDM
+
+
+d2p = squeeze(mean(meanRDM, 'omitnan')); 
+d2p(logical(eye(size(d2p, 1)))) = nan; 
+
+imagesc(d2p); axis square
+
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+%% plot average in six categories
+
+d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'omitnan') mean(d2p(1:10, 21:30), 'all', 'omitnan') mean(d2p(1:10, 31:40), 'all', 'omitnan') mean(d2p(1:10, 41:50), 'all', 'omitnan') mean(d2p(1:10, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(11:20, 1:10), 'all', 'omitnan') mean(d2p(11:20, 11:20), 'all', 'omitnan') mean(d2p(11:20, 21:30), 'all', 'omitnan') mean(d2p(11:20, 31:40), 'all', 'omitnan') mean(d2p(11:20, 41:50), 'all', 'omitnan') mean(d2p(11:20, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(21:30, 1:10), 'all', 'omitnan') mean(d2p(21:30, 11:20), 'all', 'omitnan') mean(d2p(21:30, 21:30), 'all', 'omitnan') mean(d2p(21:30, 31:40), 'all', 'omitnan') mean(d2p(21:30, 41:50), 'all', 'omitnan') mean(d2p(21:30, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(31:40, 1:10), 'all', 'omitnan') mean(d2p(31:40, 11:20), 'all', 'omitnan') mean(d2p(31:40, 21:30), 'all', 'omitnan') mean(d2p(31:40, 31:40), 'all', 'omitnan') mean(d2p(31:40, 41:50), 'all', 'omitnan') mean(d2p(31:40, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(41:50, 1:10), 'all', 'omitnan') mean(d2p(41:50, 11:20), 'all', 'omitnan') mean(d2p(41:50, 21:30), 'all', 'omitnan') mean(d2p(41:50, 31:40), 'all', 'omitnan') mean(d2p(41:50, 41:50), 'all', 'omitnan') mean(d2p(41:50, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(51:60, 1:10), 'all', 'omitnan') mean(d2p(51:60, 11:20), 'all', 'omitnan') mean(d2p(51:60, 21:30), 'all', 'omitnan') mean(d2p(51:60, 31:40), 'all', 'omitnan') mean(d2p(51:60, 41:50), 'all', 'omitnan') mean(d2p(51:60, 51:60), 'all', 'omitnan') ;...
+        ];
+
+
+imagesc(d2p2); axis square; colorbar
+%set (gca, 'clim', [-.02 .02])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
 %% Process and plot RDM during encoding (SELECT TIME PERIOD - THETA)
 clearvars -except allR_M
 
-f2load = 'vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'vvs_E123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1943,12 +1981,22 @@ nTimes = size(allNeuralRDMS{1}, 4);
 for subji = 1:nSubjs
     neuralRDMs  = allNeuralRDMS{subji, 1}; 
     ids         = allNeuralRDMS{subji, 2};
-    rdm         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,6:14), 3),4)); %Theta cluster time period
-    meanRDM{subji,:} = rdm; 
+    oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+    oneListIds = double(string(cat(1, oneListIds{:})));
+    idsF1 = oneListIds(:, 3);
+    idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
+    [x1 x2 x3] = intersect (idsF1, idsF2);
+    
+    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
+    
+    rdm = nan(60); 
+    rdm(x3,x3) = rdmS; 
+    meanRDM(subji,:,:) = rdm; 
+
     CM = load_CATMODEL_activ(ids); 
-    rdm = vectorizeRDM(rdm); 
+    rdmS = vectorizeRDM(rdmS); 
     CM = vectorizeRDM(CM); 
-    allR_E(subji, :) = corr(CM', rdm, 'type', 's');    
+    allR_E(subji, :) = corr(CM', rdmS, 'type', 's');    
     
     
 end
@@ -1960,6 +2008,31 @@ allR_E(sub2exc) = [];
 [h p ci t] = ttest (allR_E);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
+%% plot average RDM
+
+
+d2p = squeeze(mean(meanRDM, 'omitnan')); 
+d2p(logical(eye(size(d2p, 1)))) = nan; 
+
+imagesc(d2p); axis square
+
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+%% plot average in six categories
+
+d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'omitnan') mean(d2p(1:10, 21:30), 'all', 'omitnan') mean(d2p(1:10, 31:40), 'all', 'omitnan') mean(d2p(1:10, 41:50), 'all', 'omitnan') mean(d2p(1:10, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(11:20, 1:10), 'all', 'omitnan') mean(d2p(11:20, 11:20), 'all', 'omitnan') mean(d2p(11:20, 21:30), 'all', 'omitnan') mean(d2p(11:20, 31:40), 'all', 'omitnan') mean(d2p(11:20, 41:50), 'all', 'omitnan') mean(d2p(11:20, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(21:30, 1:10), 'all', 'omitnan') mean(d2p(21:30, 11:20), 'all', 'omitnan') mean(d2p(21:30, 21:30), 'all', 'omitnan') mean(d2p(21:30, 31:40), 'all', 'omitnan') mean(d2p(21:30, 41:50), 'all', 'omitnan') mean(d2p(21:30, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(31:40, 1:10), 'all', 'omitnan') mean(d2p(31:40, 11:20), 'all', 'omitnan') mean(d2p(31:40, 21:30), 'all', 'omitnan') mean(d2p(31:40, 31:40), 'all', 'omitnan') mean(d2p(31:40, 41:50), 'all', 'omitnan') mean(d2p(31:40, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(41:50, 1:10), 'all', 'omitnan') mean(d2p(41:50, 11:20), 'all', 'omitnan') mean(d2p(41:50, 21:30), 'all', 'omitnan') mean(d2p(41:50, 31:40), 'all', 'omitnan') mean(d2p(41:50, 41:50), 'all', 'omitnan') mean(d2p(41:50, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(51:60, 1:10), 'all', 'omitnan') mean(d2p(51:60, 11:20), 'all', 'omitnan') mean(d2p(51:60, 21:30), 'all', 'omitnan') mean(d2p(51:60, 31:40), 'all', 'omitnan') mean(d2p(51:60, 41:50), 'all', 'omitnan') mean(d2p(51:60, 51:60), 'all', 'omitnan') ;...
+        ];
+
+
+imagesc(d2p2); axis square; colorbar
+set (gca, 'clim', [-.015 .005])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
 
 %% directly compare the two RDM fits
@@ -3443,12 +3516,68 @@ else
 end
 
 
- 
+
+
 d4ANOVA = [nnHBLNET; nnHALEX ;nnHCAT]; 
 d4ANOVA(:,2) = [ones(1,15) ones(1,15)*2 ones(1,15)*3];
 d4ANOVA(:,3) = [1:15 1:15 1:15];
-
 [p F] = RMAOV1(d4ANOVA);
+
+
+
+%% independent anova does not work
+
+d4ANOVA1 = [nnHBLNET nnHALEX nnHCAT]; 
+[p t stats] = anova1(d4ANOVA1); 
+[c,m,h,gnames] = multcompare(stats);
+
+%% build LME equivalent
+clc
+tbl = table(d4ANOVA(:,1), d4ANOVA(:,2), d4ANOVA(:,3), ...
+    'VariableNames',{'fit','model', 'subID'});
+
+lme = fitlme(tbl,'fit ~  model + (1|subID)'); % random intercept model
+
+lme
+
+
+
+%%
+%                                                           Weeks
+%                             ------------------------------------------------------
+%                              Subject        1       2       3       4       5
+%                             ------------------------------------------------------
+%                                  1         21      22       8       6       6
+%                                  2         20      19      10       4       4           
+%                                  3         17      15       5       4       5
+%                                  4         25      30      13      12      17
+%                                  5         30      27      13       8       6
+%                                  6         19      27       8       7       4
+%                                  7         26      16       5       2       5        
+%                                  8         17      18       8       1       5       
+%                                  9         26      24      14       8       9
+%                             ------------------------------------------------------
+
+% DATA MUST BE
+
+ X= [21 1 1;20 1 2;17 1 3;25 1 4;30 1 5;19 1 6;26 1 7;17 1 8;26 1 9;
+ 22 2 1;19 2 2;15 2 3;30 2 4;27 2 5;27 2 6;16 2 7;18 2 8;24 2 9;
+ 8 3 1;10 3 2;5 3 3;13 3 4;13 3 5;8 3 6;5 3 7;8 3 8;14 3 9;
+ 6 4 1;4 4 2;4 4 3;12 4 4;8 4 5;7 4 6;2 4 7;1 4 8;8 4 9;
+ 6 5 1;4 5 2;5 5 3;17 5 4;6 5 5;4 5 6;5 5 7;5 5 8;9 5 9];
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% 
 [h p ci ts] = ttest(nnHBLNET, nnHALEX);
@@ -4372,11 +4501,44 @@ plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
 
 
 
-%%
+
+%% COUNT NREP (ONLY TO COUNT NUMBER OF REPEATED ITEMS IN THE ITEM MODEL ANALYSIS)
+clear, clc
+listF2sav = {
+'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1.mat';
+};   
+
+t1 = datetime; 
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi t1
+        
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFilesWM(paths.powerFromRT);
+    
+    for sessi= 1:length(filelistSess) 
+        disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+        
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            oneListIDs = cfg_contrasts.oneListIds;
+            [ACT nRep{sessi,:}] = load_ITMODEL_activ(oneListIDs);
+            
+        end
+    end
+end
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
 
 
+%% 
 
-
+nReps = cellfun(@(x) sum(x>1), nRep, 'un', 0)
 
 
 

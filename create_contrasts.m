@@ -11,7 +11,7 @@ subjend = 83;
 
 
 %%power parameters
-eLim            =       [-3 7]; %[-3 7];            %   max 5 
+eLim            =       [-2 7]; %[-3 7];            %   max 5 
 xlimE           =       [-500 4000];       %   for cleaning at enc
 xlimR           =       [-500 4000];      %   for cleaning at ret
 cleaning        =       1;                 %      event
