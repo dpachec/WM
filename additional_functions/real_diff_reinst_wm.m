@@ -12,7 +12,11 @@ for subji = 1:n_subj
 end
 
 [sigMH_real subjigMP_real subjigMCI_real sigMT_real] = ttest (meanReal_cond1, meanReal_cond2, 'alpha', cfg.alpha);
-sigMH_real = squeeze(sigMH_real);subjigMP_real = squeeze(subjigMP_real); 
+sigMH_real = squeeze(sigMH_real);
+% if cfg.cond1(6:8) == 'EM1'
+%     sigMH_real(1:15, 1:5) = 0; % % % remove clusters before baseline
+% end
+subjigMP_real = squeeze(subjigMP_real); 
 sigMT_real = squeeze (sigMT_real.tstat);
 
 sigMH_real(isnan(sigMH_real)) = 0; %for the half-matrix analysubjis

@@ -1,7 +1,7 @@
 %% 
 %% Export power from epoched rawTraces 
 % % note that multi-item trials are discarded, and data is normalized across trials after removing these trials
-clear 
+clear , clc
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.traces);
 
@@ -87,7 +87,20 @@ listF2sav = {
 % 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
 % 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
 
-'CAT_vvs_M123IC-R_[1]_3-54_1_0_1_0_.1_5_1.mat';
+% 'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1'
+% 'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1'
+% 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1'
+% 'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1'
+% 'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1'
+% 
+% 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1'
+% 'CAT_vvs_M123_[1]_9-12_1_0_0_0_.1_5_1'
+% 'CAT_vvs_M123_[1]_13-29_1_0_0_0_.1_5_1'
+% 'CAT_vvs_M123_[1]_30-38_1_0_0_0_.1_5_1'
+% 'CAT_vvs_M123_[1]_39-54_1_0_0_0_.1_5_1'
+
+'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+
 
 };   
 
@@ -120,9 +133,9 @@ for listi = 1:length(listF2sav)
             end
 
             if ~strcmp(cfg.meth(1:2), 'PC')
-                tic
+                
                 nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
-                toc
+
             elseif strcmp(cfg.meth(1:2), 'PC')
                 nnFit{sessi,1}              = fitModelPartialCorrelation(cfg_contrasts, neuralRDMs, networkRDMs, f2sav(end)); 
             end
@@ -215,6 +228,70 @@ t2 = datetime;
 etime(datevec(t2), datevec(t1))
 
 
+%% IN LOOP LOADING POWER DATA PERMUTATIONS for trial level analysis (NO SEPARATLY) 
+clear, clc
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+nPerm = 200; 
+listF2sav = {
+
+%'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+%'BLNETi_pfc_M123_[56]_3-54_0_0_1_1_.1_5_1';
+%'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+%'BLNETi_pfc_E123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
+
+
+};   
+
+t1 = datetime; 
+
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi nPerm t1
+        
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFilesWM(paths.powerFromRT);
+    
+    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+        disp(['Sessi > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+        
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+    
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+            neuralRDMs                  = restrictTime4Perm(cfg, neuralRDMs); 
+            if strcmp(cfg.period(1), 'M')
+             ids = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0); %str2num does not work
+             ids = double(string(cat(1, ids{:})));
+           elseif strcmp(cfg.period(1), 'E') % for clarity
+             ids= str2num(cell2mat(nnFit{subji, 2}));
+           end
+            
+           
+            parfor permi = 1:nPerm
+                % % shuffle ids for each condition independently 
+                idsRand = randperm(length(ids)); 
+                networkRDMsPerm = networkRDMs(:, idsRand, idsRand); 
+                nnFitPerm{permi, sessi} = fitModel_WM(neuralRDMs, networkRDMsPerm, cfg.fitMode); 
+            end                
+        end
+    end
+
+    
+    save([paths.results.DNNs f2sav '_' num2str(nPerm) 'p.mat'], 'nnFitPerm', '-v7.3');
+
+end
+
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
+
+
 %% IN LOOP LOADING POWER DATA PERMUTATIONS for trial level analysis
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
@@ -287,15 +364,17 @@ end
 t2 = datetime; 
 etime(datevec(t2), datevec(t1))
 
+
+
 %%  plot all layers FREQUENCY RESOLVED
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
 %f2sav = 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 %f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'; 
-f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
 %f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
 %f2sav = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1';
 
@@ -416,7 +495,7 @@ clear , clc
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
 f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
-cond2plot = 'CC'; %allT CC CI
+cond2plot = 'IC'; %allT CC CI
 minSubCrit = 5; 
 
 cfg = getParams(f2sav);
@@ -531,7 +610,7 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-%f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_1_.1_5_1';
+%f2sav = 'Alex_vvs_M123_[1-8]_3-54_0_0_1_1_.1_5_1';
 f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_1_.1_5_1';
 
 minSubCrit = 5; 
@@ -547,12 +626,11 @@ paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav '.mat']);
 
 
-tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+tiledlayout(8,8, 'TileSpacing', 'compact', 'Padding', 'compact');
 if strcmp(cfg.period(1), 'M')
-    set(gcf, 'Position', [100 100 1200 1000])
+    set(gcf, 'Position', [100 100 1800 1300])
 else
-    set(gcf, 'Position', [100 100 700 1200])
-    %set(gcf, 'Position', [100 100 1800 1000])
+    set(gcf, 'Position', [100 100 670 1300])
 end
 
 for layi = 1:size(nnFit{2}, 1)
@@ -573,9 +651,9 @@ for layi = 1:size(nnFit{2}, 1)
             idsCI = ids(:,19)==1; 
             idsII = ids(:,19)==0; 
 
-            nTR(subji,:) = sum(idsII==1); 
+            nTR(subji,:) = sum(idsIC==1); 
             nnH1(subji, : ,:) = squeeze(mean(avTR(:, idsCC,:,:), 2)); 
-            nnH2(subji, : ,:) = squeeze(mean(avTR(:, idsII,:,:), 2)); 
+            nnH2(subji, : ,:) = squeeze(mean(avTR(:, idsIC,:,:), 2)); 
 
        end
     end
@@ -597,7 +675,6 @@ for layi = 1:size(nnFit{2}, 1)
     %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
     
     d2p = squeeze(mean(nnH1 - nnH2, 'omitnan'));
-    freqs = 1:52; 
     clustinfo = bwconncomp(h);
     allClustInfo{layi} = clustinfo; 
 
@@ -616,34 +693,46 @@ for layi = 1:size(nnFit{2}, 1)
     [max2u id] = max(allTObs);
     tObs(layi) = allTObs(id); 
     
+    freqs = 1:520; 
+    
     if strcmp(cfg.period(1), 'M')
-        times = 1:size(t, 2); 
+        times = 1:size(t, 2)*10; 
+        h = zeros(52, 40); 
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 1
+            h(clustinfo.PixelIdxList{11}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 3
+            h(clustinfo.PixelIdxList{13}) = 1;
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.brainROI, 'vvs') & layi == 4
+            h(clustinfo.PixelIdxList{13}) = 1;
+        end
+
     else
-        times = 1:15; 
-        %times = 1:134;
+        times = 1:150; 
     end
-    myCmap = colormap(brewermap([],'YlOrRd'));
+    myCmap = colormap(brewermap([],'*spectral'));
     colormap(myCmap)
-    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
-    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    contourf(times, freqs,myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
     
     if strcmp(cfg.period(1), 'M')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
-        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        set(gca, 'xlim', [1 400], 'clim', [-5 5], 'FontSize', 10);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
     else
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         set(gca, 'FontSize', 8, 'clim', [-5 5]);
-        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
         
     end
-    
+
 
 end
 
 %exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
+close all 
 
 %% permutations from NNH 
 
@@ -714,7 +803,12 @@ p_ranked = sort(p_ranked(:))
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-f2sav = 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1';
+
+%f2sav =  'BLNETi_vvs_M11_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_vvs_M12_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'
+f2sav = 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1'
 
 
 cfg = getParams(f2sav);
@@ -736,7 +830,7 @@ else
     %set(gcf, 'Position', [100 100 1800 1000])
 end
 
-for layi = 1:size(nnFit{1}, 1)
+for layi = 1:size(nnFit{2}, 1)
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)
@@ -809,7 +903,7 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-f2sav = 'CAT_vvs_E123_[1]_3-8_1_0_0_0_.1_5_1';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 %f2sav =  'Alex_pfc_E123_[1]_3-54_0_0_1_0_.1_5_1_MASK'; 
 
 
@@ -905,9 +999,10 @@ exportgraphics(gcf, ['myP.png'], 'Resolution', 300);
 clear, clc
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK';
 
-f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1';
+%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -919,18 +1014,25 @@ end
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav '.mat']);
 
-load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
-%load ([paths.results.clusters 'all_clustinfo_VVS']);
+%load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+load ([paths.results.clusters 'all_clustinfo_VVS']);
+
+% compute overlapping cluster in layers 4 5 and 6
+c2u = unique([allClustInfo{4}.PixelIdxList{14} ; allClustInfo{5}.PixelIdxList{25} ; allClustInfo{6}.PixelIdxList{17}]);
+
+
 
 clear nnHClust_pfc7 nnHClust_vvs4 nnHClust_vvs5 nnHClust_vvs6
-for layi = 1 %1:size(nnFit{1}, 1)
+for layi = 7 %1:size(nnFit{1}, 1)
     clear nnH
     for subji = 1:length(nnFit)
+        if ~isempty(nnFit{subji, 1})
            if strcmp(cfg.period(1), 'M')
              nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
            else
              nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
            end
+        end
     end
     
     nnH(sub2exc, :, :) = []; 
@@ -939,20 +1041,16 @@ for layi = 1 %1:size(nnFit{1}, 1)
     for subji = 1:size(nnH, 1)
         nnHSubj = squeeze(nnH(subji, :, :)); 
         if strcmp(cfg.period(1), 'M')
-            if layi == 4 & strcmp(cfg.brainROI, 'vvs')
-               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
-            end 
-            if layi == 5 & strcmp(cfg.brainROI, 'vvs')
-               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
-            end 
-            if layi == 6 & strcmp(cfg.brainROI, 'vvs')
-               nnHClust(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
+            
+            %nnHClust(subji, :) = mean(nnHSubj(allClustInfo{4}.PixelIdxList{14}));
+            %nnHClust(subji, :) = mean(nnHSubj(allClustInfo{5}.PixelIdxList{25})); 
+            %nnHClust(subji, :) = mean(nnHSubj(allClustInfo{6}.PixelIdxList{17})); 
+            if strcmp(cfg.brainROI, 'vvs')
+                %nnHClust(subji, :) = mean(nnHSubj(c2u)); 
+                nnHClust(subji, layi, :) = mean(nnHSubj(c2u)); 
             end
             if strcmp(cfg.brainROI, 'pfc')
                 nnHClust(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{7})); 
-            end
-            if layi == 8 & strcmp(cfg.brainROI, 'pfc') & strcmp(cfg.net2load, 'AlexEco')
-                nnHClust(subji, :) = mean(nnHSubj(allClustInfo{7}.PixelIdxList{2})); 
             end
         elseif strcmp(cfg.period(1), 'E')
             nnHClust_vvsE1(subji, :) = mean(nnHSubj(allClustInfo{1}.PixelIdxList{1})); 
@@ -969,11 +1067,36 @@ for layi = 1 %1:size(nnFit{1}, 1)
    
 end
 
+%sub2exc = [1 2 5 8 9 10 11 12 13 15 17 18 19 20 21];
+%nnHClust = mean(nnHClust(:, 4:6), 2);
+
 [h p ci ts] = ttest(nnHClust);
 h = squeeze(h); t = squeeze(ts.tstat); 
 disp (['t = ' num2str(ts.tstat) ',' ' p = ' num2str(p)]);
 
 
+%% plot one bar
+clear data
+data.data = [nnHClust]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 25, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.2 .2])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %% Extract activity in specific clusters from NNH 
 
@@ -1044,28 +1167,7 @@ set(gca, 'LineWidth', 3);
 
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
-%% plot one bar
-clear data
-data.data = [nnHClust_vvsE1]; 
 
-figure(2); set(gcf,'Position', [0 0 500 620]); 
-mean_S = mean(data.data, 1);
-hb = scatter([1], data.data, 100, 'k'); hold on;
-%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
-
-h = bar (mean_S);hold on;
-set(h,'FaceColor', 'none', 'lineWidth', 3);
-set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 2] );
-set(gca, 'ylim', [-.1 .15])
-plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
-
-[h p ci t] = ttest (data.data(:,1));
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-set(gca, 'LineWidth', 3);
-
-
-exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 %%  plot all layers FREQUENCY RESOLVED FANCY PLOT
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
@@ -1075,7 +1177,7 @@ clear , clc
 %f2sav = 'AlexEco_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1'; 
 
 %f2sav = 'BLNETe_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'; 
 %f2sav = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'ITM_vvs_E123_[1]_3-54_0_0_1_0_.1_5_1'; 
@@ -1236,81 +1338,6 @@ end
 exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 close all; 
 
-%% plot final figure only last layer / time point ENCODING
-times = 1:150;
-freqs = 1:520; 
-%h = zeros(52, 15); 
-
-%h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 1-3, 5
-
-%h(clustinfo.PixelIdxList{1}) = 1; % Alexnet VVS Layer 4 and 6
-%h(clustinfo.PixelIdxList{2}) = 1; % Alexnet VVS Layer 4 and 6
-
-
-%h(clustinfo.PixelIdxList{5}) = 1; % BLNETi PFC
-%h(clustinfo.PixelIdxList{1}) = 1; % BLNETi VVS
-
-%h(clustinfo.PixelIdxList{1}) = 1; % BLNETe cluster 1
-%h(clustinfo.PixelIdxList{2}) = 1; % BLNETe cluster 2
-
-%h(clustinfo.PixelIdxList{2}) = 1; %Cornet
-%h(clustinfo.PixelIdxList{4}) = 1; %Cornet cluster 2
-
-
-figure; set(gcf, 'Position', [100 100 200 400])
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
-
-set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-set(gca, 'xlim', [1 150], 'clim', [-5 5], 'FontSize', 10);
-set(gca, 'clim', [-4 4], 'FontSize', 10);
-plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
-%colorbar
-
-myCmap = colormap(brewermap([],'*Spectral'));
-colormap(myCmap)
-
-%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
-exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
-%% plot final figure only last layer MAINTENANCE
-times = 1:400;
-freqs = 1:520; 
-%h = zeros(52, 39); 
-
-h(clustinfo.PixelIdxList{2}) = 1; %BLNETi PFC
-
-%h(clustinfo.PixelIdxList{3}) = 1; %CORNET PFC
-%h(clustinfo.PixelIdxList{15}) = 1; %CORNET VVS
-
-%h(clustinfo.PixelIdxList{5}) = 1; %category model
-
-%h(clustinfo.PixelIdxList{2}) = 1; %pfc - Cornet
-%h(clustinfo.PixelIdxList{23}) = 1; %pfc - Cornet
-
-%h(clustinfo.PixelIdxList{8}) = 1; %pfc - ecoset
-%h(clustinfo.PixelIdxList{10}) = 1; %vvs1 - ecoset
-%h(clustinfo.PixelIdxList{23}) = 1; %vvs2 - ecoset
-
-
-figure; set(gcf, 'Position', [1000 918 560 420])
-myCmap = colormap(brewermap([],'*Spectral'));
-colormap(myCmap)
-%contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
-%contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
-contourf(times, freqs, myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 4);
-
-set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-set(gca, 'xlim', [1 390], 'clim', [-4 4], 'FontSize', 10);
-%set(gca, 'clim', [-4 4], 'FontSize', 10);
-plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
-%colorbar
-
-%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
-exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
-
 
 
 
@@ -1412,7 +1439,7 @@ etime(datevec(t2), datevec(t1))
 
 
 
-%% Process and plot RDM in the PFC cluster during ENCODING
+%% Process and plot RDM in the CATEGORY MODEL PFC cluster during ENCODING
 clear
 
 f2load = 'pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
@@ -1891,10 +1918,14 @@ mRDM(logical(eye(size(mRDM, 1)))) = nan;
 imagesc(mRDM)
 
 
-%% Process and plot RDM during maintenance in VVS theta cluster
+
+
+
+
+%% PFC CATEGORY MODEL DURING ENCODING
 clear
 
-f2load = 'vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+f2load = 'pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
 filelistSess = getFilesWM(paths.results.neuralRDMS);
 load([paths.results.neuralRDMS f2load]);   
@@ -1904,39 +1935,74 @@ nSubjs = size(allNeuralRDMS, 1);
 nFreqs = size(allNeuralRDMS{1}, 3); 
 nTimes = size(allNeuralRDMS{1}, 4); 
 
-
+load ([paths.results.clusters 'CAT_PFC_ENC_px8']);
+idsClust = clustinfo.PixelIdxList{8}; 
 
 for subji = 1:nSubjs
     neuralRDMs  = allNeuralRDMS{subji, 1}; 
     ids         = allNeuralRDMS{subji, 2};
+
     oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
     oneListIds = double(string(cat(1, oneListIds{:})));
     idsF1 = oneListIds(:, 3);
     idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
     [x1 x2 x3] = intersect (idsF1, idsF2);
     
-    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
-    
+    nRows       = size(neuralRDMs, 1); 
+    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+    rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
+
     rdm = nan(60); 
     rdm(x3,x3) = rdmS; 
     meanRDM(subji,:,:) = rdm; 
 
+
     CM = load_CATMODEL_activ(ids); 
-    rdmS = vectorizeRDM(rdmS); 
+    rdm = vectorizeRDM(rdm); 
     CM = vectorizeRDM(CM); 
-    allR_M(subji, :) = corr(CM', rdmS, 'type', 's');    
+    allR(subji, :) = corr(CM', rdm, 'type', 's');    
     
+    %z-score RDM
+    rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    CM = squeeze(load_M6_activ(ids));
+    mW1 = mean(rdm(CM==1), 'omitnan'); mB1 = mean(rdm(CM ==-1), 'omitnan'); 
+    mW2 = mean(rdm(CM==2), 'omitnan'); mB2 = mean(rdm(CM ==-2), 'omitnan'); 
+    mW3 = mean(rdm(CM==3), 'omitnan'); mB3 = mean(rdm(CM ==-3), 'omitnan'); 
+    mW4 = mean(rdm(CM==4), 'omitnan'); mB4 = mean(rdm(CM ==-4), 'omitnan'); 
+    mW5 = mean(rdm(CM==5), 'omitnan'); mB5 = mean(rdm(CM ==-5), 'omitnan'); 
+    mW6 = mean(rdm(CM==6), 'omitnan'); mB6 = mean(rdm(CM ==-6), 'omitnan');
+
+    rdm(CM==1) = rdm(CM==1) - mW1; rdm(CM==-1) = rdm(CM==-1) - mB1; 
+    rdm(CM==2) = rdm(CM==2) - mW2; rdm(CM==-2) = rdm(CM==-2) - mB2; 
+    rdm(CM==3) = rdm(CM==3) - mW3; rdm(CM==-3) = rdm(CM==-3) - mB3; 
+    rdm(CM==4) = rdm(CM==4) - mW4; rdm(CM==-4) = rdm(CM==-4) - mB4; 
+    rdm(CM==5) = rdm(CM==5) - mW5; rdm(CM==-5) = rdm(CM==-5) - mB5; 
+    rdm(CM==6) = rdm(CM==6) - mW6; rdm(CM==-6) = rdm(CM==-6) - mB6; 
+
+    meanRDMZ{subji, :} = rdm;
+    CM = load_CATMODEL_activ(ids); 
+    rdmZ = vectorizeRDM(rdm); 
+    CM = vectorizeRDM(CM); 
+    allRZ(subji, :) = corr(CM', rdmZ, 'type', 's');    
 end
 
-sub2exc = [18 22]; 
-allR_M(sub2exc) = []; 
-meanRDM(sub2exc, :, :) = [];
+sub2exc = [1]; 
+allR(sub2exc) = []; 
+allRZ(sub2exc) = []; 
 
-[h p ci t] = ttest (allR_M);
+[h p ci t] = ttest (allR);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 
-%% plot average RDM
+[h p ci t] = ttest (allRZ);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+
+
+
+
+%% plot mean RDM
 
 
 d2p = squeeze(mean(meanRDM, 'omitnan')); 
@@ -1963,8 +2029,117 @@ imagesc(d2p2); axis square; colorbar
 exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
 
+
+
+%% Process and plot RDM during maintenance in VVS theta cluster
+clear
+
+f2load = 'vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+    oneListIds = double(string(cat(1, oneListIds{:})));
+    idsF1 = oneListIds(:, 3);
+    idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
+    [x1 x2 x3] = intersect (idsF1, idsF2);
+    
+    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 1:6,12:24), 3),4)); %Theta cluster time period (checked in the out_real sigMH_real : Exact time period)
+    
+    rdm = nan(60); 
+    rdm(x3,x3) = rdmS; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    rdm = mat2gray(rdm); 
+    rdm(rdm==1) = nan; 
+    meanRDM_M(subji,:,:) = rdm; 
+
+    CM = load_CATMODEL_activ(ids); 
+    rdmS = vectorizeRDM(rdmS); 
+    CM = vectorizeRDM(CM); 
+    allR_M(subji, :) = corr(CM', rdmS, 'type', 's');    
+    
+end
+
+sub2exc = [18 22]; 
+allR_M(sub2exc) = []; 
+meanRDM_M(sub2exc, :, :) = [];
+
+[h p ci t] = ttest (allR_M);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+%% plot one bar
+clear data
+data.data = [allR_M]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 25, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.075 .1])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth',2);
+box on
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth',2);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+
+
+
+%% plot mean RDM
+
+
+d2p = squeeze(mean(meanRDM_M, 'omitnan')); 
+d2p(logical(eye(size(d2p, 1)))) = nan; 
+
+imagesc(d2p); axis square; colorbar
+set(gca, 'xTick', [], 'yTick', [], 'Fontsize', 20)
+%set (gca, 'clim', [.35 .65])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+
+%d2p = mat2gray(d2p)
+%% plot average in six categories
+
+d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'omitnan') mean(d2p(1:10, 21:30), 'all', 'omitnan') mean(d2p(1:10, 31:40), 'all', 'omitnan') mean(d2p(1:10, 41:50), 'all', 'omitnan') mean(d2p(1:10, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(11:20, 1:10), 'all', 'omitnan') mean(d2p(11:20, 11:20), 'all', 'omitnan') mean(d2p(11:20, 21:30), 'all', 'omitnan') mean(d2p(11:20, 31:40), 'all', 'omitnan') mean(d2p(11:20, 41:50), 'all', 'omitnan') mean(d2p(11:20, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(21:30, 1:10), 'all', 'omitnan') mean(d2p(21:30, 11:20), 'all', 'omitnan') mean(d2p(21:30, 21:30), 'all', 'omitnan') mean(d2p(21:30, 31:40), 'all', 'omitnan') mean(d2p(21:30, 41:50), 'all', 'omitnan') mean(d2p(21:30, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(31:40, 1:10), 'all', 'omitnan') mean(d2p(31:40, 11:20), 'all', 'omitnan') mean(d2p(31:40, 21:30), 'all', 'omitnan') mean(d2p(31:40, 31:40), 'all', 'omitnan') mean(d2p(31:40, 41:50), 'all', 'omitnan') mean(d2p(31:40, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(41:50, 1:10), 'all', 'omitnan') mean(d2p(41:50, 11:20), 'all', 'omitnan') mean(d2p(41:50, 21:30), 'all', 'omitnan') mean(d2p(41:50, 31:40), 'all', 'omitnan') mean(d2p(41:50, 41:50), 'all', 'omitnan') mean(d2p(41:50, 51:60), 'all', 'omitnan') ;...
+        mean(d2p(51:60, 1:10), 'all', 'omitnan') mean(d2p(51:60, 11:20), 'all', 'omitnan') mean(d2p(51:60, 21:30), 'all', 'omitnan') mean(d2p(51:60, 31:40), 'all', 'omitnan') mean(d2p(51:60, 41:50), 'all', 'omitnan') mean(d2p(51:60, 51:60), 'all', 'omitnan') ;...
+        ];
+
+
+imagesc(d2p2); axis square; colorbar
+set(gca, 'xTick', [], 'yTick', [], 'Fontsize', 20)
+%set (gca, 'clim', [.47 .485])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+
 %% Process and plot RDM during encoding (SELECT TIME PERIOD - THETA)
-clearvars -except allR_M
+clearvars -except allR_M meanRDM_M
 
 f2load = 'vvs_E123_[]_3-54_1_0_1_0_.1_5_1'; 
 paths = load_paths_WM('vvs', 'none');
@@ -1987,11 +2162,14 @@ for subji = 1:nSubjs
     idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
     [x1 x2 x3] = intersect (idsF1, idsF2);
     
-    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 3:8,12:24), 3),4)); %Theta cluster time period
+    rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 1:6,12:24), 3),4)); %Theta cluster time period
     
     rdm = nan(60); 
     rdm(x3,x3) = rdmS; 
-    meanRDM(subji,:,:) = rdm; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    rdm = mat2gray(rdm); 
+    rdm(rdm==1) = nan; 
+    meanRDM_E(subji,:,:) = rdm; 
 
     CM = load_CATMODEL_activ(ids); 
     rdmS = vectorizeRDM(rdmS); 
@@ -2003,22 +2181,47 @@ end
 
 sub2exc = [18 22]; 
 allR_E(sub2exc) = []; 
+meanRDM_E(sub2exc, :, :) = [];
 
 
 [h p ci t] = ttest (allR_E);
 disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
-%% plot average RDM
+%% plot one bar
+clear data
+data.data = [allR_E]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 25, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.05 .2])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth',2);
+box on
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth',2);
 
 
-d2p = squeeze(mean(meanRDM, 'omitnan')); 
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+%%
+d2p = squeeze(mean(meanRDM_E, 'omitnan')); 
 d2p(logical(eye(size(d2p, 1)))) = nan; 
 
-imagesc(d2p); axis square
-
+imagesc(d2p); axis square; colorbar
+%set (gca, 'clim', [.4 .6])
+set(gca, 'xTick', [], 'yTick', [], 'Fontsize', 20)
 exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
-
+%d2p = mat2gray(d2p)
 %% plot average in six categories
 
 d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'omitnan') mean(d2p(1:10, 21:30), 'all', 'omitnan') mean(d2p(1:10, 31:40), 'all', 'omitnan') mean(d2p(1:10, 41:50), 'all', 'omitnan') mean(d2p(1:10, 51:60), 'all', 'omitnan') ;...
@@ -2031,11 +2234,59 @@ d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'o
 
 
 imagesc(d2p2); axis square; colorbar
-set (gca, 'clim', [-.015 .005])
+set(gca, 'xTick', [], 'yTick', [], 'Fontsize', 20)
+%set (gca, 'clim', [.45 .55])
+%set (gca, 'clim', [.47 .485])
 exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
+%% Correlate two average RDMs
 
-%% directly compare the two RDM fits
+for subji = 1:26
+    
+    x = meanRDM_E(subji, :, : ); 
+    y = meanRDM_M(subji, :, : ); 
+
+    x = vectorizeRDM(x); 
+    y = vectorizeRDM(y); 
+
+    isnanY = isnan(y); 
+
+    x(isnanY) = []; 
+    y(isnanY) = []; 
+
+    [rho1(subji, :)] = corr(x', y', 'type', 's'); 
+
+
+end
+
+[h p ci ts] = ttest(rho1)
+
+%% plot one bar
+clear data
+data.data = [rho1]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 25, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.1 .1])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth',2);
+box on
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth',2);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+%% directly compare the two RDM fits with the Category Model
 
 
 [h p ci ts] = ttest(allR_M, allR_E)
@@ -2069,7 +2320,6 @@ for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
         neuralRDMs  = allNeuralRDMS{subji, 1}; 
         ids         = allNeuralRDMS{subji, 2};
         CM          = squeeze(load_CATMODEL_activ(ids));
-        
 
         for freqi  = 1:nFreqs
             for timei = 1:nTimes
@@ -2091,7 +2341,7 @@ end
 
 clear
 paths = load_paths_WM('vvs', 'none');
-cd(paths.results.neuralRDMS.CATPlts);
+cd(paths.results.CCI);
 
 filelistSess = dir('*mat'); filelistSess = [{filelistSess.name}'];
 for sessi= 6% 1:length(filelistSess) 
@@ -2129,7 +2379,7 @@ for sessi= 6% 1:length(filelistSess)
         
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
         set(gca, 'xlim', [1 390], 'FontSize', 10);
-        %set(gca, 'clim', [-4 4], 'FontSize', 10);
+        %set(gca, 'clim', [0 .2], 'FontSize', 10);
         plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5); 
         %colorbar
 
@@ -2158,6 +2408,8 @@ for subji = 1:size(CCI, 1)
     cciClust(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{7}), 'all');
 end
 
+sub2exc = [1]
+cciClust(sub2exc) = []; 
 [h p ci ts] = ttest (cciClust)
 
 %% plot one bar
@@ -2189,21 +2441,27 @@ clearvars -except CCI
 paths = load_paths_WM('vvs', 'none');
 load ([paths.results.clusters 'all_clustinfo_VVS']);
 
+c2u = unique([allClustInfo{4}.PixelIdxList{14} ; allClustInfo{5}.PixelIdxList{25} ; allClustInfo{6}.PixelIdxList{17}]);
+
 for subji = 1:size(CCI, 1)
     cciSubj = squeeze(CCI(subji, :, :)); 
     
-    clustinfo = allClustInfo{4};
-    cciClust1(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{14}), 'all');
+    % clustinfo = allClustInfo{4};
+    % cciClust1(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{14}), 'all');
+    % 
+    % clustinfo = allClustInfo{5};
+    % cciClust2(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{25}), 'all');
+    % 
+    % clustinfo = allClustInfo{6};
+    % cciClust3(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{17}), 'all');
 
-    clustinfo = allClustInfo{5};
-    cciClust2(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{25}), 'all');
-
-    clustinfo = allClustInfo{6};
-    cciClust3(subji, :) = mean(cciSubj(clustinfo.PixelIdxList{17}), 'all');
+    cciClust(subji, :) = mean(cciSubj(c2u), 'all');
 
 end
 
-[h p ci ts] = ttest (cciClust3)
+sub2exc = [18 22]
+cciClust(sub2exc) = []; 
+[h p ci ts] = ttest (cciClust)
 
 %% plot one bar
 clear data
@@ -3397,83 +3655,13 @@ p = 1 - ((nPerm-1) - (length (allAB)))  / nPerm;
 
 disp(['p = ' num2str(p)])
 
-%% ANOVA comparing fits in ALEXNET BL-NET (LAYER 7 vs 8) AND CATEGORY MODEL > IN CLUSTER 
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear , clc
-
-f2sav1 = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-cfg = getParams(f2sav1);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav1 '.mat']);
-nnFitBLNET = nnFit; 
-
-f2sav2 = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1';
-cfg = getParams(f2sav2);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav2 '.mat']);
-nnFitALEX = nnFit; 
-
-f2sav3 = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
-cfg = getParams(f2sav3);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav3 '.mat']);
-nnFitCAT = nnFit; 
-
-load ([paths.results.clusters 'clustinfo_PFC_px2']);
-idsClust = clustinfo.PixelIdxList{2}; 
-
-
-clear nnHVVS nnHPFC
-for subji = 1:length(nnFitBLNET)
-    nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(7,:,1:40));
-    nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(8,:,1:40));
-    nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:40));
-end
-
-if strcmp(cfg.brainROI, 'vvs')
-    nnHBLNET([18 22], :, :) = []; 
-    nnHALEX([18 22], :, :) = []; 
-    nnHCAT([18 22], :, :) = []; 
-else
-    nnHBLNET([1], :, :) = []; 
-    nnHALEX([1], :, :) = []; 
-    nnHCAT([1], :, :) = []; 
-end
-
-
-nnHBLNET = reshape(nnHBLNET, size(nnHBLNET, 1), []);
-nnHALEX = reshape(nnHALEX, size(nnHALEX, 1), []);
-nnHCAT = reshape(nnHCAT, size(nnHCAT, 1), []); 
-
-nnHBLNET = mean (nnHBLNET(:, idsClust), 2); 
-nnHALEX = mean (nnHALEX(:, idsClust), 2); 
-nnHCAT = mean (nnHCAT(:, idsClust), 2); 
-
-
-%% 
-d4ANOVA = [nnHBLNET; nnHALEX ;nnHCAT]; 
-d4ANOVA(:,2) = [ones(1,15) ones(1,15)*2 ones(1,15)*3];
-d4ANOVA(:,3) = [1:15 1:15 1:15];
-
-[p F] = RMAOV1(d4ANOVA);
-
-%% 
-[h p ci ts] = ttest(nnHBLNET, nnHALEX);
-disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
-
-
-[h p ci ts] = ttest(nnHBLNET, nnHCAT);
-disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
-
-[h p ci ts] = ttest(nnHALEX, nnHCAT);
-disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
 
 
 %% ANOVA comparing fits in ALEXNET BL-NET (LAYER 7 vs 8) AND CATEGORY MODEL > IN SELECTED ROI
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-timeBins =6:15; 
+timeBins =6:12; 
 freqBins = 21:29; 
 
 f2sav1 = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
@@ -3500,9 +3688,11 @@ idsClust = clustinfo.PixelIdxList{2};
 
 clear nnHVVS nnHPFC
 for subji = 1:length(nnFitBLNET)
-    nnHBLNET(subji, : ,:) = mean(mean(atanh(nnFitBLNET{subji, 1}(7,freqBins,timeBins)), 2), 3);
-    nnHALEX(subji, : ,:) = mean(mean(atanh(nnFitALEX{subji, 1}(8,freqBins,timeBins)), 2), 3);
-    nnHCAT(subji, : ,:) = mean(mean(atanh(nnFitCAT{subji, 1}(1,freqBins,timeBins)), 2), 3);
+    if ~isempty(nnFitBLNET{subji, 1})
+        nnHBLNET(subji, : ,:) = mean(mean(atanh(nnFitBLNET{subji, 1}(7,freqBins,timeBins)), 2), 3);
+        nnHALEX(subji, : ,:) = mean(mean(atanh(nnFitALEX{subji, 1}(8,freqBins,timeBins)), 2), 3);
+        nnHCAT(subji, : ,:) = mean(mean(atanh(nnFitCAT{subji, 1}(1,freqBins,timeBins)), 2), 3);
+    end
 end
 
 if strcmp(cfg.brainROI, 'vvs')
@@ -3516,68 +3706,10 @@ else
 end
 
 
-
-
 d4ANOVA = [nnHBLNET; nnHALEX ;nnHCAT]; 
 d4ANOVA(:,2) = [ones(1,15) ones(1,15)*2 ones(1,15)*3];
 d4ANOVA(:,3) = [1:15 1:15 1:15];
 [p F] = RMAOV1(d4ANOVA);
-
-
-
-%% independent anova does not work
-
-d4ANOVA1 = [nnHBLNET nnHALEX nnHCAT]; 
-[p t stats] = anova1(d4ANOVA1); 
-[c,m,h,gnames] = multcompare(stats);
-
-%% build LME equivalent
-clc
-tbl = table(d4ANOVA(:,1), d4ANOVA(:,2), d4ANOVA(:,3), ...
-    'VariableNames',{'fit','model', 'subID'});
-
-lme = fitlme(tbl,'fit ~  model + (1|subID)'); % random intercept model
-
-lme
-
-
-
-%%
-%                                                           Weeks
-%                             ------------------------------------------------------
-%                              Subject        1       2       3       4       5
-%                             ------------------------------------------------------
-%                                  1         21      22       8       6       6
-%                                  2         20      19      10       4       4           
-%                                  3         17      15       5       4       5
-%                                  4         25      30      13      12      17
-%                                  5         30      27      13       8       6
-%                                  6         19      27       8       7       4
-%                                  7         26      16       5       2       5        
-%                                  8         17      18       8       1       5       
-%                                  9         26      24      14       8       9
-%                             ------------------------------------------------------
-
-% DATA MUST BE
-
- X= [21 1 1;20 1 2;17 1 3;25 1 4;30 1 5;19 1 6;26 1 7;17 1 8;26 1 9;
- 22 2 1;19 2 2;15 2 3;30 2 4;27 2 5;27 2 6;16 2 7;18 2 8;24 2 9;
- 8 3 1;10 3 2;5 3 3;13 3 4;13 3 5;8 3 6;5 3 7;8 3 8;14 3 9;
- 6 4 1;4 4 2;4 4 3;12 4 4;8 4 5;7 4 6;2 4 7;1 4 8;8 4 9;
- 6 5 1;4 5 2;5 5 3;17 5 4;6 5 5;4 5 6;5 5 7;5 5 8;9 5 9];
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 %% 
 [h p ci ts] = ttest(nnHBLNET, nnHALEX);
@@ -3590,9 +3722,28 @@ disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
 [h p ci ts] = ttest(nnHALEX, nnHCAT);
 disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
 
-%%
-d4ANOVA = [nnHBLNET nnHALEX nnHCAT]; 
-p = kruskalwallis(d4ANOVA)
+
+
+
+%% WITHIN SUBJECTS DESING IN MATLAB
+
+d4ANOVA = [[1:15]' nnHBLNET nnHALEX nnHCAT]; 
+% organize the data in a table
+T = array2table(d4ANOVA(:,2:end));
+T.Properties.VariableNames = {'nnHBLNET' 'nnHALEX' 'nnHCAT'};
+% create the within-subjects design
+withinDesign = table([1 2 3]','VariableNames',{'Model'});
+withinDesign.Model = categorical(withinDesign.Model);
+% create the repeated measures model and do the anova
+rm = fitrm(T,'nnHBLNET-nnHCAT ~ 1','WithinDesign',withinDesign);
+AT = ranova(rm,'WithinModel','Model'); % remove comma to see ranova's table
+%tbl = multcompare(rm, 'Model', 'ComparisonType', 'tukey-kramer'); % see: help RepeatedMeasuresModel/multcompare;  'tukey-kramer' (default), 'dunn-sidak', 'bonferroni','scheffe'
+tbl = multcompare(rm, 'Model', 'ComparisonType', 'bonferroni'); % see: help RepeatedMeasuresModel/multcompare;  'tukey-kramer' (default), 'dunn-sidak', 'bonferroni','scheffe'
+
+
+% output a conventional anova table
+disp(anovaTable(AT, 'Measure (units)'));
+
 
 
 %% Permutations 
@@ -3794,12 +3945,12 @@ disp(['p = ' num2str(p)])
 
 
 
-%% ANOVA comparing fits in ALEXNET BL-NET (LAYER 7 vs 8) AND CATEGORY MODEL > IN SELECTED ROI
+%% ANOVA comparing fits in ALEXNET BL-NET AND CATEGORY MODEL > IN SELECTED ROI VVS LAYER 5
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
-timeBins = 26:40; 
-freqBins = 3:14; 
+timeBins = 26:36; 
+freqBins = 7:11; % alpha range
 
 f2sav1 = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 cfg = getParams(f2sav1);
@@ -3819,15 +3970,14 @@ paths = load_paths_WM(cfg.brainROI, cfg.net2load);
 load([paths.results.DNNs f2sav3 '.mat']);
 nnFitCAT = nnFit; 
 
-load ([paths.results.clusters 'clustinfo_PFC_px2']);
-idsClust = clustinfo.PixelIdxList{2}; 
-
 
 clear nnHVVS nnHPFC
 for subji = 1:length(nnFitBLNET)
-    nnHBLNET(subji, : ,:) = mean(mean(atanh(nnFitBLNET{subji, 1}(5,freqBins,timeBins)), 2), 3);
-    nnHALEX(subji, : ,:) = mean(mean(atanh(nnFitALEX{subji, 1}(5,freqBins,timeBins)), 2), 3);
-    nnHCAT(subji, : ,:) = mean(mean(atanh(nnFitCAT{subji, 1}(1,freqBins,timeBins)), 2), 3);
+    if ~isempty(nnFitBLNET{subji, 1})
+        nnHBLNET(subji, : ,:) = mean(mean(atanh(nnFitBLNET{subji, 1}(5,freqBins,timeBins)), 2), 3);
+        nnHALEX(subji, : ,:) = mean(mean(atanh(nnFitALEX{subji, 1}(5,freqBins,timeBins)), 2), 3);
+        nnHCAT(subji, : ,:) = mean(mean(atanh(nnFitCAT{subji, 1}(1,freqBins,timeBins)), 2), 3);
+    end
 end
 
 if strcmp(cfg.brainROI, 'vvs')
@@ -3848,30 +3998,38 @@ d4ANOVA(:,3) = [1:26 1:26 1:26];
 
 [p F] = RMAOV1(d4ANOVA);
 
+
+%% 
 [h p ci ts] = ttest(nnHBLNET, nnHALEX);
 disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
+
 [h p ci ts] = ttest(nnHBLNET, nnHCAT);
 disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
+
 [h p ci ts] = ttest(nnHALEX, nnHCAT);
 disp(['t= ' num2str(ts.tstat) ', p = ' num2str(p)])
 
 
 
 
+%% WITHIN SUBJECTS DESING IN MATLAB
+
+d4ANOVA = [[1:26]' nnHBLNET nnHALEX nnHCAT]; 
+% organize the data in a table
+T = array2table(d4ANOVA(:,2:end));
+T.Properties.VariableNames = {'nnHBLNET' 'nnHALEX' 'nnHCAT'};
+% create the within-subjects design
+withinDesign = table([1 2 3]','VariableNames',{'Model'});
+withinDesign.Model = categorical(withinDesign.Model);
+% create the repeated measures model and do the anova
+rm = fitrm(T,'nnHBLNET-nnHCAT ~ 1','WithinDesign',withinDesign);
+AT = ranova(rm,'WithinModel','Model'); % remove comma to see ranova's table
+%tbl = multcompare(rm, 'Model', 'ComparisonType', 'tukey-kramer'); % see: help RepeatedMeasuresModel/multcompare;  'tukey-kramer' (default), 'dunn-sidak', 'bonferroni','scheffe'
+tbl = multcompare(rm, 'Model', 'ComparisonType', 'bonferroni'); % see: help RepeatedMeasuresModel/multcompare;  'tukey-kramer' (default), 'dunn-sidak', 'bonferroni','scheffe'
 
 
-%%
-d4ANOVA = [nnHBLNET nnHALEX nnHCAT]; 
-p = kruskalwallis(d4ANOVA)
-
-
-
-%%
-pd1 = makedist('Normal');
-pd2 = makedist('Normal','mu',2,'sigma',1);
-x = [random(pd1,20,2),random(pd2,20,1)];
-
-p = kruskalwallis(x)
+% output a conventional anova table
+disp(anovaTable(AT, 'Measure (units)'));
 
 
 

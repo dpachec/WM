@@ -20,7 +20,7 @@ rereference     =       1;                 %
 montage         =       'bipo';            %   'aver', 'bipo'
 timeRes         =       0.1; %0.01;               %    0.1 = 100ms; 0.01 = 10ms; or 'all' 
 takeAllTrials   =       0; 
-region          =       'vvs';
+region          =       'pfc';
 powOrAmp        =       'amp'; %power or raw amplitude time series
   
 disp ([ 'eLim = ' num2str(eLim) newline ...
@@ -34,7 +34,7 @@ disp ([ 'eLim = ' num2str(eLim) newline ...
 [all_events] = loadLogsWM;
     
  
-for sessi = subjfir:subjend 
+for sessi = 1:subjend 
     disp (['Subj: ' num2str(sessi)]);
     
     events = all_events{sessi};
@@ -113,11 +113,55 @@ end
 
 
 %% Combine sessions for each subject and saves to output_folder
-
-cd D:\_WM\analysis\out_contrasts\raw_traces_extended\vvs
-
 % % % create folder to store the subject data
-output_folder = 'D:\_WM\analysis\out_contrasts\raw_traces_extended\vvs\allTrials';
+
+tic
+output_folder = 'D:\Documents\GitHub\WM\vvs\allTrials';
+mkdir(output_folder);
+sublist = dir('*contr.mat');
+sublist = {sublist.name};
+disp (['measurements -> ' num2str(length(sublist))]);
+
+sessblo = cellfun(@(x) strsplit(string(x),'_'), sublist, 'UniformOutput', false);
+sessblo = cellfun(@(x) x(1:3), sessblo, 'UniformOutput', false);
+sessblo = cell2mat(cellfun(@(x) double(string(regexp(x, '\d+', 'match'))), sessblo, 'UniformOutput', false)');
+
+[C, iaF, icF] = unique(sessblo(:,1),'first');   [C, iaL, icL] = unique(sessblo(:,1),'last');
+for i = 1:length(C)
+   dataF{i, 1} = C(i);dataF{i, 2} = iaF(i):iaL(i); %cell array that stores subject id in column 1 and sessions in column 2
+end
+
+for subji = 1:length(dataF) 
+    
+    d2m = sublist(dataF{subji, 2});
+    s2u{subji,:} = d2m{1}(1:3);
+    sb = sessblo(dataF{subji, 2},2:3);
+    allC{subji,:} = merge_sessions_WM(d2m, sb);   %load files 1 by one
+    
+end
+
+cd (output_folder)
+
+for subji = 1:length(allC)
+
+    disp(['Subj: ' num2str(subji)]);
+    %filename = ['s' num2str(subji,'%02.f') '_out_contr']
+    filename = [ s2u{subji} '_out_contr'];
+    cfg_contrasts = allC{subji};
+    save(filename, 'cfg_contrasts', '-v7.3')
+
+end
+
+toc
+ 
+cd .. 
+
+%%
+cd D:\Documents\GitHub\WM\pfc
+
+clear
+tic
+output_folder = 'D:\Documents\GitHub\WM\pfc\allTrials';
 mkdir(output_folder);
 sublist = dir('*contr.mat');
 sublist = {sublist.name};

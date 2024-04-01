@@ -29,7 +29,7 @@ end
 
 cfg_plot.lwd1        =       2;%baseline
 cfg_plot.lwd2        =       2; %cluster
-cfg_plot.plotClust   =       1; %cluster
+cfg_plot.plotClust   =       ~cfg.remClust; %cluster
 %cfg_plot.sigMH_thres =       out_real.sigMH_real;
 
 
@@ -101,6 +101,7 @@ end
 imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; 
 if cfg_plot.plotClust
     contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k'); %colorbar; 
+    %contour(flipud(myresizem(sigMH_real, 10)), 1,':', 'lineWidth', 6, 'linecolor', 'k'); %colorbar; 
 end
 if cfg_plot.plotCueOnset
     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 

@@ -91,7 +91,21 @@ if strcmp(cfg.res, '100_norm')
         cfg_plot.placeTX = [0.5 4.5 9.5 14.5 19.5 24.5 29.5 34.5 39.5 44.5]; 
         cfg_plot.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];
         cfg_plot.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
-                   
+    end
+    if strcmp(cfg.cut2, '2-2')
+        cfg_plot.mlimE = 11:30 %1:45; %1:85;
+        cfg_plot.mlimR = 11:30 %1:45; %1:85
+        x = 20; %45 %note that x is different from the original size of the matrix 
+        cfg_plot.binsE = x; cfg_plot.binsR = x; 
+        cfg_plot.labels_to_plotE = -.5:.5:3.5; 
+        cfg_plot.labels_to_plotR = -.5:.5:3.5; 
+        cfg_plot.limFE = 15.5; %cue onset line
+        cfg_plot.limFR = 4.5;
+        cfg_plot.l2excE = [1 3 5 7 9  ]; %[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.l2excR = [1 3 5 7 9 11 13 15 17 19];%[2 4 6 8 10 12 14 16 18 20 22 24 26 28]; 
+        cfg_plot.placeTX = [0.5 4.5 9.5 14.5 19.5 24.5 29.5 34.5 39.5 44.5]; 
+        cfg_plot.placeTY = [0.5 5.5 10.5 15.5 20.5 25.5 30.5 35.5 40.5 45.5];
+        cfg_plot.plotCueOnset    =       1; %plot cue onset at encoding and retrieval
     end
 end 
 

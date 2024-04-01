@@ -58,6 +58,8 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
     else
         nTrials = size(neuralRDMs, 1);
         all_r_Times = zeros(nLays,nTrials, nFreqs, nTimes);
+
+
         for layi = 1:nLays
             % parfor triali = 1:size(neuralRDMs, 1)
             %     M =  squeeze(networkRDMs(layi,triali,:)); 
@@ -83,12 +85,14 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
                 rdm(nanIds,:) = []; 
                 rdm = reshape(rdm, [], nFreqs*nTimes);
                 allTEst = corr(rdm, M, 'type', 's');
+                %groupRDM(layi, triali, :,:) = rdm; 
+                %groupM(layi, triali, :) = M; 
                 all_r_Times(layi,triali, :,:) = reshape(allTEst, nFreqs, nTimes);
             end
 
         end
 
-      
+
 
     end
     

@@ -132,7 +132,8 @@ region = 'pfc';
 paths = load_paths_WM(region, 'none');
 
 contrasts = {
-              
+              %'DISC_M1A' 'DIDC_M1A';
+
               %'DISC_EE1' 'DIDC_EE1';
               %'DISC_EE2' 'DIDC_EE2';
               %'DISC_EE3' 'DIDC_EE3';
@@ -140,21 +141,21 @@ contrasts = {
               %'DCSP_M2M2' 'DCDP_M2M2' ; 
               %'DCSP_M2M2' 'DCDP_M2M2';
 
-              'SCSP_EM2' 'SCDP_EM2' ; 
-              'DCSP_EM2' 'DCDP_EM2';
+              % 'SCSP_EM2' 'SCDP_EM2' ; 
+              % 'DCSP_EM2' 'DCDP_EM2';
 
               %'SCSP_EE' 'SCDP_EE' ; 
               %'DCSP_EE' 'DCDP_EE';
 
-              % 'DISC_EM11' 'DIDC_EM11';
-              % 'DISC_EM12' 'DIDC_EM12';
-              % 'DISC_EM13' 'DIDC_EM13';
+              %'DISC_EM11' 'DIDC_EM11';
+              %'DISC_EM12' 'DIDC_EM12';
+              %'DISC_EM13' 'DIDC_EM13';
 
                % 'DISC_EM21' 'DIDC_EM21';
                % 'DISC_EM22' 'DIDC_EM22';
                % 'DISC_EM23' 'DIDC_EM23';
 
-              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_EM2' 'DIDC_EM2';
 
               %'DISC_EE' 'DIDC_EE';
               %'DISC_EM2' 'DIDC_EM2';
@@ -179,17 +180,18 @@ clc
 tic; 
 
 %define conditions 
-cond1 = 'SCSP_EM2';
-cond2 = 'SCDP_EM2';
+cond1 = 'DISC_EM2';
+cond2 = 'DIDC_EM2';
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
-%cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc   =       []; % pfc LATERAL
+cfg.subj2exc    =       [18 22];% vvs;
 %cfg.subj2exc    =       [18];% vvs;
 %cfg.subj2exc   =       [1]; % pfc
-cfg.subj2exc   =       []; % pfc LATERAL
+%cfg.subj2exc   =       []; % pfc LATERAL
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
@@ -201,7 +203,7 @@ cfg.lwd1        =       2; %baseline
 cfg.lwd2        =       2; %significant outline
 cfg.remClust    =       0; 
 cfg.plot1clust  =       0;  
-cfg.clust2plot  =       [1];  %VVS EMS maintenance > 3-8: 4; 9-12: 6; 13-29: 8; 30-75: 7; 75-150: [3 17]; vector of pixels to print
+cfg.clust2plot  =       [2];  %VVS EMS maintenance > 3-8: 4; 9-12: 6; 13-29: 8; 30-75: 7; 75-150: [3 17]; vector of pixels to print
 cfg.all_cond1   =       cond1B; 
 cfg.all_cond2   =       cond2B; 
 cfg.alpha       =       0.05; 
@@ -394,9 +396,9 @@ for permi = 1:nPerm
      
     %allTs(permi, :) = mean(out_real.sigMT_real(1:8, 6:15), 'all');
     tObs = squeeze(mean(mean(out_real.meanReal_cond1(:, 1:8, 6:15) - out_real.meanReal_cond2(:, 1:8, 6:15), 2), 3));
-    %[h p ci ts] = ttest(tObs); 
-    %allPs(permi, :) = p;
-    %allTs(permi, :) = ts.tstat;
+    [h p ci ts] = ttest(tObs); 
+    allPs(permi, :) = p;
+    allTs(permi, :) = ts.tstat;
 
     alltObs(permi, :) = tObs; 
     
@@ -412,11 +414,12 @@ for permi = 1:nPerm
 
 end
 
-save('1000p16S.mat','alltObs')
+%save('1000p16S.mat','alltObs')
 
-%% 
-d2u = mean(alltObs)
-[h p ci ts] = ttest(d2u)
+
+%% count how many times there is a significant effect when VVS N = 15
+numberOfTimes = sum(allPs < 0.05);
+perc2report = (numberOfTimes/nPerm)*100
 
 
 
