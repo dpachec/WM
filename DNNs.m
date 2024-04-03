@@ -1075,6 +1075,8 @@ h = squeeze(h); t = squeeze(ts.tstat);
 disp (['t = ' num2str(ts.tstat) ',' ' p = ' num2str(p)]);
 
 
+
+
 %% plot one bar
 clear data
 data.data = [nnHClust]; 

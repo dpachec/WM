@@ -11,11 +11,11 @@ oneListIds = cellfun(@(x) strsplit(x, ' '), cfg_contrasts.oneListIds, 'un', 0);
 oneListIds = double(string(cat(1, oneListIds{:})));
 
 if strcmp (zScType, 'sess')
-    %z2u = 21;
-    z2u = 30;
+    z2u = 21;
+    %z2u = 30;
 elseif strcmp(zScType, 'blo')
-    %z2u = 23;
-    z2u = 32;
+    z2u = 23;
+    %z2u = 32;
 end
 
 if acrossTrials

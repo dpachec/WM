@@ -7,19 +7,19 @@ paths = load_paths_WM(region, 'none');
 filelistSess = getFilesWM(paths.out_contrasts);
 
 
-frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
-fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+%frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
+%fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
-%frequncies2test = [{3:29}]';
-%fnames = { '3-29Hz'}'; fnames = fnames';
+frequncies2test = [{13:29}]';
+fnames = { '13-29Hz'}'; fnames = fnames';
 
 win_width           = 5; 
 mf                  = 1; 
 meanInTime          = 0; 
 meanInFreq          = 0; 
-avMeth              = 'none';  % average across image repetitions or not
+avMeth              = 'pow';  % average across image repetitions or not
 TG                  = 1; %temporal generalization
-contr2save          = { 'DISC_M1A' 'DIDC_M1A'}; %
+contr2save          = { 'DISC_EM2' 'DIDC_EM2'}; %
 %contr2save          = { 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
 %contr2save          = { 'DISC_EM11' 'DIDC_EM11' 'DISC_EM12' 'DIDC_EM12' 'DISC_EM13' 'DIDC_EM13'}; %
 %contr2save          = { 'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3' 'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE' 'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2'}; %
@@ -155,10 +155,12 @@ contrasts = {
                % 'DISC_EM22' 'DIDC_EM22';
                % 'DISC_EM23' 'DIDC_EM23';
 
-              'DISC_EM2' 'DIDC_EM2';
+              %'DISC_EM2' 'DIDC_EM2';
 
               %'DISC_EE' 'DIDC_EE';
-              %'DISC_EM2' 'DIDC_EM2';
+              'DISC_EM2' 'DIDC_EM2';
+              
+              
               %'DISC_M2M2' 'DIDC_M2M2';
 
              };
@@ -188,14 +190,14 @@ cond2B = eval(cond2);
  
 cfg             =       [];
 %cfg.subj2exc   =       []; % pfc LATERAL
-cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc    =       [18 22];% vvs;
 %cfg.subj2exc    =       [18];% vvs;
 %cfg.subj2exc   =       [1]; % pfc
-%cfg.subj2exc   =       []; % pfc LATERAL
+cfg.subj2exc   =       []; % pfc LATERAL
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
 cfg.cut2        =       '1-4'; %1-1 1-4 4-4
 cfg.cond1       =       cond1;
 cfg.cond2       =       cond2;
@@ -341,6 +343,28 @@ d4ANOVA(:,3) = [1:nSub 1:nSub 1:nSub];
 [p F] = RMAOV1(d4ANOVA);
 
 
+
+%% LOAD all conditions
+clearvars
+
+region = 'pfc'; 
+paths = load_paths_WM(region, 'none');
+
+contrasts = {
+              
+              'DISC_EM2' 'DIDC_EM2';
+             };
+
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    if exist("all_IDs")
+        idData{i,:} = all_IDs;
+    end
+end
+
 %% RUN this same analysis by randomly excluding subjects in VVS
 clc
 clearvars -except DISC_EM2 DIDC_EM2
@@ -353,6 +377,8 @@ cond2 = 'DIDC_EM2';
 
 
 for permi = 1:nPerm
+    permi 
+
     ids = [1:17 19:21 23:28]; 
     ids2 = randperm(26, 11); 
     ids3 = ids(ids2); 
@@ -383,19 +409,20 @@ for permi = 1:nPerm
     [out_real]   = plot_reinst_map_wm_no_plot(cfg);
      
     
-    %%perm
-    cfg_perm                    =       [];
-    cfg.runperm                 =       1;  
-    cfg_perm.n_perm             =       1000; 
-    cfg_perm.savePerm           =       1;
-    cfg_perm.out_real           =       out_real;
-    cfg_perm.pval               =       0.05;
-    cfg_perm.cond1              =       cond1;
-    cfg_perm.cond2              =       cond2;
-    cfg_perm.ids_all_cond       =       [];
+    % %%perm
+    % cfg_perm                    =       [];
+    % cfg.runperm                 =       1;  
+    % cfg_perm.n_perm             =       1000; 
+    % cfg_perm.savePerm           =       1;
+    % cfg_perm.out_real           =       out_real;
+    % cfg_perm.pval               =       0.05;
+    % cfg_perm.cond1              =       cond1;
+    % cfg_perm.cond2              =       cond2;
+    % cfg_perm.ids_all_cond       =       [];
      
     %allTs(permi, :) = mean(out_real.sigMT_real(1:8, 6:15), 'all');
-    tObs = squeeze(mean(mean(out_real.meanReal_cond1(:, 1:8, 6:15) - out_real.meanReal_cond2(:, 1:8, 6:15), 2), 3));
+    %tObs = squeeze(mean(mean(out_real.meanReal_cond1(:, 6:13, 6:15) - out_real.meanReal_cond2(:, 6:13, 6:15), 2), 3));
+    tObs = squeeze(mean(mean(out_real.meanReal_cond1(:, 1:8, 1:15) - out_real.meanReal_cond2(:, 1:8, 1:15), 2), 3));
     [h p ci ts] = ttest(tObs); 
     allPs(permi, :) = p;
     allTs(permi, :) = ts.tstat;
@@ -414,7 +441,7 @@ for permi = 1:nPerm
 
 end
 
-%save('1000p16S.mat','alltObs')
+save('1000p16S.mat','alltObs', 'allPs', 'allTs')
 
 
 %% count how many times there is a significant effect when VVS N = 15
@@ -549,6 +576,9 @@ plot(get(gca, 'xlim'), [0 0], 'k:', 'LineWidth', 2);
 
 exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
+checkTimes(1, :) = times; 
+checkTimes(2, :) = hbBoth; 
+
 %% analysis high temporal resolution: Fig2E randomly subselecting same number of subjects 1000 times
 
 cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
@@ -608,36 +638,49 @@ exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
 load all % this file contains the traces from VVS and PFC computed in the cells above
 
-nPerm = 1000; 
+nPerm = 10000; 
 
-clear max_clust_sum_perm
+clear max_clust_sum_perm allPs
 for permi = 1:nPerm
     cPFC = cond1_PFC-cond2_PFC;
-    ids2u = randsample(26, 16);
+    ids2u = randsample(26, 15);
     cVVS = cond1_VVS(ids2u, :) - cond2_VVS(ids2u, :); 
-        
-    [hBoth p ci ts] = ttest2(cVVS, cPFC); 
-    t = ts.tstat; 
 
-    clustinfo = bwconncomp(hBoth);
-    clear allTObs
-    if ~isempty(clustinfo.PixelIdxList)
-        for pixi = 1:length(clustinfo.PixelIdxList)
-             allTObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
-        end
-    else
-        allTObs(permi,:) = 0;
-    end
-    
-    if exist('allTObs')
-        [max2u id] = max(abs(allTObs));
-        max_clust_sum_perm(permi,:) = allTObs(id); 
-    else
-        max_clust_sum_perm(permi,:) = 0; 
-    end
-    
+    mcPFC = mean(cPFC(:, 91:143), 2); 
+    mcVVS = mean(cVVS(:, 91:143), 2); 
+
+
+    [h p ci ts] = ttest2(mcVVS, mcPFC); 
+    allPs(permi, :) = p; 
+
+        
+    % [hBoth p ci ts] = ttest2(cVVS, cPFC); 
+    % t = ts.tstat; 
+    % 
+    % clustinfo = bwconncomp(hBoth);
+    % clear allTObs
+    % if ~isempty(clustinfo.PixelIdxList)
+    %     for pixi = 1:length(clustinfo.PixelIdxList)
+    %          allTObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+    %     end
+    % else
+    %     allTObs(permi,:) = 0;
+    % end
+    % 
+    % if exist('allTObs')
+    %     [max2u id] = max(abs(allTObs));
+    %     max_clust_sum_perm(permi,:) = allTObs(id); 
+    % else
+    %     max_clust_sum_perm(permi,:) = 0; 
+    % end
+    % 
 
 end
+
+
+%% count how many times there is a significant effect when VVS N = 15
+numberOfTimes = sum(allPs < 0.05);
+perc2report = (numberOfTimes/nPerm)*100
 
 %% 
 
@@ -704,15 +747,47 @@ disp (['p = ' num2str(p)]);
 
 
 
+%% compare pfc M2M2 vs EM2
+clearvars
+
+cd D:\_WM\analysis\pattern_similarity\pfc\100ms\EM2-M2_together
+region = 'pfc'; 
+paths = load_paths_WM(region, 'none');
+
+contrasts = {
+              'DISC_M2M2' 'DIDC_M2M2';
+              'DISC_EM2' 'DIDC_EM2';
+             };
+
+c = unique (contrasts);
+d = cellfun(@(x) [x '_id'], c, 'un', 0);
+for i = 1:length(c) 
+    load([c{i} '.mat']);
+    contrData{i,:} = eval(c{i});
+    if exist("all_IDs")
+        idData{i,:} = all_IDs;
+    end
+end
 
 
+%% take all means
 
 
+c1 = cell2mat(cellfun(@mean, DISC_EM2, 'un', 0)); 
+c2 = cell2mat(cellfun(@mean, DIDC_EM2, 'un', 0)); 
+c3 = cell2mat(cellfun(@mean, DISC_M2M2, 'un', 0)); 
+c4 = cell2mat(cellfun(@mean, DIDC_M2M2, 'un', 0)); 
+
+c5 = c1-c2; 
+c6 = c3-c4; 
+
+c7 = c1-c3; 
+
+%transfMetric = mean(mean(c7(:, 8:35, 8:35), 2, 'omitnan'), 3, 'omitnan'); 
+transfMetric = mean(mean(c7(:, 8:15, 8:15), 2, 'omitnan'), 3, 'omitnan'); 
 
 
-
-
-
+[h p ci ts ] = ttest(transfMetric)
 
 
 
