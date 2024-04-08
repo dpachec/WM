@@ -99,7 +99,7 @@ listF2sav = {
 % 'CAT_vvs_M123_[1]_30-38_1_0_0_0_.1_5_1'
 % 'CAT_vvs_M123_[1]_39-54_1_0_0_0_.1_5_1'
 
-'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1'
 
 
 };   
@@ -806,9 +806,9 @@ clear , clc
 
 %f2sav =  'BLNETi_vvs_M11_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
 %f2sav = 'BLNETi_vvs_M12_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
-%f2sav = 'BLNETi_vvs_M13_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'
-f2sav = 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1'
+%f2sav = 'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1'
 
 
 cfg = getParams(f2sav);
@@ -852,7 +852,6 @@ for layi = 1:size(nnFit{2}, 1)
     %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
     
     d2p = squeeze(mean(nnH, 'omitnan'));
-    freqs = 1:52; 
     clustinfo = bwconncomp(h);
     allClustInfo{layi} = clustinfo; 
 
@@ -1782,6 +1781,29 @@ disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
 
 
 
+%% compute CATEGORY MODEL fits in VVS cluster
+clear, clc
+paths = load_paths_WM('vvs', 'none');
+load ([paths.results.clusters 'all_clustinfo_VVS']);
+idsClust=intersect(intersect(allClustInfo{4}.PixelIdxList{14},allClustInfo{5}.PixelIdxList{25},'stable'), allClustInfo{6}.PixelIdxList{17},'stable');
+f2sav3 = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
+cfg = getParams(f2sav3);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav3 '.mat']);
+
+for subji = 1:size(nnFit, 1)
+    cciSubj = squeeze(nnFit{subji, 1}); 
+    cciSubj = cciSubj(:, 1:40); 
+    cciClust(subji, :) = mean(cciSubj(idsClust), 'all');
+end
+sub2exc = [18 22]
+cciClust(sub2exc) = []; 
+[h p ci ts] = ttest (cciClust);
+disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
+
+
+
+
 %% Correlate 3 clusters with CATEGORY MODEL VVS
 clear, clc
 
@@ -1813,8 +1835,8 @@ for subji = 1:nSubjs
             rdm         = mean(neuralRDM1(:, :,idsClust ), 3); 
             meanRDM{subji,:} = rdm; 
             CM = load_CATMODEL_activ(ids); 
-            rdm = vectorizeRDM(rdm); 
-            CM = vectorizeRDM(CM); 
+            rdm = vectorizeRDM_WM(rdm); 
+            CM = vectorizeRDM_WM(CM); 
             isnanIDs = isnan(CM); 
             CM(isnanIDs) = []; 
             rdm(isnanIDs) = []; 
@@ -2121,7 +2143,7 @@ exportgraphics(gcf, 'myP.png', 'Resolution', 300)
 
 
 
-%d2p = mat2gray(d2p)
+
 %% plot average in six categories
 
 d2p2 = [mean(d2p(1:10, 1:10), 'all', 'omitnan') mean(d2p(1:10, 11:20), 'all', 'omitnan') mean(d2p(1:10, 21:30), 'all', 'omitnan') mean(d2p(1:10, 31:40), 'all', 'omitnan') mean(d2p(1:10, 41:50), 'all', 'omitnan') mean(d2p(1:10, 51:60), 'all', 'omitnan') ;...
@@ -2296,7 +2318,148 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
 
 
 
+%% Process and plot RDM during maintenance late maintenance alpha cluster 
+clear
 
+f2load = 'vvs_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{1}, 3); 
+nTimes = size(allNeuralRDMS{1}, 4); 
+
+load ([paths.results.clusters 'all_clustinfo_VVS']);
+idsClust = unique([allClustInfo{4}.PixelIdxList{14} ; allClustInfo{5}.PixelIdxList{25} ; allClustInfo{6}.PixelIdxList{17}]);
+
+
+for subji = 1:nSubjs
+    neuralRDMs  = allNeuralRDMS{subji, 1}; 
+    ids         = allNeuralRDMS{subji, 2};
+    oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+    oneListIds = double(string(cat(1, oneListIds{:})));
+    idsF1 = oneListIds(:, 3);
+    idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
+    [x1 x2 x3] = intersect (idsF1, idsF2);
+    
+    %rdmS         = squeeze(mean(mean(neuralRDMs(:, :, 1:6,12:24), 3),4)); %Theta cluster time period (checked in the out_real sigMH_real : Exact time period)
+    nRows       = size(neuralRDMs, 1); 
+    neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+    rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
+    
+    rdm = nan(60); 
+    rdm(x3,x3) = rdmS; 
+    rdm(logical(eye(size(rdm, 1)))) = nan; 
+    rdm = mat2gray(rdm); 
+    rdm(rdm==1) = nan; 
+    meanRDM_M(subji,:,:) = rdm; 
+
+    CM = squeeze(load_CATMODEL_activ(ids)); 
+    rdmS = vectorizeRDM_WM(rdmS); 
+    CM = vectorizeRDM_WM(CM); 
+    allR_M(subji, :) = corr(CM, rdmS, 'type', 's'); 
+    
+end
+
+sub2exc = [18 22]; 
+allR_M(sub2exc) = []; 
+meanRDM_M(sub2exc, :, :) = [];
+
+[h p ci t] = ttest (allR_M);
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+
+%% plot one bar
+clear data
+data.data = [allR_M]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 2);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 25, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.075 .1])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth',2);
+box on
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth',2);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+
+
+
+%% plot mean RDM
+
+
+d2p = squeeze(mean(meanRDM_M, 'omitnan')); 
+d2p(logical(eye(size(d2p, 1)))) = nan; 
+
+imagesc(d2p); axis square; colorbar
+set(gca, 'xTick', [], 'yTick', [], 'Fontsize', 20)
+%set (gca, 'clim', [.35 .65])
+exportgraphics(gcf, 'myP.png', 'Resolution', 300)
+
+
+
+%% Correlate PFC CLUSTER WITH CATEGORY MODEL 
+clearvars -except meanRDM_M
+clc
+f2load = 'pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]); 
+load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{2}, 3); 
+nTimes = size(allNeuralRDMS{2}, 4); 
+
+for subji = 1:nSubjs
+    if ~isempty(allNeuralRDMS{subji, 1})
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+
+        oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+        oneListIds = double(string(cat(1, oneListIds{:})));
+        idsF1 = oneListIds(:, 3);
+        idsF2 = [101:110 201:210 301:310 401:410 501:510 601:610]';
+        [x1 x2 x3] = intersect (idsF1, idsF2);
+        
+        nRows       = size(neuralRDMs, 1); 
+        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+        rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
+        
+        rdm = nan(60); 
+        rdm(x3,x3) = rdmS; 
+        meanRDM_MAINT(subji,:,:) = rdm; 
+
+        
+    end
+end
+
+
+%% 
+rdm1 = squeeze(mean(meanRDM_M, 'omitnan')); 
+rdm2 = squeeze(mean(meanRDM_MAINT, 'omitnan')); 
+
+rdm1 = vectorizeRDM_WM(rdm1); 
+rdm2 = vectorizeRDM_WM(rdm2); 
+
+
+[rho p] = corr(rdm1, rdm2)
 
 %% Process neural RDMs and compute CCI for CATEGORIES
 
@@ -3537,9 +3700,11 @@ nnFitCAT = nnFit;
 
 clear nnHVVS nnHPFC
 for subji = 1:length(nnFitBLNET)
+    if ~isempty(nnFitBLNET{subji, 1})
      nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(7,:,1:40));
      nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(8,:,1:40));
      nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:40));
+    end
 end
 
 if strcmp(cfg.brainROI, 'vvs')

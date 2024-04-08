@@ -43,11 +43,11 @@ if ndims(neuralRDMs) == 4 % if frequency resolved
 
         % % % The layer loop can be avoided as well
         all_r_Times = zeros(nLays, nFreqs, nTimes);
-        Ms =  vectorizeRDM(networkRDMs)';
+        Ms =  vectorizeRDM_WM(networkRDMs)';
         nanIds = isnan(Ms(:, 1)); 
         Ms(any(nanIds, 2), :) = [];
         rdm = neuralRDMs;
-        rdm = vectorizeRDM(rdm);
+        rdm = vectorizeRDM_WM(rdm);
         rdm(any(nanIds, 2), :) = [];
         allTEst = corr(rdm, Ms, 'type', 's');
         all_r_Times = reshape(allTEst', nLays, nFreqs, nTimes);
@@ -110,10 +110,10 @@ else % if only 3 dimensions (frequencies used as features)
 
         for layi = 1:nLays
             M =  squeeze(networkRDMs(layi,:,:)); 
-            M = vectorizeRDM(M);
+            M = vectorizeRDM_WM(M);
             parfor timei = 1:nTimes
                 rdm = squeeze(neuralRDMs(:, :, timei));
-                rdm = vectorizeRDM(rdm);
+                rdm = vectorizeRDM_WM(rdm);
                 allTEst = corr(rdm, M, 'type', 's');
                 all_r_Times(layi,timei) = allTEst;  
             end
