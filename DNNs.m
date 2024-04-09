@@ -99,7 +99,13 @@ listF2sav = {
 % 'CAT_vvs_M123_[1]_30-38_1_0_0_0_.1_5_1'
 % 'CAT_vvs_M123_[1]_39-54_1_0_0_0_.1_5_1'
 
-'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1'
+
+'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_0_0_.1_5_1';
 
 
 };   
@@ -806,10 +812,10 @@ clear , clc
 
 %f2sav =  'BLNETi_vvs_M11_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
 %f2sav = 'BLNETi_vvs_M12_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
-f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1'; 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'
 %f2sav = 'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1'
-
+f2sav = 'Alex_vvs_E123CAT2_[1-8]_3-8_0_0_0_0_.1_5_1';
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -879,7 +885,7 @@ for layi = 1:size(nnFit{2}, 1)
     hb = h; hb(h==1) = 0; hb(h==0) = nan; 
     
     plot(times, t); hold on; %colorbar
-    plot(times, hb)
+    plot(times, hb, linew=3)
     
     
     if strcmp(cfg.period(1), 'M')
@@ -3094,7 +3100,7 @@ end
 clear, clc
 %Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
     
-lay2u = 1; 
+lay2u = 2; 
 
 listF2sav = {
 
@@ -3127,12 +3133,12 @@ listF2sav = {
 % 'BLNETi_pfc_M123CAT5_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 % 'BLNETi_pfc_M123CAT6_[8-8-56]_3-54_0_0_1_0_.1_5_1';
 
-% 'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
-% 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_1_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_1_0_.1_5_1';
 
 % 'Alex_pfc_E123CAT1_[1-8]_3-54_0_0_1_0_.1_5_1';
 % 'Alex_pfc_E123CAT2_[1-8]_3-54_0_0_1_0_.1_5_1';
@@ -3197,7 +3203,9 @@ for listi = 1:length(listF2sav)
     paths = load_paths_WM(cfg.brainROI, cfg.net2load);
     load([paths.results.DNNs f2sav '.mat']);
     x =  nnFit(:, 1);
+    x(cellfun('isempty', x)) = []; 
     x = cellfun(@(x) x(lay2u,:,:), x, 'un', 0); 
+    
     allnnFIT{listi,:} = x; 
 
 end
@@ -3222,6 +3230,7 @@ if strcmp(cfg.brainROI, 'vvs')
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
 end
+
 
 
 nnH(sub2exc, :, :) = []; 
@@ -3260,6 +3269,537 @@ else
 end
 
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+%% p last layer only
+p = p (end,:);
+p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
+p_ranked = sort(p_ranked(:))
+
+
+
+
+%% Extract activity in specific clusters from NNH
+
+
+paths = load_paths_WM('vvs', 'none');
+
+load ([paths.results.clusters 'ITM_VVS_enc']);
+%load ([paths.results.clusters 'clust_PFC_ITM_ENC_px3']);
+
+
+for subji = 1:size(nnH, 1)
+    nnHSubj = squeeze(nnH(subji, :, :)); 
+    nnHClust_vvsE1(subji, :) = mean(nnHSubj(clustinfo.PixelIdxList{6})); 
+    %nnHClust_vvsE1(subji, :) = mean(nnHSubj(clustinfo.PixelIdxList{3})); 
+end
+
+% % % test cluster is correct
+%tes2u = zeros(52, 15); 
+%tes2u(clustinfo.PixelIdxList{6})=1; 
+%figure()
+%imagesc(tes2u);
+
+[h p ci ts] = ttest(nnHClust_vvsE1);
+
+h = squeeze(h); t = squeeze(ts.tstat); 
+
+disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
+
+%% plot one bar
+clear data
+data.data = [nnHClust_vvsE1]; 
+
+figure(2); set(gcf,'Position', [0 0 500 620]); 
+mean_S = mean(data.data, 1);
+hb = scatter([1], data.data, 100, 'k'); hold on;
+%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
+
+h = bar (mean_S);hold on;
+set(h,'FaceColor', 'none', 'lineWidth', 3);
+set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 2] );
+set(gca, 'ylim', [-.1 .15])
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
+
+[h p ci t] = ttest (data.data(:,1));
+disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
+
+set(gca, 'LineWidth', 3);
+
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+%% plot all nnH
+
+for subji = 1:size(nnH, 1)
+    
+    figure()
+    imagesc(squeeze(nnH(subji, :, :))); colorbar
+
+end
+
+
+
+
+%% COMPUTE ONE ITEM LEVEL DNN FIT PER SUBJECT and CATEGORY, AVERAGE AND PERFORM STATS SIX CATEGORIES BANDS
+
+
+clear, clc
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+lay2u = 4; 
+
+listF2sav = {
+
+% 'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_0_0_.1_5_1';
+
+'Alex_vvs_E123CAT1_[1-8]_30-38_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT2_[1-8]_30-38_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT3_[1-8]_30-38_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT4_[1-8]_30-38_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT5_[1-8]_30-38_0_0_0_0_.1_5_1';
+'Alex_vvs_E123CAT6_[1-8]_30-38_0_0_0_0_.1_5_1';
+
+
+% 'Alex_vvs_E123CAT1_[1-8]_3-54_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_3-54_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_3-54_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_3-54_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_3-54_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_3-54_1_0_0_0_.1_5_1';
+
+
+% 'Alex_vvs_E123CAT1_[1-8]_3-8_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_3-8_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_3-8_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_3-8_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_3-8_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_3-8_0_0_0_0_.1_5_1';
+
+% 'Alex_vvs_E123CAT1_[1-8]_13-29_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_13-29_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_13-29_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_13-29_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_13-29_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_13-29_0_0_0_0_.1_5_1';
+
+% 'Alex_vvs_E123CAT1_[1-8]_3-8_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_3-8_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_3-8_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_3-8_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_3-8_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_3-8_1_0_0_0_.1_5_1';
+
+% 'Alex_vvs_E123CAT1_[1-8]_1-3_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_1-3_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_1-3_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_1-3_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_1-3_0_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_1-3_0_0_0_0_.1_5_1';
+
+
+
+ % 'Alex_vvs_E123CAT1_[1-8]_39-54_0_0_0_0_.1_5_1';
+ % 'Alex_vvs_E123CAT2_[1-8]_39-54_0_0_0_0_.1_5_1';
+ % 'Alex_vvs_E123CAT3_[1-8]_39-54_0_0_0_0_.1_5_1';
+ % 'Alex_vvs_E123CAT4_[1-8]_39-54_0_0_0_0_.1_5_1';
+ % 'Alex_vvs_E123CAT5_[1-8]_39-54_0_0_0_0_.1_5_1';
+ % 'Alex_vvs_E123CAT6_[1-8]_39-54_0_0_0_0_.1_5_1';
+
+% 'Alex_vvs_E123CAT1_[1-8]_30-38_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT2_[1-8]_30-38_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT3_[1-8]_30-38_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT4_[1-8]_30-38_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT5_[1-8]_30-38_1_0_0_0_.1_5_1';
+% 'Alex_vvs_E123CAT6_[1-8]_30-38_1_0_0_0_.1_5_1';
+
+};   
+
+
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi allnnFIT lay2u
+        
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    load([paths.results.DNNs f2sav '.mat']);
+    x =  nnFit(:, 1);
+    x(cellfun('isempty', x)) = []; 
+    x = cellfun(@(x) x(lay2u,:,:), x, 'un', 0); 
+    
+    allnnFIT{listi,:} = x; 
+
+end
+
+
+% allNF = cell2mat(cat(2, allnnFIT{:})); 
+% mAallSNF = reshape(allNF, 27, 46, []); 
+% mAallSNF = squeeze(mean(mAallSNF, 3)); 
+
+ % allNF = cat(2, allnnFIT{:});
+ % allSNF = cell2mat(permute(allNF, [3 4 1 2])); 
+ % mAallSNF = squeeze(mean(allSNF, 4));
+ % mAallSNF = permute(mAallSNF, [2 1]); 
+
+clear allS44
+for cati = 1:6
+    for subji = 1:27
+        allS44(subji, cati,:) = cell2mat(allnnFIT{cati}(subji)); 
+    end
+end
+mAallSNF = squeeze(mean(allS44, 2)); 
+
+
+if strcmp(cfg.period(1), 'M')
+ nnH = mAallSNF(:,1:40);
+else
+ nnH = mAallSNF(:,1:15);
+end
+
+if strcmp(cfg.brainROI, 'vvs')
+    %sub2exc = [18 22];
+    sub2exc = [18];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+nnH(sub2exc, :) = []; 
+nnH = squeeze(nnH);
+
+[h p ci ts] = ttest(nnH);
+%[h p ci ts] = ttest(nnH,0, 'Tail','right');
+
+h = squeeze(h); t = squeeze(ts.tstat); 
+%h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
+mART = squeeze(mean(nnH)); 
+stdART = squeeze(std(nnH)); 
+seART = stdART/ sqrt(size(nnH, 1));
+
+
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 500/1.5 300/1.7])
+    myCmap = colormap(brewermap(14,'*RdPu'));
+    times = 1:40;
+    x = (-.015:-.003:-.028)';
+    
+    plot (times, hb, 'Linewidth', 4); hold on; 
+    plot(times, mART, 'Linewidth', 3); hold on; 
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
+    set(gca, 'FontSize', 12, 'ylim', [-.0375 .0375]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',2);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+
+elseif strcmp(cfg.period(1), 'E')
+    
+    figure()
+    set(gcf, 'Position', [100 100 150 300])
+    myCmap = colormap(brewermap(14,'RdPu'));
+    myCmap = myCmap([6 8 10 12 14],:);
+    times = 1:15;
+    plot(times, mART, 'Linewidth', 5); hold on; 
+    x = (-.015:-.0053:-.039)';
+    
+    plot (times, hb, 'Linewidth', 5); hold on; 
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 11]); 
+    set(gca, 'FontSize', 12, 'ylim', [-.04 .15]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth',3);
+    plot(get(gca,'xlim'), [0 0],'k:','lineWidth',3);
+    %legend
+
+end
+
+%% SIX CATEGORIES BANDS - PLOT TOGETHER
+
+
+clear, clc
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+    
+for layi = 1:8
+
+
+    lay2u = layi; 
+    
+    listF2sav = {
+    
+    'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_0_0_.1_5_1';
+    'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_0_0_.1_5_1';
+    'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_0_0_.1_5_1';
+    'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_0_0_.1_5_1';
+    'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_0_0_.1_5_1';
+    'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_0_0_.1_5_1';
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_30-38_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_30-38_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_30-38_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_30-38_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_30-38_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_30-38_0_0_0_0_.1_5_1';
+    
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_3-54_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_3-54_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_3-54_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_3-54_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_3-54_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_3-54_1_0_0_0_.1_5_1';
+    
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_3-8_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_3-8_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_3-8_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_3-8_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_3-8_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_3-8_0_0_0_0_.1_5_1';
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_13-29_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_13-29_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_13-29_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_13-29_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_13-29_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_13-29_0_0_0_0_.1_5_1';
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_3-8_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_3-8_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_3-8_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_3-8_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_3-8_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_3-8_1_0_0_0_.1_5_1';
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_1-3_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_1-3_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_1-3_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_1-3_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_1-3_0_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_1-3_0_0_0_0_.1_5_1';
+    
+    
+    
+     % 'Alex_vvs_E123CAT1_[1-8]_39-54_0_0_0_0_.1_5_1';
+     % 'Alex_vvs_E123CAT2_[1-8]_39-54_0_0_0_0_.1_5_1';
+     % 'Alex_vvs_E123CAT3_[1-8]_39-54_0_0_0_0_.1_5_1';
+     % 'Alex_vvs_E123CAT4_[1-8]_39-54_0_0_0_0_.1_5_1';
+     % 'Alex_vvs_E123CAT5_[1-8]_39-54_0_0_0_0_.1_5_1';
+     % 'Alex_vvs_E123CAT6_[1-8]_39-54_0_0_0_0_.1_5_1';
+    
+    % 'Alex_vvs_E123CAT1_[1-8]_30-38_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT2_[1-8]_30-38_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT3_[1-8]_30-38_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT4_[1-8]_30-38_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT5_[1-8]_30-38_1_0_0_0_.1_5_1';
+    % 'Alex_vvs_E123CAT6_[1-8]_30-38_1_0_0_0_.1_5_1';
+    
+    };   
+    
+    
+    for listi = 1:length(listF2sav)
+        disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+        clearvars -except listF2sav listi allnnFIT lay2u
+            
+        f2sav       = listF2sav{listi}; 
+        cfg = getParams(f2sav);
+        paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+        load([paths.results.DNNs f2sav '.mat']);
+        x =  nnFit(:, 1);
+        x(cellfun('isempty', x)) = []; 
+        x = cellfun(@(x) x(lay2u,:,:), x, 'un', 0); 
+        
+        allnnFIT{listi,:} = x; 
+    
+    end
+    
+    
+    % allNF = cell2mat(cat(2, allnnFIT{:})); 
+    % mAallSNF = reshape(allNF, 27, 46, []); 
+    % mAallSNF = squeeze(mean(mAallSNF, 3)); 
+    
+     % allNF = cat(2, allnnFIT{:});
+     % allSNF = cell2mat(permute(allNF, [3 4 1 2])); 
+     % mAallSNF = squeeze(mean(allSNF, 4));
+     % mAallSNF = permute(mAallSNF, [2 1]); 
+    
+    clear allS44
+    for cati = 1:6
+        for subji = 1:27
+            allS44(subji, cati,:) = cell2mat(allnnFIT{cati}(subji)); 
+        end
+    end
+    mAallSNF = squeeze(mean(allS44, 2)); 
+    
+    
+    if strcmp(cfg.period(1), 'M')
+     nnH = mAallSNF(:,1:40);
+    else
+     nnH = mAallSNF(:,1:15);
+    end
+    
+    if strcmp(cfg.brainROI, 'vvs')
+        %sub2exc = [18 22];
+        sub2exc = [18];
+    elseif strcmp(cfg.brainROI, 'pfc')
+        sub2exc = [1];
+    end
+    
+    nnH(sub2exc, :) = []; 
+    nnH = squeeze(nnH);
+    
+    [h p ci ts] = ttest(nnH);
+    %[h p ci ts] = ttest(nnH,0, 'Tail','right');
+    
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    hb = h; hb(h==0) = nan; hb(hb==1) = 0; 
+    mART = squeeze(mean(nnH)); 
+    stdART = squeeze(std(nnH)); 
+    seART = stdART/ sqrt(size(nnH, 1));
+    
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gcf, 'Position', [100 100 500/1.5 300/1.7])
+        myCmap = colormap(brewermap(14,'*RdPu'));
+        times = 1:40;
+        x = (-.015:-.003:-.028)';
+        
+        plot (times, hb, 'Linewidth', 4); hold on; 
+        plot(times, mART, 'Linewidth', 3); hold on; 
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 37]); 
+        set(gca, 'FontSize', 12, 'ylim', [-.0375 .0375]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth',2);
+        plot(get(gca,'xlim'), [0 0],'k:','lineWidth',2);
+    
+    elseif strcmp(cfg.period(1), 'E')
+        
+        figure()
+        set(gcf, 'Position', [100 100 150 300])
+        myCmap = colormap(brewermap(14,'RdPu'));
+        myCmap = myCmap([6 8 10 12 14],:);
+        times = 1:15;
+        plot(times, mART, 'Linewidth', 5); hold on; 
+        x = (-.015:-.0053:-.039)';
+        
+        plot (times, hb, 'Linewidth', 5); hold on; 
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'xlim', [1 15]); 
+        set(gca, 'FontSize', 12, 'ylim', [-.0035 .01]);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth',3);
+        plot(get(gca,'xlim'), [0 0],'k:','lineWidth',3);
+        %legend
+    
+    end
+
+end
+
+%% plot all layers BANDS > recover method for plotting the category model in individual bands
+
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+
+%f2sav =  'BLNETi_vvs_M11_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_vvs_M12_[8-8-56]_3-29_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-8_1_0_0_0_.1_5_1'; 
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_13-29_1_0_0_0_.1_5_1'
+%f2sav = 'CAT_pfc_E123_[1]_13-29_1_0_0_0_.1_5_1'
+f2sav = 'Alex_vvs_E123CAT2_[1-8]_3-8_0_0_0_0_.1_5_1';
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+    %set(gcf, 'Position', [100 100 1800 1000])
+end
+
+for layi = 1:size(nnFit{2}, 1)
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+       if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,1:15));
+             %nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:134));
+           end
+       end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+        %times = 1:134;
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    hb = h; hb(h==1) = 0; hb(h==0) = nan; 
+    
+    plot(times, t); hold on; %colorbar
+    plot(times, hb, linew=3)
+    
+    
+    if strcmp(cfg.period(1), 'M')
+        
+    else
+        
+    end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+%% p last layer only
+p = p (end,:);
+p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
+p_ranked = sort(p_ranked(:))
+
+
+
 
 %% Extract activity in specific clusters from NNH
 
