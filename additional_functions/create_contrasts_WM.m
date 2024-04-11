@@ -538,8 +538,8 @@ if ~isempty(intersect(c2c, 'EE'))
     if ~isempty(intersect(c2c, 'EE'))
       if strcmp(posEnc, '1') | strcmp(posEnc, '3') | strcmp(posEnc, '5')
         posI = str2double(evei{1});
-        catI = str2double(evei{3});
-        catI = floor(catI/100); 
+        itI = str2double(evei{3});
+        catI = floor(itI/100); 
         
         for j = i:length(oneListIds)
            evej = strsplit(oneListIds{j});
@@ -550,10 +550,10 @@ if ~isempty(intersect(c2c, 'EE'))
            if length(trlij) == length(unique(trlij)) % all averaged instances are from different trials
             if strcmp(evej(1), '1') | strcmp(evej(1), '3') | strcmp(evej(1), '5') 
                   posJ = str2double(evej{1});
-                  catJ = str2double(evej{3});
-                  catJ = floor(catJ/100); 
+                  itJ = str2double(evej{3});
+                  catJ = floor(itJ/100); 
 
-                  if catI == catJ & posI == posJ
+                  if catI == catJ & posI == posJ  & itI ~= itJ 
                     if exist('countSCSP_EE')
                         %disp(['SCSP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
                         new_scsp_ee{countSCSP_EE} = [i, j];
@@ -561,7 +561,7 @@ if ~isempty(intersect(c2c, 'EE'))
                     end
                   end   
 
-                    if catI == catJ & posI ~= posJ
+                    if catI == catJ & posI ~= posJ  & itI ~= itJ 
                         if exist('countSCDP_EE')
                             %disp(['SCDP_EE > ' oneListIds{i} '//' oneListIds{j}]);     
                             new_scdp_ee{countSCDP_EE} = [i, j];
@@ -654,7 +654,7 @@ if ~isempty(intersect(c2c, 'EM11'))
     if strcmp(posEnc, '3') %* is for the average data
         for j = 1:length(oneListIds) % repetitions are needed so should not start at i (we are only saving half of the matrix)
            evej = strsplit(oneListIds{j});
-           if strcmp(evej(1), '3') 
+           if strcmp(evej(1), '5') 
             trli = string(evei(12)); trlj = string(evej(12));
             trli = strsplit(trli, '_'); trlj = strsplit(trlj, '_');
             trlij = [trli trlj];

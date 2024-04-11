@@ -33,7 +33,10 @@ cfg_plot.plotClust   =       ~cfg.remClust; %cluster
 %cfg_plot.sigMH_thres =       out_real.sigMH_real;
 
 
-if strcmp(cfg.cond1(end-2:end), 'EM2') | strcmp(cfg.cond1(end-3:end), 'EM11') | strcmp(cfg.cond1(end-3:end), 'EM12') | strcmp(cfg.cond1(end-3:end), 'EM13')
+if strcmp(cfg.cond1(end-2:end), 'EM2') | ...
+        strcmp(cfg.cond1(end-3:end), 'EM11') | strcmp(cfg.cond1(end-3:end), 'EM12') | strcmp(cfg.cond1(end-3:end), 'EM13') | ...
+        strcmp(cfg.cond1(end-3:end), 'EM21') | strcmp(cfg.cond1(end-3:end), 'EM22') | strcmp(cfg.cond1(end-3:end), 'EM23')
+
     dupSym      =      0; 
 else
     dupSym      =      1; 
@@ -48,6 +51,7 @@ myCmap = colormap(brewermap([],'YlOrRd'));
 meanReal_cond1      =   out_real.meanReal_cond1;
 meanReal_cond2      =   out_real.meanReal_cond2;
 sigMT_real          =   out_real.sigMT_real;
+%out_real.sigMH_real(9,4) = 0; out_real.sigMH_real(9,5) = 0; out_real.sigMH_real(10, 5) = 0; %% THIS IS JUST TO PLOT VVS EES THETA FOR POSITION 3
 sigMH_real          =   out_real.sigMH_real;
 plot1clust          =   cfg.plot1clust; 
 clust2plot          =   cfg.clust2plot;
@@ -100,8 +104,11 @@ if plot1clust
 end
 imagesc (flipud(myresizem(sigMT_real, 10))); axis equal;hold on; 
 if cfg_plot.plotClust
-    contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k'); %colorbar; 
-    %contour(flipud(myresizem(sigMH_real, 10)), 1,':', 'lineWidth', 6, 'linecolor', 'k'); %colorbar; 
+    if (cfg.plotTrend)
+        contour(flipud(myresizem(sigMH_real, 10)), 1,':', 'lineWidth', 6, 'linecolor', 'k'); %colorbar; 
+    else
+        contour(flipud(myresizem(sigMH_real, 10)), 1, 'lineWidth', lwd2, 'linecolor', 'k'); %colorbar; 
+    end
 end
 if cfg_plot.plotCueOnset
     plot(get(gca,'xlim'), [cfg_plot.limFE*10 cfg_plot.limFE*10],'k:', 'linewidth', lwd1); 
