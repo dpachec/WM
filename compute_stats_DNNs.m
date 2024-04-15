@@ -12,8 +12,8 @@ clear , clc
 
 %f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
 
-%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
+f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
+%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';

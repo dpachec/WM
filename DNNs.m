@@ -165,10 +165,7 @@ clear, clc
 nPerm = 1000;
 listF2sav = {
 
-%'BLNETi_vvs_E123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'
-
 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
 
 
@@ -192,7 +189,7 @@ for listi = 1:length(listF2sav)
     else 
         nnFitPerm = zeros(nPerm, length(filelistSess), length(cfg.lays2load), length(cfg.freqs), 21);
     end
-    for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3
+    for sessi= 1:length(filelistSess) 
         disp(['File > ' num2str(sessi)]);
         load([paths.powerFromRT filelistSess{sessi}]);   
         
