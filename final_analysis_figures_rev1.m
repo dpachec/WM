@@ -853,20 +853,21 @@ for subji = 1:16
     neuDist = ACT(CM==triu2u); 
     %neuDist = vectorizeRDM_WM(ACT); 
 
-    rhoALL(subji, :) = corr(neuDist, BLDist, 'type', 's'); 
+    rhoALLPFC(subji, :) = corr(neuDist, BLDist, 'type', 's'); 
     
 end
 
+
 sub2exc = 1; 
-rhoALL(sub2exc) = []; 
-[h p ci ts] = ttest(rhoALL);
+rhoALLPFC(sub2exc) = []; 
+[h p ci ts] = ttest(rhoALLPFC);
 disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 
 
 %% plot one bar
 clear data
-data.data = [rhoALL]; 
+data.data = [rhoALLPFC]; 
 
 figure(2); set(gcf,'Position', [0 0 500 620]); 
 mean_S = mean(data.data, 1);
@@ -890,7 +891,8 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
 
 %% BL-NET FIT TO WITHIN ITEM / or BETWEEN CATEGORY CORRELATIONS VVS
 
-clear, clc
+clearvars -except rhoALLPFC
+clc
 subj_ch_fr = 17;
 triu2u = 1; %Within or between category correlations
 
@@ -969,17 +971,17 @@ for subji = 1:size(meanRDM, 1)
     
 end
 
-rhoALLM = squeeze(mean(rhoALL, 2)); 
+rhoALLVVS = squeeze(mean(rhoALL, 2)); 
 
-sub2exc = [2 18]; 
-rhoALLM(sub2exc) = []; 
-[h p ci ts] = ttest(rhoALLM);
+sub2exc = [18 22]; 
+rhoALLVVS(sub2exc) = []; 
+[h p ci ts] = ttest(rhoALLVVS);
 disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 
 %% plot one bar
 clear data
-data.data = [rhoALLM]; 
+data.data = [rhoALLVVS]; 
 
 figure(2); set(gcf,'Position', [0 0 500 620]); 
 mean_S = mean(data.data, 1);
@@ -993,13 +995,22 @@ set(gca, 'ylim', [-.15 .3])
 plot(get(gca,'xlim'), [0 0],'k','lineWidth',2);
 box on
 
-[h p ci t] = ttest (data.data(:,1));
+[h p ci ts] = ttest (data.data(:,1));
 disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
 
 set(gca, 'LineWidth',2);
 
 
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+%% contrasts VVS and PFC for 10 subjects
+
+rhoALLPFC = rhoALLPFC([2 3  5  9 10 11 12 14 15 16],:,:);
+rhoALLVVS = rhoALLVVS([7 9 13 18 19 20 21 23 27 28],:,:);
+
+[h p ci ts] = ttest (rhoALLPFC, rhoALLVVS);
+disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
 
 
 
@@ -1040,9 +1051,32 @@ cciClust(sub2exc) = [];
 disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
 
 
+%% count how many items repetitions
+clear , clc
+f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1'
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
 
 
+for subji = 1:length(nnFit)
 
+    ids = nnFit{subji, 2}; 
+    oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+    oneListIds = double(string(cat(1, oneListIds{:})));
+    idsF1 = oneListIds(:, 3);
+    [v, w] = unique(idsF1, 'stable' );
+    duplicate_indices = setdiff( 1:numel(idsF1), w ); 
+    nRep(subji, :) = length(duplicate_indices); 
+
+end
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

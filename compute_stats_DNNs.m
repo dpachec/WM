@@ -13,7 +13,7 @@ clear , clc
 %f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-%f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
+f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
@@ -25,8 +25,6 @@ clear , clc
 
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
-
-f2sav = 'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1'
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -181,6 +179,9 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
         if strcmp(cfg.net2load, 'BKNETi') & layi == 4
             h(allClustInfo{4}.PixelIdxList{16}) = 1; 
 
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 7
+            h(allClustInfo{7}.PixelIdxList{1}) = 1; 
         end
 
 

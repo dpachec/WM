@@ -7,11 +7,11 @@ paths = load_paths_WM(region, 'none');
 filelistSess = getFilesWM(paths.out_contrasts);
 
 
-%frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
-%fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
-frequncies2test = [{13:29}]';
-fnames = { '13-29Hz'}'; fnames = fnames';
+% frequncies2test = [{13:29}]';
+% fnames = { '13-29Hz'}'; fnames = fnames';
 
 win_width           = 5; 
 mf                  = 1; 
@@ -29,7 +29,8 @@ TG                  = 1; %temporal generalization
 %contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
 %contr2save          = {'DISC_EM21' 'DIDC_EM21' 'DISC_EM22' 'DIDC_EM22' 'DISC_EM23' 'DIDC_EM23'}; %{};
 %contr2save          = {'SCSP_EM2' 'SCDP_EM2' 'DCSP_EM2' 'DCDP_EM2'}; %{};
-contr2save          = {'DISC_EM12' 'DIDC_EM12'}; %{};
+contr2save          = {'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2' 'SCSP_EM2' 'SCDP_EM2' 'DCSP_EM2' 'DCDP_EM2'}; %{};
+%contr2save          = {'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE'}; %{};
 
 bline               = [3 7];
 acrossTrials        = 1;
@@ -134,11 +135,11 @@ paths = load_paths_WM(region, 'none');
 filelistSess = getFilesWM(paths.out_contrasts);
 
 
-%frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
-%fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
+frequncies2test = [{3:8} {9:12} {13:29} {30:38} {39:54} ]';
+fnames = { '3-8Hz' '9-12Hz' '13-29Hz' '30-75Hz' '75-150Hz' }'; fnames = fnames';
 
-frequncies2test = [{13:29}]';
-fnames = { '13-29Hz'}'; fnames = fnames';
+%frequncies2test = [{13:29}]';
+%fnames = { '13-29Hz'}'; fnames = fnames';
 
 win_width           = 5; 
 mf                  = 1; 
@@ -156,7 +157,8 @@ TG                  = 1; %temporal generalization
 %contr2save          = {'DISC_EE1' 'DIDC_EE1' 'DISC_EE2' 'DIDC_EE2' 'DISC_EE3' 'DIDC_EE3'}; %{};
 %contr2save          = {'DISC_EM21' 'DIDC_EM21' 'DISC_EM22' 'DIDC_EM22' 'DISC_EM23' 'DIDC_EM23'}; %{};
 %contr2save          = {'SCSP_EM2' 'SCDP_EM2' 'DCSP_EM2' 'DCDP_EM2'}; %{};
-contr2save          = {'DISC_EM12' 'DIDC_EM12'}; %{};
+contr2save          = {'SCSP_M2M2' 'SCDP_M2M2' 'DCSP_M2M2' 'DCDP_M2M2' 'SCSP_EM2' 'SCDP_EM2' 'DCSP_EM2' 'DCDP_EM2'}; %{};
+%contr2save          = {'SCSP_EE' 'SCDP_EE' 'DCSP_EE' 'DCDP_EE'}; %{};
 
 bline               = [3 7];
 acrossTrials        = 1;
@@ -260,34 +262,35 @@ disp ('done')
 
 %% LOAD all conditions
 
-clearvars
+clear, clc 
 
 region = 'pfc'; 
 paths = load_paths_WM(region, 'none');
 
+tic
 contrasts = {
               %'DISC_M1A' 'DIDC_M1A';
 
               %'DISC_EE1' 'DIDC_EE1';
-              'DISC_EE2' 'DIDC_EE2';
+              %'DISC_EE2' 'DIDC_EE2';
               %'DISC_EE3' 'DIDC_EE3';
               
-              %'DCSP_M2M2' 'DCDP_M2M2' ; 
-              %'DCSP_M2M2' 'DCDP_M2M2';
+               'SCSP_M2M2' 'SCDP_M2M2' ; 
+              % 'DCSP_M2M2' 'DCDP_M2M2';
 
-              % 'SCSP_EM2' 'SCDP_EM2' ; 
-              % 'DCSP_EM2' 'DCDP_EM2';
+              %'SCSP_EM2' 'SCDP_EM2' ; 
+              %'DCSP_EM2' 'DCDP_EM2';
 
               %'SCSP_EE' 'SCDP_EE' ; 
               %'DCSP_EE' 'DCDP_EE';
 
               %'DISC_EM11' 'DIDC_EM11';
               %'DISC_EM12' 'DIDC_EM12';
-              %'DISC_EM13' 'DIDC_EM13';
+              %'DISC_EM11' 'DIDC_EM11';
 
-              % 'DISC_EM21' 'DIDC_EM21';
-              % 'DISC_EM22' 'DIDC_EM22';
-              % 'DISC_EM23' 'DIDC_EM23';
+               % 'DISC_EM21' 'DIDC_EM21';
+               % 'DISC_EM22' 'DIDC_EM22';
+               % 'DISC_EM23' 'DIDC_EM23';
 
               %'DISC_EM2' 'DIDC_EM2';
 
@@ -308,39 +311,38 @@ for i = 1:length(c)
         idData{i,:} = all_IDs;
     end
 end
-
+toc
 
 %% PLOT
 clc
-%clear all; 
-tic; 
 
 %define conditions 
-cond1 = 'DISC_EE2';
-cond2 = 'DIDC_EE2';
+cond1 = 'SCSP_M2M2'; 
+cond2 = 'SCDP_M2M2'; 
+
 
 cond1B = eval(cond1);
 cond2B = eval(cond2);
  
 cfg             =       [];
 %cfg.subj2exc   =       []; % pfc LATERAL
-cfg.subj2exc    =       [18 22];% vvs;
+%cfg.subj2exc    =       [18 22];% vvs;
 %cfg.subj2exc    =       [18];% vvs;
 %cfg.subj2exc   =       [1]; % pfc
-%cfg.subj2exc   =       []; % pfc LATERAL
+cfg.subj2exc   =       []; % pfc LATERAL
 cfg.clim        =       [-.01 .01];
 cfg.climT       =       [-7 7]; %color scale for t-map
 cfg.saveimg     =       1;
-cfg.res         =       '100_norm'; %'100_perm'; '100_norm'
-cfg.cut2        =       '1-1'; %1-1 1-4 4-4
-cfg.cond1       =       cond1;
-cfg.cond2       =       cond2;
-cfg.lwd1        =       6; %baseline 
-cfg.lwd2        =       6; %significant outline
+cfg.res         =       '100_perm'; %'100_perm'; '100_norm'
+cfg.cut2        =       '4-4'; %1-1 1-4 4-4
+cfg.lwd1        =       2; %baseline 
+cfg.lwd2        =       2; %significant outline
 cfg.remClust    =       0; 
 cfg.plot1clust  =       1;  
-cfg.clust2plot  =       [5];  %VVS EMS maintenance > 3-8: 4; 9-12: 6; 13-29: 8; 30-75: 7; 75-150: [3 17]; vector of pixels to print
+cfg.clust2plot  =       [8];  %VVS EMS maintenance > 3-8: 4; 9-12: 6; 13-29: 8; 30-75: 7; 75-150: [3 17]; vector of pixels to print
 cfg.plotTrend   =       0; 
+cfg.cond1       =       cond1;
+cfg.cond2       =       cond2;
 cfg.all_cond1   =       cond1B; 
 cfg.all_cond2   =       cond2B; 
 cfg.alpha       =       0.05; 
@@ -351,7 +353,8 @@ cfg.alpha       =       0.05;
 %tObs = squeeze(mean(mean(out_real.meanReal_cond1(:, 1:8, 6:15) - out_real.meanReal_cond2(:, 1:8, 6:15), 2), 3));
 %[h p ci ts] = ttest(tObs); 
  
-toc
+close all 
+
 
 
 

@@ -91,9 +91,17 @@ function [out_perm] = myPerm (cfg_perm)
     max_clust_sum                   =   out_perm.max_clust_sum;
     max_clust_sum_perm              =   out_perm.max_clust_sum_perm;
     out_perm.max_clust_sum_real     =   cfg_perm.out_real.max_clust_sum_real;
+
+
+    max_clust_sum = out_perm.max_clust_sum;
+    obs = max(cfg_perm.out_real.all_clust_tsum_real(:,1));
+    %allAb = max_clust_sum(abs(max_clust_sum) > obs);
+    allAb = max_clust_sum((max_clust_sum) > obs);
+    p = (1 - (cfg_perm.n_perm - (length (allAb) ) )  /cfg_perm.n_perm) + (1/cfg_perm.n_perm);
+    
     
     if cfg_perm.savePerm
-        filename =  [num2str(cfg_perm.n_perm) 'p_' cfg_perm.cond1 '_' cfg_perm.cond2];
+        filename =  [num2str(cfg_perm.n_perm) 'p_' cfg_perm.cond1 '_' cfg_perm.cond2 '_p=' num2str(p, 3) '.mat'];
             save (filename, 'all_clust_tsum_real', 'out_perm');
     end
 

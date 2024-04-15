@@ -400,7 +400,7 @@ if ~isempty(intersect(c2c, 'EE'))
                   idRet_J = double(string(evej(idx)));
                   catJ = floor(idRet_J / 100);
                   
-                  if catI == catJ & posI == posJ
+                  if catI == catJ & posI == posJ & idRet_I ~= idRet_J
                     if exist('countSCSP_M2M2')
                         %disp(['SCSP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
                         new_scsp_m2m2{countSCSP_M2M2} = [i, j];
@@ -408,7 +408,7 @@ if ~isempty(intersect(c2c, 'EE'))
                     end
                   end   
 
-                    if catI == catJ & posI ~= posJ
+                    if catI == catJ & posI ~= posJ & idRet_I ~= idRet_J
                         if exist('countSCDP_M2M2')
                             %disp(['SCDP_M2M2 > ' oneListIds{i} '//' oneListIds{j}]);     
                             new_scdp_m2m2{countSCDP_M2M2} = [i, j];
