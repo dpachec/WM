@@ -716,6 +716,8 @@ disp(anovaTable(AT, 'Measure (units)'));
 
 
 
+
+
 %% Ttest at every time-frequency point comparing fits in ALEXNET VS BL-NET (LAYER 7 vs 8)
 
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
@@ -754,9 +756,9 @@ for subji = 1:length(nnFitBLNET)
 end
 for subji = 1:length(nnFitALEX)
    if strcmp(cfg.period(1), 'M')
-     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(7,:,1:40));
+     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(8,:,1:40));
    else
-     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(7,:,1:15));
+     nnHALEX(subji, : ,:) = atanh(nnFitALEX{subji, 1}(8,:,1:15));
    end
 end
 
@@ -773,6 +775,158 @@ nnHBLNET = squeeze(nnHBLNET);
 nnHALEX = squeeze(nnHALEX);
 
 [h p ci ts] = ttest(nnHBLNET, nnHALEX);
+h = squeeze(h); t = squeeze(ts.tstat); 
+h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+
+freqs = 1:52; 
+clustinfoO = bwconncomp(h);
+allClustInfo{1} = clustinfoO; 
+
+% store allTOBS
+if ~isempty(clustinfoO.PixelIdxList)
+    for pixi = 1:length(clustinfoO.PixelIdxList)
+         allTObs(1, pixi, :) = sum(t(clustinfoO.PixelIdxList{pixi}));
+         allTObs1(pixi, :) = sum(t(clustinfoO.PixelIdxList{pixi}));
+    end
+else
+    allTObs(1, :, :) = 0;
+end
+
+if exist('allTObs1')
+    [max2u id] = max(abs(allTObs1));
+    tObs = allTObs1(id); 
+end
+
+
+if strcmp(cfg.period(1), 'M')
+    times = 1:size(t, 2); 
+else
+    times = 1:15; 
+end
+myCmap = colormap(brewermap([],'YlOrRd'));
+colormap(myCmap)
+contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+
+if strcmp(cfg.period(1), 'M')
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'xlim', [1 40], 'clim', [-3 3], 'FontSize', 10);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+else
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'FontSize', 8, 'clim', [-5 5]);
+    plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    
+end
+
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+%% plot nicely
+sub2exc = 1; 
+tiledlayout(8,8, 'TileSpacing', 'compact', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1800 1300])
+else
+    set(gcf, 'Position', [100 100 670 1300])
+end
+
+load ([paths.results.clusters 'clustinfo_PFC_px2']);
+h1 = zeros(52, 40); 
+h1(clustinfo.PixelIdxList{2}) = 1; 
+
+
+isTrend = 0; 
+for layi = 1
+    
+    freqs = 1:520; 
+    times = 1:size(t, 2)*10; 
+    
+    h = zeros(52, 40); 
+    h(clustinfoO.PixelIdxList{5}) = 1; 
+    %h(clustinfo.PixelIdxList{6}) = 1; 
+    
+
+    myCmap = colormap(brewermap([],'*spectral'));
+    colormap(myCmap)
+    contourf(times, freqs,myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+    
+    contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 8);
+    contour(times, freqs, myresizem(h1, 10), 1, ':', 'Color', [1, 0, 0], 'LineWidth', 8);
+    
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'xlim', [1 400], 'clim', [-5 5], 'FontSize', 20);
+    plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 15);
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+close all
+
+
+
+%% Ttest at every time-frequency point comparing fits in BL-NET VS CATEGORY MODEL FOR LATERAL ELECTRODES
+
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+f2sav1 = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+cfg = getParams(f2sav1);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav1 '.mat']);
+nnFitBLNET = nnFit; 
+
+f2sav3 = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1';
+cfg = getParams(f2sav3);
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav3 '.mat']);
+nnFitCAT = nnFit; 
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+end
+
+
+ax1 = nexttile;
+clear nnHVVS nnHPFC
+for subji = 1:length(nnFitBLNET)
+        if ~isempty(nnFitBLNET{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+                nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(7,:,1:40));
+           else
+             nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(7,:,1:15));
+           end
+        end 
+end
+for subji = 1:length(nnFitCAT)
+   if strcmp(cfg.period(1), 'M')
+     nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:40));
+   else
+     nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:15));
+   end
+end
+
+if strcmp(cfg.brainROI, 'vvs')
+    nnHBLNET([18 22], :, :) = []; 
+    nnFitCnnHCATAT([18 22], :, :) = []; 
+else
+    nnHBLNET([1], :, :) = []; 
+    nnHCAT([1], :, :) = []; 
+end
+
+
+nnHBLNET = squeeze(nnHBLNET);
+nnHCAT = squeeze(nnHCAT);
+
+[h p ci ts] = ttest(nnHBLNET, nnHCAT);
 h = squeeze(h); t = squeeze(ts.tstat); 
 h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
 
@@ -820,6 +974,8 @@ end
 
 %exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
 
 %% Permutations 
 nPerm = 1000; 

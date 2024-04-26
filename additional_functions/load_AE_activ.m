@@ -6,13 +6,9 @@ function [ACT layerNames] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2loa
     currentFolder = pwd; 
     
     gPath = [paths.activations.AE]; 
-    normalizedMatrices = strcmp(net2load(end), 'N')
-    if normalizedMatrices
-        net2load = [net2load(1) '_' net2load(2:end-1)];
-    else
-        net2load = [net2load(1) '_' net2load(2:end)];
-    end
-
+    normalizedMatrices = strcmp(net2load(end), 'N');
+    net2load = [net2load(3) '_' net2load(4:end-1)];
+    
     
     if sessi < subj_ch_fr
         if normalizedMatrices

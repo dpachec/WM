@@ -12,7 +12,7 @@ clear , clc
 
 %f2sav = 'Alex_vvs_M13_[1-8]_3-54_1_0_1_0_.1_5_1'
 
-f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'CAT_pfc_M123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
@@ -23,8 +23,11 @@ f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
 %f2sav = 'BKNETi_vvs_M123_[1-7]_3-54_1_0_1_0_.1_5_1';
 %f2sav = 'BDNETi_vvs_M123_[1-13]_3-54_1_0_1_0_.1_5_1';
 
-%f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
+f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
+
+cLim = [-5 5]; 
 
 cfg = getParams(f2sav);
 if strcmp(cfg.brainROI, 'vvs')
@@ -97,17 +100,17 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     
     if strcmp(cfg.period(1), 'M')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        set(gca, 'xlim', [1 40], 'clim', cLim, 'FontSize', 10);
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
     else
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'FontSize', 8, 'clim', [-5 5]);
+        set(gca, 'FontSize', 8, 'clim', cLim);
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
     end
 
     if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 40], 'clim', [-5 5], 'FontSize', 10);
+        set(gca, 'xlim', [1 40], 'clim', cLim, 'FontSize', 10);
         plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
         plot([5+8 5+8],get(gca,'ylim'), 'k:','lineWidth', 2);
         % set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
@@ -133,6 +136,7 @@ else
     set(gcf, 'Position', [100 100 670 1300])
 end
 
+isTrend = 0; 
 for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     ax1 = nexttile;
     clear nnH
@@ -176,6 +180,14 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     if strcmp(cfg.period(1), 'M')
         times = 1:size(t, 2)*10; 
         h = zeros(52, 40); 
+        if strcmp(cfg.net2load, 'BLNETi') & layi == 7
+            h(allClustInfo{7}.PixelIdxList{2}) = 1; 
+            isTrend = 0; 
+        end
+        if strcmp(cfg.net2load, 'BLNETe') & layi == 7
+            h(allClustInfo{7}.PixelIdxList{2}) = 1; 
+            isTrend = 0; 
+        end
         if strcmp(cfg.net2load, 'BKNETi') & layi == 4
             h(allClustInfo{4}.PixelIdxList{16}) = 1; 
 
@@ -187,15 +199,29 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
 
     else
         times = 1:150; 
+        h = zeros(52, 15); 
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 2
+            h(allClustInfo{2}.PixelIdxList{2}) = 1; 
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 3
+            h(allClustInfo{3}.PixelIdxList{2}) = 1; 
+        end
+        if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 4
+            h(allClustInfo{4}.PixelIdxList{2}) = 1; 
+        end
     end
     myCmap = colormap(brewermap([],'*spectral'));
     colormap(myCmap)
     contourf(times, freqs,myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
-    contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    if ~isTrend
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    else
+        contour(times, freqs, myresizem(h, 10), 1, ':', 'Color', [0, 0, 0], 'LineWidth', 2);
+    end
     
     if strcmp(cfg.period(1), 'M') & ~strcmp(cfg.period, 'M11') & ~strcmp(cfg.period, 'M12') & ~strcmp(cfg.period, 'M13')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
-        set(gca, 'xlim', [1 400], 'clim', [-5 5], 'FontSize', 10);
+        set(gca, 'xlim', [1 400], 'clim', [-4 4], 'FontSize', 10);
         plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
     elseif strcmp(cfg.period(1), 'E')
         set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
@@ -203,11 +229,57 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
         plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 4);
     end
     if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
-        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', [], 'clim', [-5 5]); 
         plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 3);
         plot([45+80 45+80],get(gca,'ylim'), 'k:','lineWidth', 3);
     end
     
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+close all
+
+%% plot nicely BLNETe
+sub2exc = 1; 
+tiledlayout(8,8, 'TileSpacing', 'compact', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1800 1300])
+else
+    set(gcf, 'Position', [100 100 670 1300])
+end
+
+isTrend = 0; 
+for layi = 7
+    
+    freqs = 1:520; 
+    clustinfo = bwconncomp(h);
+
+
+    freqs = 1:520; 
+    
+    times = 1:size(t, 2)*10; 
+    h = zeros(52, 40); 
+    h(allClustInfo{7}.PixelIdxList{2}) = 1; 
+    isTrend = 0; 
+
+    
+    
+
+    myCmap = colormap(brewermap([],'*spectral'));
+    colormap(myCmap)
+    contourf(times, freqs,myresizem(t, 10), 100, 'linecolor', 'none'); hold on; %colorbar
+    if ~isTrend
+        contour(times, freqs, myresizem(h, 10), 1, 'Color', [0, 0, 0], 'LineWidth', 8);
+    else
+        contour(times, freqs, myresizem(h, 10), 1, ':', 'Color', [0, 0, 0], 'LineWidth', 8);
+    end
+    
+    set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+    set(gca, 'xlim', [1 400], 'clim', [-5 5], 'FontSize', 20);
+    plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 15);
     
 
 end
@@ -303,7 +375,7 @@ p_ranked = sort(p_ranked(:));
 p
 
 %% p last layer only
-p = p (end,:);
+%p = p (end,:);
 p_ranked = p; p_ranked(p_ranked == 0 | isnan(p_ranked)) = []; 
 p_ranked = sort(p_ranked(:))
 
@@ -1075,21 +1147,6 @@ plot([45 45],get(gca,'ylim'), 'k:','lineWidth', 5);
 exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
 
 
-%%
-
-M = zeros(110); 
-M(1:35, 1:35) = 1; M(36:56, 36:56) = 1; M(57:65, 57:65) = 1;  M(66:86, 66:86) = 1; M(87:end, 87:end) = 1; 
-imagesc(M); axis square; 
-exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
-
-%%
-
-M = zeros(110); 
-M(1:35, 1:35) = rand(35); M(36:56, 36:56) = rand(21); M(57:65, 57:65) = rand(9);  M(66:86, 66:86) = rand(21); M(87:end, 87:end) = rand(24); 
-M(M==0) = nan;
-imagesc(M); axis square; colorbar
-
-exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
 
 
 %%  plot all layers FREQUENCY RESOLVED FANCY PLOT FOR MASK ANALYSIS

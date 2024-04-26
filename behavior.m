@@ -380,6 +380,151 @@ mean(an3Corr_it)
 (1/6) * (1/5) * (1/4)
 
 
+%% check composition of final grid for a description of the task
+clearvars -except allTrlInfo
+clc
+trialinfo = allTrlInfo{20}; 
+
+trls = trialinfo(:, [4:6 12:14])
+
+trls = floor(trls/100);
+
+for triali = 1:length(trls)
+
+
+    trlHE = trls(triali,1:3); 
+    trlHL = trls(triali,4:6); 
+    if trialinfo(triali, 10) < 4
+        itemsRepOfEnc(triali, :) = length(intersect(trlHE, trlHL));
+    else
+        itemsRepOfEnc(triali, :) = nan;
+    end
+
+end
+
+
+sum(itemsRepOfEnc==2)
+sum(itemsRepOfEnc==1)
+
+
+
+
+%% check composition of final grid for a description of the task
+
+clc
+
+for sessi = 1: length(allTrlInfo)
+
+    trialinfo = allTrlInfo{sessi}; 
+
+    trls = trialinfo(:, [4:6 12:14]);
+    
+    trls = floor(trls/100);
+    
+    clear itemsRepOfEnc
+    for triali = 1:length(trls)
+        trlHE = trls(triali,1:3); 
+        trlHL = trls(triali,4:6); 
+        if trialinfo(triali, 10) < 4
+            itemsRepOfEnc(triali, :) = length(intersect(trlHE, trlHL));
+        else
+            itemsRepOfEnc(triali, :) = nan;
+        end
+    end
+    
+    nOfrep(sessi, 1) = sum(itemsRepOfEnc==2);
+    nOfrep(sessi, 2) = sum(itemsRepOfEnc==1);
+
+end
+
+%%
+
+mean(nOfrep)
+
+
+
+
+%% check cued item
+
+clc
+trialinfo = allTrlInfo{1}; 
+
+trls = trialinfo(:, [4:6 12:14])
+
+trls = floor(trls/100);
+
+
+
+for triali = 1:length(trls)
+
+    
+    trlHE = trls(triali,1:3); 
+    if trialinfo(triali, 10) < 4
+        cued = trlHE(trialinfo(triali, 10)); 
+        trlHL = trls(triali,4:6); 
+        isCatOfCued(triali, :) = length(intersect(cued, trlHL));
+    else
+        isCatOfCued(triali, :) = nan;
+    end
+
+end
+
+
+sum(isCatOfCued==0)
+sum(isCatOfCued==1)
+
+
+
+
+%% check composition of final grid for a description of the task
+
+clc
+
+for sessi = 1: length(allTrlInfo)
+
+    trialinfo = allTrlInfo{sessi}; 
+
+    trls = trialinfo(:, [4:6 12:14]);
+    
+    trls = floor(trls/100);
+    
+    trlHE = trls(triali,1:3); 
+    clear isCatOfCued
+    for triali = 1:length(trls)
+        if trialinfo(triali, 10) < 4
+            cued = trlHE(trialinfo(triali, 10)); 
+            trlHL = trls(triali,4:6); 
+            isCatOfCued(triali, :) = length(intersect(cued, trlHL));
+        else
+            isCatOfCued(triali, :) = nan;
+        end
+    end
+
+    nOfCE(sessi, 1) = sum(isCatOfCued==0);
+    nOfCE(sessi, 2) = sum(isCatOfCued==1);
+
+end
+
+
+%%
+
+
+
+mean(nOfCE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

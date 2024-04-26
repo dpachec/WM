@@ -83,29 +83,7 @@ clear, clc
     
 listF2sav = {
 
-% 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-% 'CAT_pfc_E123_[1]_3-54_1_0_1_0_.1_5_1_LATERAL';
-% 'Alex_pfc_E123_[1-8]_3-54_1_0_1_0_.1_5_1_LATERAL';
-
-% 'CAT_pfc_M123_[1]_3-8_1_0_0_0_.1_5_1'
-% 'CAT_pfc_M123_[1]_9-12_1_0_0_0_.1_5_1'
-% 'CAT_pfc_M123_[1]_13-29_1_0_0_0_.1_5_1'
-% 'CAT_pfc_M123_[1]_30-38_1_0_0_0_.1_5_1'
-% 'CAT_pfc_M123_[1]_39-54_1_0_0_0_.1_5_1'
-% 
-% 'CAT_vvs_M123_[1]_3-8_1_0_0_0_.1_5_1'
-% 'CAT_vvs_M123_[1]_9-12_1_0_0_0_.1_5_1'
-% 'CAT_vvs_M123_[1]_13-29_1_0_0_0_.1_5_1'
-% 'CAT_vvs_M123_[1]_30-38_1_0_0_0_.1_5_1'
-% 'CAT_vvs_M123_[1]_39-54_1_0_0_0_.1_5_1'
-
-
-'Alex_vvs_E123CAT1_[1-8]_3-54_0_0_0_0_.1_5_1';
-'Alex_vvs_E123CAT2_[1-8]_3-54_0_0_0_0_.1_5_1';
-'Alex_vvs_E123CAT3_[1-8]_3-54_0_0_0_0_.1_5_1';
-'Alex_vvs_E123CAT4_[1-8]_3-54_0_0_0_0_.1_5_1';
-'Alex_vvs_E123CAT5_[1-8]_3-54_0_0_0_0_.1_5_1';
-'Alex_vvs_E123CAT6_[1-8]_3-54_0_0_0_0_.1_5_1';
+ 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_CHOSENCAT';
 
 
 };   
@@ -4883,84 +4861,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
-%% CORRELATION OF TF MAPS in BL-NET (LAYER 7) VS CATEGORY MODEL 
 
-%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
-clear , clc
-
-f2sav1 = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
-cfg = getParams(f2sav1);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav1 '.mat']);
-nnFitBLNET = nnFit; 
-
-f2sav2 = 'CAT_vvs_M123_[1]_3-54_1_0_1_0_.1_5_1';
-cfg = getParams(f2sav2);
-paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-load([paths.results.DNNs f2sav2 '.mat']);
-nnFitCAT = nnFit; 
-
-clear nnHVVS nnHPFC
-for subji = 1:length(nnFitBLNET)
-   if strcmp(cfg.period(1), 'M')
-     nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(4,:,1:40));
-   else
-     nnHBLNET(subji, : ,:) = atanh(nnFitBLNET{subji, 1}(4,:,1:15));
-   end
-end
-for subji = 1:length(nnFitCAT)
-   if strcmp(cfg.period(1), 'M')
-     nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:40));
-   else
-     nnHCAT(subji, : ,:) = atanh(nnFitCAT{subji, 1}(1,:,1:15));
-   end
-end
-
-if strcmp(cfg.brainROI, 'vvs')
-    nnHBLNET([18 22], :, :) = []; 
-    nnHCAT([18 22], :, :) = []; 
-else
-    nnHBLNET([1], :, :) = []; 
-    nnHCAT([1], :, :) = []; 
-end
-
-
-clear allR
-for subji = 1:size(nnHBLNET, 1)
-    
-    nnHBLNETS = nnHBLNET(subji, :, :); 
-    nnHCATS = nnHCAT(subji, :, :); 
-
-    nnHBLNETS = nnHBLNETS(:); 
-    nnHCATS = nnHCATS(:); 
-
-    allR(subji, :) = corr(nnHBLNETS, nnHCATS, 'type', 's'); 
-
-end
-
-
-%% plot one bar
-clear data
-data.data = [allR]; 
-
-figure(2); set(gcf,'Position', [0 0 500 620]); 
-mean_S = mean(data.data, 1);
-hb = scatter([1], data.data, 100, 'k'); hold on;
-%set(hb, 'lineWidth', 0.01, 'Marker', '.', 'MarkerSize',45);hold on;
-
-h = bar (mean_S);hold on;
-set(h,'FaceColor', 'none', 'lineWidth', 3);
-set(gca,'XTick',[1],'XTickLabel',{'', ''}, 'FontSize', 30, 'linew',2, 'xlim', [0 2] );
-set(gca, 'ylim', [0 1])
-plot(get(gca,'xlim'), [0 0],'k','lineWidth', 3);
-
-[h p ci t] = ttest (data.data(:,1));
-disp (['t = ' num2str(t.tstat) '  ' ' p = ' num2str(p)]);
-
-set(gca, 'LineWidth', 3);
-
-
-exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 

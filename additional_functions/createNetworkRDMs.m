@@ -51,10 +51,8 @@ elseif strcmp (cfg.net2load , 'CAT')
     [ACT] = load_CATMODEL_activ(oneListIDs);
 elseif strcmp (cfg.net2load , 'ITM')
     [ACT] = load_ITMODEL_activ(oneListIDs);    
-elseif strcmp (cfg.net2load, 'AE-t00')  | strcmp (cfg.net2load, 'AE-t06') | strcmp (cfg.net2load, 'AE-t10')
-    net2load = strsplit(cfg.net2load, '-'); 
-    net2load = net2load{2};
-    [ACT] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
+elseif strcmp (cfg.net2load, 'AE0000N')  | strcmp (cfg.net2load, 'AE1000N') 
+    [ACT] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, cfg.net2load);
 else
     %disp ('loading BLnext'); 
     [ACT] = load_blnext(cfg, sessi, paths, oneListIDs);
@@ -86,8 +84,8 @@ end
 
 if strcmp (cfg.net2load , 'BLNETi') | strcmp (cfg.net2load , 'BLNETe') | strcmp (cfg.net2load , 'Alex') | strcmp (cfg.net2load , 'CORrt') ...
         | strcmp (cfg.net2load , 'CORs')  | strcmp (cfg.net2load , 'CORrtRELU')  | strcmp (cfg.net2load , 'BLNETeBatchNorm') ...
-        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE-t00')  | strcmp (cfg.net2load , 'AE-t10') ...
-        | strcmp (cfg.net2load , 'AE-t06') | strcmp (cfg.net2load , 'BKNETi') | strcmp (cfg.net2load , 'BNETi') | strcmp (cfg.net2load , 'BDNETi') ...
+        | strcmp (cfg.net2load , 'AlexEco') | strcmp (cfg.net2load , 'CORr') | strcmp (cfg.net2load , 'AE0000N')  | strcmp (cfg.net2load , 'AE1000N') ...
+        | strcmp (cfg.net2load , 'BKNETi') | strcmp (cfg.net2load , 'BNETi') | strcmp (cfg.net2load , 'BDNETi') ...
         | strcmp (cfg.net2load , 'BFNETi') | strcmp (cfg.net2load , 'CORz') 
 
     networkRDMs = ACT(:, ids4, ids4);

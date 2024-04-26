@@ -156,8 +156,8 @@ for sub=1:size(all_pat,2)
                 c22 = trlinfo(:, 41);
                 c22 = repelem(c22,n,1);
 
-                ctrlinf2230 = trlinfo(:, 22:30);
-                ctrlinf2230 = repelem(ctrlinf2230, n, 1);
+                ctrlinf1630 = trlinfo(:, 22:30);
+                ctrlinf1630 = repelem(ctrlinf1630, n, 1);
                 
                 
                 [c1 idx]=sort(c1);
@@ -167,7 +167,7 @@ for sub=1:size(all_pat,2)
                 c7 = c7(idx);
                 c8 = c8(idx);
                                 
-                event_info = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c141516 c171819 c21 c22 ctrlinf2230];
+                event_info = [c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c141516 c171819 c21 c22 ctrlinf1630];
                 
                 [uni idx] = unique(c1);
                 event_info = event_info(idx, :);

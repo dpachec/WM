@@ -149,7 +149,8 @@ end
  
 %% count electrodes
 %%load cfg_contrasts
-%clearvars
+clear 
+
 tic
 sublist = dir('*contr.mat');
 sublist = {sublist.name};
@@ -185,7 +186,7 @@ end
 sum(s_ids)
 
 
-%% export s_all as csv file
+%% export s_all as csv file VVS
 
 %allChans = cat(1, s_all{:})
 cd D:\_WM\analysis\out_contrasts
@@ -194,7 +195,15 @@ allChans = cat(1, chanNames_all{:})
 writematrix(string(allChans), 'allChans_VVS.csv')
 
 
+%% export s_all as csv file
 
+allE = s_all; 
+% include subject ID to s_all
+for subji = 1:16
+    allE{subji}(:, 6) = {subji};
+end
+allChansP = cat(1, allE{:});
+writematrix(string(allChansP), 'allChans_PFC.csv')
 
 
 

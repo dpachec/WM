@@ -1,17 +1,15 @@
 %% AUTOENCODER 
-% % % 
+%% 
 clear, clc
-f2sav =  'AE-0000N_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+f2sav =  'AE0000N_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
 cfg = getParams(f2sav);
 sessi = 1; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
-net2load = strsplit(cfg.net2load, '-'); 
-net2load = net2load{2};
 
 subj_ch_fr = 1; 
-[ACT_FR layNames] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
+[ACT_FR layNames] = load_AE_activ(cfg, sessi, subj_ch_fr, paths, cfg.net2load);
 subj_ch_fr = 20; 
-ACT_CH = load_AE_activ(cfg, sessi, subj_ch_fr, paths, net2load);
+ACT_CH = load_AE_activ(cfg, sessi, subj_ch_fr, paths, cfg.net2load);
 
     
 %% Representational consistency all layers / time points 
@@ -796,3 +794,249 @@ end
 t = ts.tstat;
 disp(['t = ' num2str(t) ' // p = ' num2str(p)])
 
+
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%FIT TO NEURAL DATA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear, clc
+
+%Network_ROI_EoM_layers_freqs_avRepet_avTimeFeatVect_freqResolv(0-1)__fitMode(0:noTrials; 1:Trials)__timeRes__win-width__mf
+   
+listF2sav = {
+
+'AE0000N_vvs_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE1000N_vvs_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+
+};   
+
+t1 = datetime; 
+for listi = 1:length(listF2sav)
+    disp(['File > ' num2str(listi) '      ' listF2sav{listi}]);
+    clearvars -except listF2sav listi t1
+        
+    f2sav       = listF2sav{listi}; 
+    cfg = getParams(f2sav);
+    cfg.DNN_analysis = 1; 
+    paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+    filelistSess = getFilesWM(paths.powerFromRT);
+    
+    for sessi= 1:length(filelistSess) 
+        disp(['File > ' num2str(sessi)]);
+        load([paths.powerFromRT filelistSess{sessi}]);   
+        
+        cfg_contrasts               = getIdsWM(cfg.period, cfg_contrasts);
+        if strcmp(cfg.meth, 'LATERAL')
+            cfg_contrasts = take_only_lateral_electrodes(cfg_contrasts);
+        end
+        if length(cfg_contrasts.oneListIds) > 1 & size(cfg_contrasts.chanNames, 1) > 1
+            cfg_contrasts               = average_repetitions(cfg, cfg_contrasts);
+
+            neuralRDMs                  = createNeuralRDMs(cfg, cfg_contrasts);
+            networkRDMs                 = createNetworkRDMs(cfg, cfg_contrasts, sessi, paths);
+                
+            nnFit{sessi,1}              = fitModel_WM(neuralRDMs, networkRDMs, cfg.fitMode); 
+            nnFit{sessi,2}              = cfg_contrasts.oneListIds; 
+        end
+    end
+    
+    save([paths.results.DNNs f2sav '.mat'], 'nnFit');
+
+end
+t2 = datetime; 
+etime(datevec(t2), datevec(t1))
+
+
+
+%%  Load and plot results 
+%Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
+clear , clc
+
+f2sav = 'AE1000N_pfc_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+
+
+
+cLim = [-5 5]; 
+
+cfg = getParams(f2sav);
+if strcmp(cfg.brainROI, 'vvs')
+    sub2exc = [18 22];
+elseif strcmp(cfg.brainROI, 'pfc')
+    sub2exc = [1];
+end
+
+paths = load_paths_WM(cfg.brainROI, cfg.net2load);
+load([paths.results.DNNs f2sav '.mat']);
+
+
+tiledlayout(8,9, 'TileSpacing', 'tight', 'Padding', 'compact');
+if strcmp(cfg.period(1), 'M')
+    set(gcf, 'Position', [100 100 1200 1000])
+else
+    set(gcf, 'Position', [100 100 700 1200])
+end
+
+for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
+    ax1 = nexttile;
+    clear nnH
+    for subji = 1:length(nnFit)
+         if ~isempty(nnFit{subji, 1})
+           if strcmp(cfg.period(1), 'M')
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:40));
+           else
+             nnH(subji, : ,:) = atanh(nnFit{subji, 1}(layi,:,1:15));
+           end
+         end
+    end
+    
+    nnH(sub2exc, :, :) = []; 
+    nnH = squeeze(nnH);
+    %[h p ci ts] = ttest(nnH, 0, "Tail","right");
+    [h p ci ts] = ttest(nnH);
+    h = squeeze(h); t = squeeze(ts.tstat); 
+    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    % if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
+    %     h(:, 1:13) = 0; % only sum p-values in clusters after the baseline
+    % end
+    
+    d2p = squeeze(mean(nnH, 'omitnan'));
+    freqs = 1:52; 
+    clustinfo = bwconncomp(h);
+    allClustInfo{layi} = clustinfo; 
+
+    % store allTOBS
+    if ~isempty(clustinfo.PixelIdxList)
+        for pixi = 1:length(clustinfo.PixelIdxList)
+             %if length(clustinfo.PixelIdxList{pixi}) > 1
+                allTObs(layi, pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+             %end        
+        end
+    else
+        allTObs(layi, :, :) = 0;
+    end
+
+
+    
+    if strcmp(cfg.period(1), 'M')
+        times = 1:size(t, 2); 
+    else
+        times = 1:15; 
+    end
+    myCmap = colormap(brewermap([],'YlOrRd'));
+    colormap(myCmap)
+    contourf(times, freqs, t, 100, 'linecolor', 'none'); hold on; %colorbar
+    contour(times, freqs, h, 1, 'Color', [0, 0, 0], 'LineWidth', 2);
+    
+    if strcmp(cfg.period(1), 'M')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', cLim, 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    else
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'FontSize', 8, 'clim', cLim);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+    end
+
+    if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
+        set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        set(gca, 'xlim', [1 40], 'clim', cLim, 'FontSize', 10);
+        plot([5 5],get(gca,'ylim'), 'k:','lineWidth', 2);
+        plot([5+8 5+8],get(gca,'ylim'), 'k:','lineWidth', 2);
+        % set(gca, 'ytick', [], 'yticklabels', [], 'xtick', [], 'xticklabels', []); 
+        % set(gca, 'xlim', [6 25], 'clim', [-5 5], 'FontSize', 10);
+        
+        
+    end
+    
+
+end
+
+%exportgraphics(gcf, [paths.results.DNNs 'myP.png'], 'Resolution', 300); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%

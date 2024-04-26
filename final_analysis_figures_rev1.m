@@ -499,13 +499,23 @@ clear data
 
 
 
-%data.data = [m4_WISM{1} m4_WISM{2}]; % mean PFC
-%sub2exc = 1; 
-%data.data(sub2exc, :) = []; 
+% data.data = [m4_WISM{1} m4_WISM{2}]; % mean PFC
+% sub2exc = 1; 
+% data.data(sub2exc, :) = []; 
 
-data.data = [m4_WISM{3} m4_WISM{4}]; % mean VVS
-sub2exc = [18 22]; 
-data.data(sub2exc, :) = []; 
+% data.data = [m4_WISM{3} m4_WISM{4}]; % mean VVS
+% sub2exc = [18 22]; 
+% data.data(sub2exc, :) = []; 
+
+% % % Direct contrast MEAN
+diffPFC = [m4_WISM{1}-m4_WISM{2}];
+diffVVS = [m4_WISM{3}-m4_WISM{4}];
+diffPFC = diffPFC([2 3  5  9 10 11 12 14 15 16]);
+diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
+data.data = [diffPFC diffVVS]; 
+data.data = abs(data.data)
+
+
 
 %data.data = [m5_WISV{1} m5_WISV{2}]; % VAR PFC
 %sub2exc = 1; 
@@ -516,13 +526,25 @@ data.data(sub2exc, :) = [];
 % data.data(sub2exc, :) = []; 
 
 
-% % % Direct contrast MEAN
-% diffPFC = [m4_WISM{1}-m4_WISM{2}];
-% diffVVS = [m4_WISM{3}-m4_WISM{4}];
+% data.data = [m7_WISMBC{1} m7_WISMBC{2}]; % MEAN between cat PFC
+% sub2exc = 1; 
+% data.data(sub2exc, :) = []; 
+
+
+ % data.data = [m7_WISMBC{3} m7_WISMBC{4}]; % MEAN between cat VVS
+ % sub2exc = 1; 
+ % data.data(sub2exc, :) = []; 
+
+% % Direct contrast MEAN BETWEEN CATEGORY
+% diffPFC = [m7_WISMBC{1}-m7_WISMBC{2}];
+% diffVVS = [m7_WISMBC{3}-m7_WISMBC{4}];
 % diffPFC = diffPFC([2 3  5  9 10 11 12 14 15 16]);
 % diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
 % data.data = [diffPFC diffVVS]; 
-% data.data = abs(data.data)
+
+
+
+
 
 % % % Direct contrast MEAN WITHIN CATEGORY
 % diffPFC = [m6_WISMWC{1}-m6_WISMWC{2}];
@@ -531,12 +553,6 @@ data.data(sub2exc, :) = [];
 % diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
 % data.data = [diffPFC diffVVS]; 
 
-% % % Direct contrast MEAN BETWEEN CATEGORY
- % diffPFC = [m7_WISMBC{1}-m7_WISMBC{2}];
- % diffVVS = [m7_WISMBC{3}-m7_WISMBC{4}];
- % diffPFC = diffPFC([2 3  5  9 10 11 12 14 15 16]);
- % diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
- % data.data = [diffPFC diffVVS]; 
 
 
 % % % Direct contrast VARIANCE 
@@ -561,12 +577,6 @@ data.data(sub2exc, :) = [];
 
 
 
-
-%data.data = [m5_WISV_E m5_WISV_M];
-%data.data = [m6_WISMWC_E, m6_WISMWC_M]; 
-%data.data = [m7_WISMBC_E, m7_WISMBC_M]; 
-%data.data = [m8_WISVWC_E, m8_WISVWC_M]; 
-%data.data = [m9_WISVBC_E, m9_WISVBC_M]; 
 
 
 
@@ -1015,8 +1025,44 @@ disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Reviwer 1 comment 2 - SLIDE 9
+% Reviwer 1 comment 2 - ITEM SPECIFIC 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%%
+
+M = zeros(110); 
+M(1:35, 1:35) = 1; M(36:65, 36:65) = 1; M(66:86, 66:86) = 1; M(87:end, 87:end) = 1; 
+imagesc(M); axis square; 
+set(gca, 'xtick', [], 'ytick', [],   'xticklabels', [],  'yticklabels', []); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+%%
+
+M = zeros(110); 
+%M(1:35, 1:35) = rand(35); M(36:65, 36:65) = rand(30);  M(66:86, 66:86) = rand(21); M(87:end, 87:end) = rand(24); 
+M(1:65, 1:65) = rand(65);M(66:110, 66:110) = rand(45); 
+M(M==0) = nan;
+imagesc(M); axis square; 
+set(gca, 'xtick', [], 'ytick', [],   'xticklabels', [],  'yticklabels', []); 
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+%% Schematic (item model)
+
+CM = kron(eye(6), ones(10));
+CM(CM==0) = 2000; 
+CM = tril(CM, -1);
+CM(CM==0) = nan; 
+CM(CM==2000) = 0; 
+
+imagesc(CM); axis square; 
+set(gca, 'xTick', [], 'yTick', [])
+
+exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
+
+
+
 
 %% compute CCI in PFC cluster
 clear, clc
