@@ -494,10 +494,24 @@ for periodi = 1:length(allPeriods)
     end
 end
 
+
+
+
 %% plot two bar
 clear data
+% % % allPeriods = {meanRDM_PFC_E; meanRDM_PFC_M; meanRDM_VVS_E; meanRDM_VVS_M};
 
 
+
+
+
+data.data = atanh([m9_WISVBC{1} m9_WISVBC{2}]); % variance PFC
+sub2exc = 1; 
+data.data(sub2exc, :) = []; 
+
+%data.data = atanh([m8_WISVWC{1} m8_WISVWC{2}]); % mean PFC
+%sub2exc = 1; 
+%data.data(sub2exc, :) = []; 
 
 % data.data = [m4_WISM{1} m4_WISM{2}]; % mean PFC
 % sub2exc = 1; 
@@ -508,27 +522,29 @@ clear data
 % data.data(sub2exc, :) = []; 
 
 % % % Direct contrast MEAN
-diffPFC = [m4_WISM{1}-m4_WISM{2}];
-diffVVS = [m4_WISM{3}-m4_WISM{4}];
-diffPFC = diffPFC([2 3  5  9 10 11 12 14 15 16]);
-diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
-data.data = [diffPFC diffVVS]; 
-data.data = abs(data.data)
+% diffPFC = [m4_WISM{1}-m4_WISM{2}];
+% diffVVS = [m4_WISM{3}-m4_WISM{4}];
+% diffPFC = diffPFC([2 3  5  9 10 11 12 14 15 16]);
+% diffVVS = diffVVS([7 9 13 18 19 20 21 23 27 28]);
+% data.data = [diffPFC diffVVS]; 
+% data.data = abs(data.data)
 
 
-
-%data.data = [m5_WISV{1} m5_WISV{2}]; % VAR PFC
-%sub2exc = 1; 
-%data.data(sub2exc, :) = []; 
+% % % % %data.data = [m5_WISV{1} m5_WISV{2}]; % VAR PFC
+% data.data = atanh([m5_WISV{1} m5_WISV{2}]); % VAR PFC
+% sub2exc = 1; 
+% data.data(sub2exc, :) = []; 
 
 % data.data = [m5_WISV{3} m5_WISV{4}]; % VAR VVS
 % sub2exc = [18 22]; 
 % data.data(sub2exc, :) = []; 
 
 
-% data.data = [m7_WISMBC{1} m7_WISMBC{2}]; % MEAN between cat PFC
+% data.data = atanh([m7_WISMBC{1} m7_WISMBC{2}]); % MEAN between cat PFC
+% % % % data.data = [m7_WISMBC{1} m7_WISMBC{2}]; % MEAN between cat PFC
 % sub2exc = 1; 
 % data.data(sub2exc, :) = []; 
+
 
 
  % data.data = [m7_WISMBC{3} m7_WISMBC{4}]; % MEAN between cat VVS
@@ -796,7 +812,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);%% plot average RDM
 clear, clc
 
 subj_ch_fr = 7;
-triu2u = 0; %select Within or between category correlations
+triu2u = 1; %select Within or between category correlations
 
 % % load PFC RDMs
 f2load = 'pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
@@ -870,7 +886,7 @@ end
 
 sub2exc = 1; 
 rhoALLPFC(sub2exc) = []; 
-[h p ci ts] = ttest(rhoALLPFC);
+[h p ci ts] = ttest(atanh(rhoALLPFC));
 disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 
@@ -985,7 +1001,7 @@ rhoALLVVS = squeeze(mean(rhoALL, 2));
 
 sub2exc = [18 22]; 
 rhoALLVVS(sub2exc) = []; 
-[h p ci ts] = ttest(rhoALLVVS);
+[h p ci ts] = ttest(atanh(rhoALLVVS));
 disp (['t = ' num2str(ts.tstat) '  ' ' p = ' num2str(p)]);
 
 

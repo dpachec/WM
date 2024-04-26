@@ -3,9 +3,13 @@
 %Network_ROI_ER_layers_freqs_avRepet_avTFV_fRes(0-1)_fitMode(0:noTrials; 1:Trials)_timeRes_win_mf
 clear , clc
 
+%f2sav = 'Alex_vvs_E123_[1-8]_3-54_1_0_1_0_.1_5_1'
+%f2sav = 'BLNETi_pfc_E123_[8-8-56]_3-54_1_0_1_0_.1_5_1'
+f2sav = 'CORrt_pfc_E123_[2-2-8]_3-54_1_0_1_0_.1_5_1'
+
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_PCC'
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_0_0_1_0_.1_5_1_MASK'
-%f2sav = 'Alex_vvs_E123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'
+
 %f2sav = 'ITM_vvs_M123_[1]_3-54_0_0_1_0_.1_5_1'
 %f2sav = 'BLNETi_vvs_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1'
 %f2sav = 'Alex_pfc_M123_[1-8]_3-54_0_0_1_0_.1_5_1_MASK'
@@ -24,7 +28,9 @@ clear , clc
 %f2sav = 'BDNETi_vvs_M123_[1-13]_3-54_1_0_1_0_.1_5_1';
 
 %f2sav = 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_LATERAL';
-f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+%f2sav =  'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
+
+%f2sav = 'CAT_vvs_E123_[1]_3-54_1_0_1_0_.1_5_1';
 
 
 cLim = [-5 5]; 
@@ -65,7 +71,7 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     %[h p ci ts] = ttest(nnH, 0, "Tail","right");
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat); 
-    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
     % if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
     %     h(:, 1:13) = 0; % only sum p-values in clusters after the baseline
     % end
@@ -154,7 +160,7 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     nnH = squeeze(nnH);
     [h p ci ts] = ttest(nnH);
     h = squeeze(h); t = squeeze(ts.tstat); 
-    h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
+    %h(:, 1:5) = 0; % only sum p-values in clusters after the baseline
     if strcmp(cfg.period, 'M11') | strcmp(cfg.period, 'M12') | strcmp(cfg.period, 'M13')
         h(:, 1:13) = 0; % only sum p-values in clusters after the baseline
     end
@@ -200,6 +206,62 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
     else
         times = 1:150; 
         h = zeros(52, 15); 
+        if strcmp(cfg.brainROI, 'vvs')
+            if strcmp(cfg.net2load, 'Alex') & (layi == 1)
+                h(allClustInfo{1}.PixelIdxList{1}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi == 2)
+                h(allClustInfo{2}.PixelIdxList{4}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi == 3)
+                h(allClustInfo{3}.PixelIdxList{5}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi == 4)
+                h(allClustInfo{4}.PixelIdxList{4}) = 1; 
+                h(allClustInfo{4}.PixelIdxList{3}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi == 5)
+                h(allClustInfo{5}.PixelIdxList{3}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi == 6)
+                h(allClustInfo{layi}.PixelIdxList{4}) = 1; 
+                h(allClustInfo{layi}.PixelIdxList{3}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'Alex') & (layi ==7  | layi ==8)
+                h(allClustInfo{layi}.PixelIdxList{3}) = 1; 
+            end
+
+
+            if strcmp(cfg.net2load, 'BLNETi') & (layi ==1  | layi ==2 )
+                h(allClustInfo{layi}.PixelIdxList{2}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'BLNETi') & (layi ==3  | layi ==4  | layi ==5  )
+                h(allClustInfo{layi}.PixelIdxList{3}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'BLNETi') & (layi ==6  | layi ==7)
+                h(allClustInfo{layi}.PixelIdxList{4}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'CORrt') & (layi ==1 )
+                h(allClustInfo{layi}.PixelIdxList{1}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'CORrt') & (layi ==2 )
+                h(allClustInfo{layi}.PixelIdxList{3}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'CORrt') & (layi ==3)
+                h(allClustInfo{layi}.PixelIdxList{5}) = 1; 
+            end
+            if strcmp(cfg.net2load, 'CORrt') & (layi ==4)
+                h(allClustInfo{layi}.PixelIdxList{2}) = 1; 
+            end
+   
+            
+
+
+        else
+
+
+        end
+
         if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 2
             h(allClustInfo{2}.PixelIdxList{2}) = 1; 
         end
@@ -208,6 +270,10 @@ for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
         end
         if strcmp(cfg.net2load, 'BLNETi') & strcmp(cfg.meth, 'LATERAL') & layi == 4
             h(allClustInfo{4}.PixelIdxList{2}) = 1; 
+        end
+        if strcmp(cfg.net2load, 'CAT') & layi == 1
+            h(allClustInfo{1}.PixelIdxList{1}) = 1; 
+            h(5, [1:3]) = 0; 
         end
     end
     myCmap = colormap(brewermap([],'*spectral'));

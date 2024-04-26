@@ -171,6 +171,79 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
+
+%% Mean and variance of item correlations in the two regions during the two time-periods
+% FIRST LOAD WITHOUT ORDERING
+clear, clc
+
+% % % PFC ENCODING
+f2load = 'pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]);   
+load ([paths.results.clusters 'CAT_PFC_ENC_px8']);
+idsClust = clustinfo.PixelIdxList{8}; % % USE HERE 7 or 8 for theta or beta cluster
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{2}, 3); 
+nTimes = size(allNeuralRDMS{2}, 4); 
+
+for subji = 1:nSubjs
+    if ~isempty(allNeuralRDMS{subji, 1})
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+        oneListIds = double(string(cat(1, oneListIds{:})));
+        
+        nRows       = size(neuralRDMs, 1); 
+        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+        rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
+        meanRDM_PFC_E{subji, 1} = rdmS; 
+        meanRDM_PFC_E{subji, 2} = oneListIds(:, 3); 
+
+        
+    end
+end
+
+
+
+% % % PFC MAINTENANCE
+f2load = 'pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
+paths = load_paths_WM('vvs', 'none');
+filelistSess = getFilesWM(paths.results.neuralRDMS);
+load([paths.results.neuralRDMS f2load]); 
+load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
+idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
+
+
+t1 = datetime; 
+nSubjs = size(allNeuralRDMS, 1); 
+nFreqs = size(allNeuralRDMS{2}, 3); 
+nTimes = size(allNeuralRDMS{2}, 4); 
+
+for subji = 1:nSubjs
+    if ~isempty(allNeuralRDMS{subji, 1})
+        neuralRDMs  = allNeuralRDMS{subji, 1}; 
+        ids         = allNeuralRDMS{subji, 2};
+        oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
+        oneListIds = double(string(cat(1, oneListIds{:})));
+        
+        nRows       = size(neuralRDMs, 1); 
+        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
+        rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
+        meanRDM_PFC_M{subji, 1} = rdmS; 
+        meanRDM_PFC_M{subji, 2} = oneListIds(:, 3); 
+
+        
+    end
+end
+
+
+clearvars -except meanRDM_PFC_E meanRDM_PFC_M 
+
+
+
 %% COMPUTE METRICS FOR ALL 4 TIME PERIODS
 
 allPeriods = {meanRDM_PFC_E; meanRDM_PFC_M};
@@ -220,6 +293,7 @@ data.data = [m9_WISVBC{1} m9_WISVBC{2}]; ylim = [-.0 .05];  % VAR PFC
 %data.data = [m9_WISVBC_E, m9_WISVBC_M]; 
 
 
+data.data = atanh(data.data); % % % Fischer-Z
 sub2exc = 1; 
 data.data(sub2exc, :) = []; 
 figure(2); set(gcf,'Position', [0 0 500 620]); 
@@ -365,7 +439,7 @@ end
 
 sub2exc = 1; 
 rhoALL(sub2exc) = []; 
-[h p ci ts] = ttest(rhoALL);
+[h p ci ts] = ttest(atanh(rhoALL));
 disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
 
 
@@ -395,75 +469,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 %% 6x6 RDM analysis
-
-
-%% Correlate with BL-NET after excluding within and between category correlations
-% FIRST LOAD THE RDM in the PFC cluster during MAINTENANCE
-clear, clc
-
-f2load = 'pfc_M123_[]_3-54_1_0_1_0_.1_5_1'; 
-paths = load_paths_WM('vvs', 'none');
-filelistSess = getFilesWM(paths.results.neuralRDMS);
-load([paths.results.neuralRDMS f2load]); 
-load ([paths.results.clusters 'allClustInfo_PFC_BLNET']);
-idsClust = allClustInfo{1,7}.PixelIdxList{7}; 
-
-
-t1 = datetime; 
-nSubjs = size(allNeuralRDMS, 1); 
-nFreqs = size(allNeuralRDMS{2}, 3); 
-nTimes = size(allNeuralRDMS{2}, 4); 
-
-for subji = 1:nSubjs
-    if ~isempty(allNeuralRDMS{subji, 1})
-        neuralRDMs  = allNeuralRDMS{subji, 1}; 
-        ids         = allNeuralRDMS{subji, 2};
-        oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
-        oneListIds = double(string(cat(1, oneListIds{:})));
-        
-        nRows       = size(neuralRDMs, 1); 
-        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
-        rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
-        meanRDM{subji, 1} = rdmS; 
-        meanRDM{subji, 2} = oneListIds(:, 3); 
-        
-    end
-end
-
-%% OR LOAD THE RDM in the PFC cluster during ENCODING
-
-clear, clc
-
-f2load = 'pfc_E123_[]_3-54_1_0_1_0_.1_5_1'; 
-paths = load_paths_WM('vvs', 'none');
-filelistSess = getFilesWM(paths.results.neuralRDMS);
-load([paths.results.neuralRDMS f2load]);   
-load ([paths.results.clusters 'CAT_PFC_ENC_px8']);
-idsClust = clustinfo.PixelIdxList{8}; % % USE HERE 7 or 8 for theta or beta cluster
-
-t1 = datetime; 
-nSubjs = size(allNeuralRDMS, 1); 
-nFreqs = size(allNeuralRDMS{2}, 3); 
-nTimes = size(allNeuralRDMS{2}, 4); 
-
-for subji = 1:nSubjs
-    if ~isempty(allNeuralRDMS{subji, 1})
-        neuralRDMs  = allNeuralRDMS{subji, 1}; 
-        ids         = allNeuralRDMS{subji, 2};
-        oneListIds = cellfun(@(x) strsplit(x, ' '), ids, 'un', 0);
-        oneListIds = double(string(cat(1, oneListIds{:})));
-        
-        nRows       = size(neuralRDMs, 1); 
-        neuralRDM1 = reshape(neuralRDMs, nRows, nRows, nFreqs*nTimes); 
-        rdmS         = mean(neuralRDM1(:, :,idsClust ), 3); 
-        meanRDM{subji, 1} = rdmS; 
-        meanRDM{subji, 2} = oneListIds(:, 3); 
-        
-    end
-end
-
-
-%% Compute correlation neural Distances and BL-NET distances
+% Compute correlation neural Distances and BL-NET distances
 nPerm = 200; 
 tril2u = 0; 
 clear rhoALL rhoPerm rhoALLCAT neuralCatDist catDistBLNET rhoCATPerm catDistBLNETPERM rhoALLCATCM
@@ -716,8 +722,36 @@ end
 sub2exc = 1; 
 rho1(sub2exc) = []; 
 rho2(sub2exc) = []; 
-[h p ci ts] = ttest (rho1, rho2); 
+[h p ci ts] = ttest (atanh(rho1)); 
 disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
+
+%% FIT 6x6 RSMs ENC BL-NET 
+
+for subji = 1:16
+
+    rsm1 = squeeze(mPFC_E(subji, :, :)); 
+    rsm1 = tril(rsm1, 0); 
+    rsm1(rsm1==0) = []; 
+
+    rsm2 = ACT; 
+    rsm2 = tril(rsm2, 0); 
+    rsm2(rsm2==0) = []; 
+    
+    rsm3 = kron(eye(6), ones(1)); 
+    rsm3 = rsm3(tril(true(length(rsm3)), 0))';
+    
+    rho1(subji, :) = corr(rsm1', rsm2', 'type', 's'); 
+    rho2(subji, :) = corr(rsm1', rsm3', 'type', 's'); 
+    
+
+end
+
+sub2exc = 1; 
+rho1(sub2exc) = []; 
+rho2(sub2exc) = []; 
+[h p ci ts] = ttest (atanh(rho1)); 
+disp (['t(' num2str(ts.df) ') = ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
+
 
 
 
