@@ -516,6 +516,192 @@ mean(nOfCE)
 
 
 
+%% Assess error rates across classes, and numbers of trials where categories are correct but not classes, separately for each class. 
+% first load events
+
+clear
+
+[all_events allTrlInfo ] = loadLogsWM;
+allTrlInfo = [allTrlInfo{:}];%% has to be done twice because of the nested 
+allTrlInfo = [allTrlInfo{:}];%% has to be done twice because of the nested 
+allTrlInfo = allTrlInfo(~cellfun('isempty',allTrlInfo));
+allTrlInfo = allTrlInfo';
+
+
+
+
+%%
+
+itorCat = 40; % 40 = IT; 41 = CAT
+
+for sessi = 1:length(allTrlInfo)
+    
+    trlinfo = allTrlInfo{sessi};
+    
+    allSITrials = trlinfo(trlinfo(:, 10) ~= 4,:);
+
+    perf = nan(size(allSITrials, 1), 6);
+    nCatNotIt = nan(size(allSITrials, 1), 6);
+    for triali = 1:size(allSITrials, 1)
+
+        cuedI = allSITrials(triali, 3 + allSITrials(triali, 10)); 
+        cuedC = floor(cuedI/100); 
+        
+        if allSITrials(triali, itorCat) == 1
+            perf(triali, cuedC) = 1; 
+        elseif allSITrials(triali, itorCat) == 0
+            perf(triali, cuedC) = 0; 
+        end
+
+        if allSITrials(triali, 41) == 1 & allSITrials(triali, 40) == 0
+            nCatNotIt(triali, cuedC) = 1; 
+        end
+    end
+    
+    for cati = 1:6
+        perfPerClass(sessi, cati) = sum(perf(:, cati), 'omitnan') / sum(~isnan(perf(:, cati))); 
+        nCatNotItPerClass(sessi, cati) = sum(nCatNotIt(:, cati), 'omitnan'); 
+    end
+
+
+end
+
+region = 'all';
+perfPerClass = average_xGM (perfPerClass, region); 
+nCatNotItPerClass = average_xGM (nCatNotItPerClass, region); 
+
+
+%%
+
+nCatNotItPerClassGA = mean(nCatNotItPerClass);
+stdCatNotItPerClass = std(nCatNotItPerClass);
+seCatNotItPerClass = stdCatNotItPerClass/ sqrt(size(nCatNotItPerClass, 1)); 
+bar(nCatNotItPerClassGA, 'FaceColor', 'none', linew=2); hold on; 
+errorbar(nCatNotItPerClassGA, seCatNotItPerClass, 'k.', linew=2); % point specifies marker only 
+ylim([0 .7]); xlim([0 7])
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+%% 
+perfPerClassGA = mean(perfPerClass)
+stdPerClass = std(perfPerClass)
+sePerClass = stdPerClass/ sqrt(size(perfPerClass, 1)); 
+
+bar(perfPerClassGA, 'FaceColor', 'none', linew=2); hold on; 
+%plot(perfPerClass')
+errorbar(perfPerClassGA, sePerClass, 'k.', linew=2); % point specifies marker only 
+
+ylim([.5 1]); xlim([0 7])
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+%%
+
+itorCat = 33; % 33 = IT; 36 = CAT
+
+for sessi = 1:length(allTrlInfo)
+    
+    trlinfo = allTrlInfo{sessi};
+    %nSITR(sessi, :) = length(trlinfo(trlinfo(:, 10) ~= 4));
+    %nMITR(sessi, :) = length(trlinfo(trlinfo(:, 10) == 4));
+
+    allMITrials = trlinfo(trlinfo(:, 10) == 4,:);
+
+    perf = nan(size(allMITrials, 1), 6);
+    for triali = 1:size(allMITrials, 1)
+
+        cuedIts = floor(allMITrials(triali, 4:6)/100); 
+        
+        for cuei = 1:3
+            cuedC = cuedIts(cuei); 
+            if allMITrials(triali, itorCat+cuei) == 1
+                perf(triali, cuedC) = 1; 
+            else
+                perf(triali, cuedC) = 0; 
+            end
+        end
+    end
+    
+    for cati = 1:6
+        perfPerClassMI(sessi, cati) = sum(perf(:, cati), 'omitnan') / sum(~isnan(perf(:, cati))); 
+    end
+
+
+end
+
+region = 'all';
+perfPerClassMI = average_xGM (perfPerClassMI, region); 
+
+
+%% 
+perfPerClassGA = mean(perfPerClassMI)
+stdPerClass = std(perfPerClassMI)
+sePerClass = stdPerClass/ sqrt(size(perfPerClassMI, 1)); 
+
+bar(perfPerClassGA, 'FaceColor', 'none', linew=2); hold on; 
+%plot(perfPerClass')
+errorbar(perfPerClassGA, sePerClass, 'k.', linew=2); % point specifies marker only 
+
+ylim([.5 1]); xlim([0 7])
+exportgraphics(gcf, ['myP.png'], 'Resolution', 300); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

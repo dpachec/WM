@@ -806,8 +806,15 @@ clear, clc
    
 listF2sav = {
 
-'AE0000N_vvs_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
-'AE1000N_vvs_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE0000N_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE1000N_hipp_E123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE0000N_vvs_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE1000N_vvs_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE0000N_pfc_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE1000N_pfc_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE0000N_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+'AE1000N_hipp_M123_[1-18]_3-54_1_0_1_0_.1_5_1'; 
+
 
 };   
 
@@ -864,6 +871,8 @@ if strcmp(cfg.brainROI, 'vvs')
     sub2exc = [18 22];
 elseif strcmp(cfg.brainROI, 'pfc')
     sub2exc = [1];
+elseif strcmp(cfg.brainROI, 'hipp')
+    sub2exc = [2];
 end
 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);
@@ -877,7 +886,7 @@ else
     set(gcf, 'Position', [100 100 700 1200])
 end
 
-for layi = 1:size(nnFit{2}, 1) % nnFit{1} is empty in PFC
+for layi = 1:size(nnFit{3}, 1) % nnFit{1} is empty in PFC
     ax1 = nexttile;
     clear nnH
     for subji = 1:length(nnFit)

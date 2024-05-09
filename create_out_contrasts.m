@@ -20,7 +20,7 @@ rereference     =       1;                 %
 montage         =       'bipo';            %   'aver', 'bipo'
 timeRes         =       0.1; %0.01;               %    0.1 = 100ms; 0.01 = 10ms; or 'all' 
 takeAllTrials   =       0; 
-region          =       'vvs';
+region          =       'hipp';
 powOrAmp        =       'amp'; %power or raw amplitude time series
   
 disp ([ 'eLim = ' num2str(eLim) newline ...
