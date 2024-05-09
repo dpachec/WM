@@ -14,7 +14,7 @@ For network visualizations, use stim_repres_DNNs.m
 
 # Demo
 
-To compute model fits based on time-frequency power data of one example subject, load example_data.dat into matlab and run example_subject_fits.m
+To compute model fits based on time-frequency power data of one example subject, use example_subject_fits.m
 
 
 
