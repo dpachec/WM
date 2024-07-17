@@ -16,7 +16,7 @@ For network visualizations, use stim_repres_DNNs.m
 
 To compute model fits based on time-frequency power data of one example subject, use example_subject_fits.m
 
-Download epoched time-series and example power data from VWM Prioritisation Open Science Framework project
+Download epoched time-series and example power data from VWM Prioritization Open Science Framework (OSF) project
 https://osf.io/mw8cf/
 
 
