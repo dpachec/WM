@@ -1124,7 +1124,7 @@ paths = load_paths_WM('pfc', 'CORrt');
 
 subj_ch_fr = 1; 
 [ACT_FR] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
-%ACT = ACT([1:18 20:22 24:26 29:30 33:34], :, :);
+%ACT_FR = ACT_FR([1:18 20:22 24:26 29:30 33:34], :, :);
 subj_ch_fr = 20; 
 [ACT_CH] = load_CORrt_TL(cfg, sessi, subj_ch_fr, paths);%load network if not loaded yet
 
@@ -1155,7 +1155,6 @@ figure(); set(gcf, 'Position', [100 100 1500 500]);
 myCmap = brewermap([], '*Spectral') 
 colormap(myCmap)
 
-%l2l = [5 10 14 18 22 26 30 34];
 l2l = [5 10 15 20];
 
 for layi = 1:4
@@ -1182,7 +1181,7 @@ cols = repelem(cols, 10, 1);
 % also nice palette here: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/a64ed616-e9ce-4b1d-8d18-5118cc03f8d2/images/screenshot.png
 
 ACT = ACT_FR;
-l2l = [5 10 15 20];
+
 figure(); set(gcf, 'Position', [100 100 1500 500]);
 for layi = 1:4
    subplot (1, 4, layi)
@@ -1208,7 +1207,7 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 %% Representational consistency all layers / time points CORNET 
 clearvars -except ACT_CH ACT_FR
 
-%l2l = [5 14 22 30]; % first time-point
+%l2l = [1 3 5 7]; % first time-point
 l2l = [5 10 15 20]; % last time-point
 
 
@@ -1321,68 +1320,13 @@ exportgraphics(gcf, 'allM.png', 'Resolution', 300);
 
 
 
-%% compute CCI for each layer and timepoint Cornet 
-
-clearvars -except ACT_FR ACT_CH 
-
-%create cateogy model
-M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
-
-% freiburg
-ACT = ACT_FR;
-for layi = 1:size(ACT, 1)
-    d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
-    rdmMDS = d2p; 
-    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
-    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
-    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    %CCI(layi) = (mAcross - mWithin) / (mAcross + mWithin);
-    CCI_FR(layi) = (mAcross - mWithin) ;
-end
-
-%china
-ACT = ACT_CH;
-for layi = 1:size(ACT, 1)
-    d2p = squeeze(ACT(layi, :,:)); 
-    d2p = 1- d2p;
-    rdmMDS = d2p; 
-    rdmMDS(find(eye(size(rdmMDS)))) = nan; % % % remove zero coordinates on the diagonal
-    mWithin = mean(rdmMDS(M == 1), 'all', 'omitnan');
-    mAcross = mean(rdmMDS(M == 0), 'all', 'omitnan');
-    CCI_CH(layi) = (mAcross - mWithin) ;
-end
-
-CCI2 = [CCI_FR; CCI_CH]; 
-CCI = mean(CCI2); 
-
-% % % mds
-clear c1 c2 c3 cols
-c1 = (1:4)/4'; % sorted by time point
-c2 = repmat(zeros(1), 4, 1)';
-c3 = repmat(ones(1), 4, 1)';
-cols = [c1 ; c2 ; c3]';
-
-
-figure(); set(gcf, 'Position', [100 100 500 400])
-plot (1:5, CCI(1:5), 'Linewidth', 3, 'Color', [cols(1,:)]); hold on; %axis square
-plot (2:5,CCI(7:10), 'Linewidth', 3, 'Color', [cols(2,:)]); %axis square
-plot (3:5,CCI(13:15), 'Linewidth', 3, 'Color', [cols(3,:)]); %axis square
-plot (4:5,CCI(19:20), 'Linewidth', 3, 'Color', [cols(4,:)]); %axis square
-set(gca, 'FontSize', 22, 'xlim', [0 6], 'ylim', [0 .5])
-exportgraphics(gcf, 'matrixRNN.png', 'Resolution', 300);
-
-
-
-
-
 
 
 %% compute CCI for each layer FINAL TIME POINT
 
 clearvars -except ACT_FR ACT_CH 
 
-l2l = [5 10 15 20];
+l2l = [5 10 15 20]; % last time-point
 
 %create cateogy model
 M = zeros (60); M(1:10, 1:10) = 1; M(11:20, 11:20) = 1; M(21:30, 21:30) = 1; M(31:40, 31:40) = 1; M(41:50, 41:50) = 1; M(51:60, 51:60) = 1; 
@@ -1544,6 +1488,8 @@ scatter (4, allM2(19), 1000, [cols(4,:)], '.')
 set(gca, 'ylim', [0.75 1], 'xlim', [0.5 4.5], 'xtick', [1:4], 'xticklabels', ...
             {'1' '2' '3' '4'}, 'FontSize', 28)
 exportgraphics(gcf, 'allM.png', 'Resolution', 300);
+
+
 
 %%
 close all

@@ -2,7 +2,8 @@ function [all_events allTrlInfo] = loadLogsWM ()
     
     currentFolder = pwd;
 
-    all_pat_folder='D:\_WM\data\iEEG\';
+    %all_pat_folder='D:\_WM\data\iEEG\';
+    all_pat_folder='/Users/danielpacheco/Documents/iEEG_data_analysis/WM/logs/';
     cd(all_pat_folder);
     all_pat = dir('sub*');all_pat = {all_pat.name};
 

@@ -583,7 +583,8 @@ disp(anovaTable(AT, 'Measure (units)'));
 clearvars
 
 curr_fold = pwd; 
-cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+%cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+cd /Users/danielpacheco/Documents/iEEG_data_analysis/WM/analysis/fig2E
 
 contrasts = {'DISC_EE' 'DIDC_EE'};
 c = unique (contrasts);
@@ -652,7 +653,9 @@ exportgraphics(gcf, 'myIm.png', 'Resolution', 200)
 
 %% analysis high temporal resolution: Fig2E
 
-cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+%cd D:\_WM\analysis\pattern_similarity\pfc\50010ms\EE\avRepet\bands\category\TG\3-150Hz
+clear 
+cd /Users/danielpacheco/Documents/iEEG_data_analysis/WM/analysis/fig2E
 load all % this file contains the traces from VVS and PFC computed in the cells above
 
 mc1PFC = mean(cond1_PFC); 
@@ -681,9 +684,9 @@ hbVVS = hVVS; hbVVS(hbVVS==0) = nan; hbVVS(hbVVS==1) = l2y +.0045;
 clustinfo = bwconncomp(hBoth);
 clear allTObs
 
-for pixi = 1:length(clustinfo.PixelIdxList)
-     tObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
-end
+% for pixi = 1:length(clustinfo.PixelIdxList)
+%      tObs(pixi, :) = sum(t(clustinfo.PixelIdxList{pixi}));
+% end
 
 hbBoth = hBoth; hbBoth(hBoth==0) = nan; hbBoth(hbBoth==1) = l2y +.00775; 
 
