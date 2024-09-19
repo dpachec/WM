@@ -1,7 +1,7 @@
 %% check behavioral data
 % first load events
 
-clear 
+clear, clc
 
 [all_events allTrlInfo ] = loadLogsWM;
 allTrlInfo = [allTrlInfo{:}];%% has to be done twice because of the nested 
@@ -10,18 +10,6 @@ allTrlInfo = allTrlInfo(~cellfun('isempty',allTrlInfo));
 allTrlInfo = allTrlInfo';
 
 
-%% check number of single and multi item trials for every session
-
-for sessi = 1:length(allTrlInfo)
-    
-    trlinfo = allTrlInfo{sessi};
-    nSITR(sessi, :) = length(trlinfo(trlinfo(:, 10) ~= 4));
-    nMITR(sessi, :) = length(trlinfo(trlinfo(:, 10) == 4));
-
-
-end
-
-nSITR
 %% correct item-cat and by pos
 
 clearvars -except allTrlInfo
@@ -96,6 +84,48 @@ allPerfPos = [corr_123_pos corr_all_pos];
 
 
 
+
+
+%% 2 Bar SINGLE MULTIPLE
+clear data
+meanPF= cat(3, corr_123_pos(:, 1:3), corr_all_pos(:, 1:3))
+meanPF1 = squeeze(mean(meanPF, 2)); 
+data.data = [meanPF1]; 
+
+
+figure(1); set(gcf,'Position', [0 0 550 650]); 
+mean_S = mean(data.data);
+
+
+h = bar (mean_S,'FaceColor','flat', 'linew', 2);hold on;
+h.CData = [1 1 1; 1 1 1]; 
+hb = plot ([1:2], data.data, 'k'); hold on; 
+set(hb, 'lineWidth', 2, 'Marker', '.', 'MarkerSize',30);hold on;
+%set(hb,'linestyle','none', 'linew', 2);
+set(gca,'XTick',[1 2],'XTickLabel',{'', ''}, 'FontSize', 24, 'xlim', [0.25 2.75], 'ylim', [.4 1.1] );
+plot(get(gca,'xlim'), [0 0],'k','lineWidth', 2);hold on;
+set(gca, 'LineWidth', 2);
+box on
+
+[h p ci ts] = ttest(data.data(:, 1), data.data(:, 2));
+disp (['t(' num2str(ts.df) ')= ' num2str(ts.tstat, 3) ',' ' p = ' num2str(p, 3)]);
+
+exportgraphics(gcf, 'myP.png','Resolution', '300');
+
+
+
+%% check number of single and multi item trials for every session
+
+for sessi = 1:length(allTrlInfo)
+    
+    trlinfo = allTrlInfo{sessi};
+    nSITR(sessi, :) = length(trlinfo(trlinfo(:, 10) ~= 4));
+    nMITR(sessi, :) = length(trlinfo(trlinfo(:, 10) == 4));
+
+
+end
+
+nSITR
 
 
 %% 6 Bar 
@@ -519,7 +549,7 @@ mean(nOfCE)
 %% Assess error rates across classes, and numbers of trials where categories are correct but not classes, separately for each class. 
 % first load events
 
-clear
+clear, clc
 
 [all_events allTrlInfo ] = loadLogsWM;
 allTrlInfo = [allTrlInfo{:}];%% has to be done twice because of the nested 

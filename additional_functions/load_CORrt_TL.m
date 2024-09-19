@@ -11,10 +11,13 @@ if sessi < subj_ch_fr
     sublist = {sublist.name};  
     load(sublist{1});
     if length(cfg.lays2load) > 1
-        a{6} = nan(60); a{11} = nan(60); a{16} = nan(60);
-        act_prev = a(cfg.lays2load);
-        ACT = cat(3, act_prev{:});
-        ACT = permute(ACT, [3, 1, 2]);
+         a{6} = nan(60); a{11} = nan(60); a{16} = nan(60);
+         act_prev = a(cfg.lays2load);
+         ACT = cat(3, act_prev{:});
+         ACT = permute(ACT, [3, 1, 2]);
+        %a(6, :, :) = nan(60); a(11, :, :) = nan(60); a(16, :, :) = nan(60);
+        %act_prev = a(cfg.lays2load, :, :);
+        %ACT = act_prev; 
 
     else
         ACT = a{cfg.lays2load}; 
@@ -31,6 +34,10 @@ else
         act_prev = a(cfg.lays2load);
         ACT = cat(3, act_prev{:});
         ACT = permute(ACT, [3, 1, 2]);
+        
+        %a(6, :, :) = nan(60); a(11, :, :) = nan(60); a(16, :, :) = nan(60);
+        %act_prev = a(cfg.lays2load, :, :);
+        %ACT = act_prev; 
 
     else
         ACT = a{cfg.lays2load}; 

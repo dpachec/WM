@@ -83,7 +83,7 @@ clear, clc
     
 listF2sav = {
 
- 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1_CHOSENCAT';
+ 'BLNETi_pfc_M123_[8-8-56]_3-54_1_0_1_0_.1_5_1';
 
 
 };   
