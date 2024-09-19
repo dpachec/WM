@@ -2,7 +2,7 @@
 %% Export power from epoched rawTraces 
 % % note that multi-item trials are discarded, and data is normalized across trials after removing these trials
 clear , clc
-paths = load_paths_WM('hipp', 'none');
+paths = load_paths_WM('hipp', 'none'); 
 filelistSess = getFilesWM(paths.traces);
 
 for sessi= 1:length(filelistSess) %this one starts at 1 and not at 3

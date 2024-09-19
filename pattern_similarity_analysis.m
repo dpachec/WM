@@ -1,7 +1,7 @@
 %% load cfg_contrasts
 %% 
 
-clearvars
+clearvars 
 region              = 'vvs';
 paths = load_paths_WM(region, 'none');
 filelistSess = getFilesWM(paths.out_contrasts);

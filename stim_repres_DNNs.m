@@ -2,7 +2,7 @@
 % % ALEXNET 
 % % % 
 clear, clc
-f2sav = 'Alex_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat'; 
+f2sav = 'Alex_pfc_E123_[1-8]_3-8_0_0_1_1_.1_5_1.mat';
 cfg = getParams(f2sav);
 sessi = 1; 
 paths = load_paths_WM(cfg.brainROI, cfg.net2load);

@@ -1,7 +1,7 @@
 %% check behavioral data
 % first load events
 
-clear
+clear 
 
 [all_events allTrlInfo ] = loadLogsWM;
 allTrlInfo = [allTrlInfo{:}];%% has to be done twice because of the nested 
