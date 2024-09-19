@@ -1,6 +1,6 @@
 %% check behavioral data
 % first load events
-
+ 
 clear, clc
 
 [all_events allTrlInfo ] = loadLogsWM;
